@@ -62,7 +62,7 @@
         "provider": "github",
         "owner": "champ8644",
         "repo": "Cognitive-Fatigue-Evaluater",
-        "private": false
+        "private": true
       }
     ],
     "files": [
