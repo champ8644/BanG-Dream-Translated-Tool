@@ -1,9 +1,10 @@
 'use strict';
 
 import React, { PureComponent } from 'react';
+
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
+import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import classNames from 'classnames';
 import { imgsrc } from '../../../utils/imgsrc';
@@ -47,7 +48,7 @@ export default class ToolbarAreaPane extends PureComponent {
 
     return (
       <div className={styles.root}>
-        <AppBar position="static" elevation={0} className={styles.appBar}>
+        <AppBar position='static' elevation={0} className={styles.appBar}>
           <Toolbar
             className={styles.toolbar}
             disableGutters

@@ -9,7 +9,7 @@ module.exports = {
     node: true,
     es6: true
   },
-  plugins: ['import', 'promise', 'compat', 'react'],
+  plugins: ['import', 'promise', 'compat', 'react', 'prettier'],
   extends: ['airbnb', 'plugin:prettier/recommended', 'prettier/react'],
   settings: {
     'import/resolver': {
@@ -24,6 +24,7 @@ module.exports = {
     'consistent-return': 'off',
     'comma-dangle': 'off',
     'generator-star-spacing': 'off',
+    'import/no-cycle': 'off',
     'import/no-unresolved': 'error',
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     'jsx-a11y/anchor-is-valid': 'off',
@@ -60,6 +61,7 @@ module.exports = {
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx'] }],
     'react/prefer-stateless-function': 'off',
     strict: 'off',
+    'import/order': 'off',
     'import/prefer-default-export': 'off',
     'arrow-body-style': 'off',
     'no-underscore-dangle': 'off',

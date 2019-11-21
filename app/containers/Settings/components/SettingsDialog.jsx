@@ -1,18 +1,19 @@
 'use strict';
 
 import React, { PureComponent } from 'react';
-import electronIs from 'electron-is';
-import classNames from 'classnames';
-import Typography from '@material-ui/core/Typography';
+
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
 import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Typography from '@material-ui/core/Typography';
+import classNames from 'classnames';
+import electronIs from 'electron-is';
 import { privacyPolicyWindow } from '../../../utils/createWindows';
 
 const isMas = electronIs.mas();
@@ -34,8 +35,8 @@ export default class SettingsDialog extends PureComponent {
       <Dialog
         open={open}
         fullWidth
-        maxWidth="sm"
-        aria-labelledby="settings-dialogbox"
+        maxWidth='sm'
+        aria-labelledby='settings-dialogbox'
         disableEscapeKeyDown={false}
         onEscapeKeyDown={() =>
           onDialogBoxCloseBtnClick({
@@ -43,19 +44,19 @@ export default class SettingsDialog extends PureComponent {
           })
         }
       >
-        <Typography variant="h5" className={styles.title}>
+        <Typography variant='h5' className={styles.title}>
           Settings
         </Typography>
         <DialogContent>
-          <FormControl component="fieldset" className={styles.fieldset}>
+          <FormControl component='fieldset' className={styles.fieldset}>
             <div className={styles.block}>
-              <Typography variant="body1" className={styles.subheading}>
+              <Typography variant='body1' className={styles.subheading}>
                 General Settings
               </Typography>
 
               {!isMas && (
                 <FormGroup>
-                  <Typography variant="subtitle2" className={styles.subtitle}>
+                  <Typography variant='subtitle2' className={styles.subtitle}>
                     Enable auto-update check
                   </Typography>
 
@@ -77,7 +78,7 @@ export default class SettingsDialog extends PureComponent {
               )}
 
               <FormGroup className={styles.formGroup}>
-                <Typography variant="subtitle2" className={styles.subtitle}>
+                <Typography variant='subtitle2' className={styles.subtitle}>
                   Enable anonymous usage statistics gathering
                 </Typography>
 
@@ -99,7 +100,7 @@ export default class SettingsDialog extends PureComponent {
                   <Paper className={`${styles.onBoardingPaper}`} elevation={0}>
                     <div className={styles.onBoardingPaperArrow} />
                     <Typography
-                      component="p"
+                      component='p'
                       className={`${styles.onBoardingPaperBody}`}
                     >
                       Choose your privacy settings. Use the toggles above to
@@ -107,7 +108,7 @@ export default class SettingsDialog extends PureComponent {
                     </Typography>
                   </Paper>
                 ) : null}
-                <Typography variant="caption">
+                <Typography variant='caption'>
                   We do not gather any kind of personal information and neither
                   do we sell your data. We use this information only to improve
                   the User Experience and squash some bugs.&nbsp;
@@ -131,7 +132,7 @@ export default class SettingsDialog extends PureComponent {
                 confirm: false
               })
             }
-            color="primary"
+            color='primary'
             className={classNames(styles.btnPositive)}
           >
             Close

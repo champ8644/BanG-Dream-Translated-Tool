@@ -1,12 +1,5 @@
 'use strict';
 
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import { log } from '@Log';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { Helmet } from 'react-helmet';
 import {
   APP_GITHUB_URL,
   APP_IDENTIFIER,
@@ -15,10 +8,18 @@ import {
   AUTHOR_EMAIL,
   AUTHOR_NAME
 } from '../../constants/meta';
+import React, { Component } from 'react';
+
+import { Helmet } from 'react-helmet';
+import { PRIVACY_POLICY_PAGE_TITLE } from '../../templates/privacyPolicyPage';
+import Typography from '@material-ui/core/Typography';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { log } from '@Log';
 import { openExternalUrl } from '../../utils/url';
 import { resetOverFlowY } from '../../utils/styleResets';
-import { PRIVACY_POLICY_PAGE_TITLE } from '../../templates/privacyPolicyPage';
 import { styles } from './styles';
+import { withStyles } from '@material-ui/core/styles';
 
 class PrivacyPolicyPage extends Component {
   componentWillMount() {
@@ -32,7 +33,7 @@ class PrivacyPolicyPage extends Component {
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
           <title>{PRIVACY_POLICY_PAGE_TITLE}</title>
         </Helmet>
-        <Typography variant="h5" className={styles.heading}>
+        <Typography variant='h5' className={styles.heading}>
           Privacy policy for {APP_NAME}
         </Typography>
         <div className={styles.body}>

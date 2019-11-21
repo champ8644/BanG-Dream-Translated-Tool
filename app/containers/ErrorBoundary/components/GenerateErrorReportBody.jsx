@@ -1,8 +1,9 @@
 'use strict';
 
 import React, { PureComponent } from 'react';
-import Typography from '@material-ui/core/Typography';
+
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 
 export default class GenerateErrorReportBody extends PureComponent {
   render() {
@@ -16,7 +17,7 @@ export default class GenerateErrorReportBody extends PureComponent {
     } = this.props;
     return (
       <React.Fragment>
-        <Typography variant="subtitle1" className={styles.subHeading}>
+        <Typography variant='subtitle1' className={styles.subHeading}>
           <ul className={styles.instructions}>
             <li>Click on the &quot;EMAIL ERROR LOGS&quot; button.</li>
             <li>It will open your email client.</li>
@@ -29,14 +30,14 @@ export default class GenerateErrorReportBody extends PureComponent {
           </ul>
         </Typography>
         <Button
-          variant="outlined"
-          color="secondary"
+          variant='outlined'
+          color='secondary'
           className={styles.generateLogsBtn}
           onClick={onGenerateErrorLogs}
         >
           EMAIL ERROR LOGS
         </Button>
-        <Typography variant="subtitle1" className={styles.emailIdWrapper}>
+        <Typography variant='subtitle1' className={styles.emailIdWrapper}>
           <span>Developer email address: </span>
           <a
             href={`${mailTo} ${mailToInstructions}`}

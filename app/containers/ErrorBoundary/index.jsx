@@ -1,17 +1,18 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+
 import Button from '@material-ui/core/Button';
+import { EOL } from 'os';
+import GenerateErrorReport from './components/GenerateErrorReport';
+import Typography from '@material-ui/core/Typography';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { imgsrc } from '../../utils/imgsrc';
 import { log } from '@Log';
 import { remote } from 'electron';
-import { EOL } from 'os';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { styles } from './styles';
-import { imgsrc } from '../../utils/imgsrc';
-import GenerateErrorReport from './components/GenerateErrorReport';
+import { withStyles } from '@material-ui/core/styles';
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -48,22 +49,22 @@ class ErrorBoundary extends Component {
       return (
         <div className={styles.root}>
           <img
-            alt="Some Error Occured!"
+            alt='Some Error Occured!'
             src={imgsrc('bug.svg', false)}
             className={styles.bugImg}
           />
-          <Typography variant="h4" className={styles.headings}>
+          <Typography variant='h4' className={styles.headings}>
             Whoops!
           </Typography>
-          <Typography variant="h5" className={styles.headings}>
+          <Typography variant='h5' className={styles.headings}>
             I promise it&apos;s not you, it&apos;s me.
           </Typography>
-          <Typography variant="subtitle1" className={styles.subHeading}>
+          <Typography variant='subtitle1' className={styles.subHeading}>
             Please send us the error log so that I can fix this issue.
           </Typography>
           <GenerateErrorReport />
           <Button
-            variant="outlined"
+            variant='outlined'
             className={styles.goBackBtn}
             onClick={this.handleReload}
           >

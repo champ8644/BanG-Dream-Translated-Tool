@@ -1,14 +1,15 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { Helmet } from 'react-helmet';
-import { log } from '@Log';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import GenerateErrorReport from '../ErrorBoundary/components/GenerateErrorReport';
+
 import { APP_NAME } from '../../constants/meta';
+import GenerateErrorReport from '../ErrorBoundary/components/GenerateErrorReport';
+import { Helmet } from 'react-helmet';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { log } from '@Log';
 import { styles } from './styles';
+import { withStyles } from '@material-ui/core/styles';
 
 class ReportBugsPage extends Component {
   render() {

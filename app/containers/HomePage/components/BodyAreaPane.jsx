@@ -2,13 +2,14 @@
 
 /* eslint no-case-declarations: off */
 
+import { Link, withRouter } from 'react-router-dom';
 import React, { PureComponent } from 'react';
-import { withRouter, Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
+
 import Button from '@material-ui/core/Button';
 import { log } from '@Log';
 import { routes } from '../../../routing';
 import { styles } from '../styles/BodyAreaPane';
+import { withStyles } from '@material-ui/core/styles';
 
 class BodyAreaPane extends PureComponent {
   render() {
@@ -19,8 +20,8 @@ class BodyAreaPane extends PureComponent {
         <h3>Electron-React-Redux advanced and scalable boilerplate</h3>
         <div className={styles.btnWrapper}>
           <Button
-            variant="outlined"
-            color="secondary"
+            variant='outlined'
+            color='secondary'
             className={styles.btn}
             onClick={onSendAlertsBtn}
           >
@@ -28,8 +29,8 @@ class BodyAreaPane extends PureComponent {
           </Button>
 
           <Button
-            variant="outlined"
-            color="secondary"
+            variant='outlined'
+            color='secondary'
             className={styles.btn}
             onClick={onSendAlertsBtn.bind(this, {
               variant: 'info',
@@ -41,8 +42,8 @@ class BodyAreaPane extends PureComponent {
         </div>
         <div className={styles.btnWrapper}>
           <Button
-            variant="contained"
-            color="secondary"
+            variant='contained'
+            color='secondary'
             className={styles.btn}
             onClick={onSendAlertsBtn.bind(this, {
               variant: 'warning'
@@ -51,8 +52,8 @@ class BodyAreaPane extends PureComponent {
             SEND WARNING
           </Button>
           <Button
-            variant="contained"
-            color="secondary"
+            variant='contained'
+            color='secondary'
             className={styles.btn}
             onClick={onSendAlertsBtn.bind(this, {
               variant: 'success'
