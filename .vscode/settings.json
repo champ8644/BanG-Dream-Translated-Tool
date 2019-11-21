@@ -1,0 +1,70 @@
+{
+  "files.associations": {
+    ".babelrc": "jsonc",
+    ".eslintrc": "jsonc",
+    ".prettierrc": "jsonc",
+
+    ".stylelintrc": "json",
+
+    ".dockerignore": "ignore",
+    ".eslintignore": "ignore",
+    ".flowconfig": "ignore"
+  },
+
+  "javascript.validate.enable": true,
+  "javascript.format.enable": false,
+  "typescript.validate.enable": false,
+  "typescript.format.enable": false,
+
+  //"flow.useNPMPackagedFlow": true,
+
+  "search.exclude": {
+    ".git": true,
+    ".eslintcache": true,
+    "app/dist": true,
+    "app/main.prod.js": true,
+    "app/main.prod.js.map": true,
+    "bower_components": true,
+    "dll": true,
+    "flow-typed": true,
+    "release": true,
+    "node_modules": true,
+    "npm-debug.log.*": true,
+    "test/**/__snapshots__": true,
+    "yarn.lock": true
+  },
+
+  "workbench.colorCustomizations": {
+    "editor.selectionBackground": "#17444e",
+    "editor.selectionHighlightBackground": "#5e4312"
+  },
+  "editor.tokenColorCustomizations": {
+    "[React Ocean Next Extended - Italic]": {
+      "textMateRules": [
+        {
+          "scope": "variable.other.object",
+          "settings": {
+            "foreground": "#6a8aa8"
+          }
+        },
+        {
+          "scope": "entity.other.attribute-name",
+          "settings": {
+            "foreground": "#a46abe"
+          }
+        },
+        {
+          "scope": "case-clause.expr.js",
+          "settings": {
+            "foreground": "#d65905"
+          }
+        }
+      ]
+    }
+  },
+  "editor.tabSize": 2,
+  "eslint.enable": true,
+  "editor.formatOnSave": true,
+  "editor.fontFamily": "Fira Code Retina",
+  "editor.fontLigatures": true
+}
