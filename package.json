@@ -29,7 +29,8 @@
     "postlint-styles-fix": "prettier --ignore-path .eslintignore --single-quote --write '**/*.{css,scss}'",
     "precommit": "lint-staged",
     "preinstall": "node ./internals/scripts/CheckYarn.js",
-    "postinstall": "yarn build-dll && electron-builder install-app-deps package.json"
+    "postinstall": "yarn build-dll && electron-builder install-app-deps package.json",
+    "electron-rebuild": "electron-rebuild -w opencv4nodejs"
   },
   "lint-staged": {
     "*.{js,jsx}": [

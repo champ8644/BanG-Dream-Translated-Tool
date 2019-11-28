@@ -6,6 +6,7 @@ import { Link, withRouter } from 'react-router-dom';
 import React, { PureComponent } from 'react';
 
 import Button from '@material-ui/core/Button';
+import { imgsrc } from '../../../utils/imgsrc';
 import { log } from '@Log';
 import { routes } from '../../../routing';
 import { styles } from '../styles/BodyAreaPane';
@@ -64,7 +65,12 @@ class BodyAreaPane extends PureComponent {
         </div>
         <div>
           <Link to={routes.SecondPage.path}>Goto Second Page</Link>
-
+          <img
+            src={imgsrc('keyboard.jpg')}
+            width='100px'
+            height='auto'
+            alt=''
+          />
           {/*
           // Import a image from the local path.
           // Default images folder: ./app/public/images
