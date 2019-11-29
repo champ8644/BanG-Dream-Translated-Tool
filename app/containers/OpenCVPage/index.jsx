@@ -56,6 +56,7 @@ class Home extends Component {
     return (
       <div className={styles.root}>
         <div className={styles.grid}>
+          OpenCV
           <ToolbarAreaPane
             showMenu
             toolbarList={toolbarList}

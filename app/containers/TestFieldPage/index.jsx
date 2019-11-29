@@ -16,7 +16,7 @@ import { toggleWindowSizeOnDoubleClick } from '../../utils/titlebarDoubleClick';
 import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
-class Home extends Component {
+class TestField extends Component {
   _handleDoubleClickToolBar = event => {
     if (event.target !== event.currentTarget) {
       return null;
@@ -52,7 +52,6 @@ class Home extends Component {
 
   render() {
     const { classes: styles, toolbarList } = this.props;
-
     return (
       <div className={styles.root}>
         <div className={styles.grid}>
@@ -89,9 +88,9 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-export default withReducer('Home', reducers)(
+export default withReducer('TestField', reducers)(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(withStyles(styles)(Home))
+  )(withStyles(styles)(TestField))
 );

@@ -65,10 +65,6 @@ class BodyAreaPane extends PureComponent {
         </div>
         <div>
           <Link to={routes.SecondPage.path}>Goto Second Page</Link>
-          <br />
-          <Link to={routes.OpenCV.path}>Goto OpenCV</Link>
-          <br />
-          <Link to={routes.TestFieldPage.path}>Goto Test</Link>
           <img
             src={imgsrc('keyboard.jpg')}
             width='100px'

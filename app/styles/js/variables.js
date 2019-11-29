@@ -8,10 +8,10 @@ export default args => {
     },
     styles: {
       primaryColor: {
-        main: '#ffffff'
+        main: '#007af5'
       },
       secondaryColor: {
-        main: '#007af5'
+        main: '#f50057'
       },
       regularFontSize: 14,
       textLightColor: `rgba(0, 0, 0, 0.64)`

@@ -1,14 +1,17 @@
 'use strict';
 
-import React from 'react';
-import { Switch, Route } from 'react-router';
+import { Route, Switch } from 'react-router';
+
 import { HashRouter } from 'react-router-dom';
 import HomePage from '../containers/HomePage/Loadable';
-import SecondPage from '../containers/SecondPage/Loadable';
-import ReportBugsPage from '../containers/ReportBugsPage/Loadable';
-import ProgressbarPage from '../containers/ProgressbarPage';
-import PrivacyPolicyPage from '../containers/PrivacyPolicyPage/Loadable';
 import NotFoundPage from '../containers/NotFoundPage/Loadable';
+import OpenCV from '../containers/OpenCVPage/Loadable';
+import PrivacyPolicyPage from '../containers/PrivacyPolicyPage/Loadable';
+import ProgressbarPage from '../containers/ProgressbarPage';
+import React from 'react';
+import ReportBugsPage from '../containers/ReportBugsPage/Loadable';
+import SecondPage from '../containers/SecondPage/Loadable';
+import TestFieldPage from '../containers/TestFieldPage/Loadable';
 
 export const routes = {
   Home: {
@@ -35,6 +38,16 @@ export const routes = {
     path: '/privacyPolicyPage',
     exact: true,
     component: PrivacyPolicyPage
+  },
+  OpenCV: {
+    path: '/opencv',
+    exact: true,
+    component: OpenCV
+  },
+  TestFieldPage: {
+    path: '/testFieldPage',
+    exact: true,
+    component: TestFieldPage
   },
   NotFound: {
     component: NotFoundPage
