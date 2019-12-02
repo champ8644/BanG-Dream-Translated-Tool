@@ -13,6 +13,9 @@ export default args => {
       secondaryColor: {
         main: '#f50057'
       },
+      backgroundColor: {
+        main: '#ebeff2'
+      },
       regularFontSize: 14,
       textLightColor: `rgba(0, 0, 0, 0.64)`
     }

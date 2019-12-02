@@ -1,6 +1,6 @@
 'use strict';
 
-import { variables, mixins } from '../../../styles/js';
+import { mixins, variables } from '../../../styles/js';
 
 export const styles = theme => {
   return {
@@ -12,6 +12,13 @@ export const styles = theme => {
     },
     toolbarInnerWrapper: {
       display: 'flex'
+    },
+    toolbarTitle: {
+      display: 'flex',
+      fontSize: '1.5em',
+      marginLeft: '1em',
+      fontWeight: 'bold',
+      color: 'white'
     },
     toolbar: {
       width: `auto`,

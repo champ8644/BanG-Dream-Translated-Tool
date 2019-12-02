@@ -8,7 +8,8 @@ export const initialState = {
       imgSrc: 'Toolbar/chevron_left.svg',
       invert: false
     }
-  }
+  },
+  toolbarTitle: 'Stroop'
 };
 
 export default function TestField(state = initialState, action) {

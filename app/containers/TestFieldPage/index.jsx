@@ -1,13 +1,13 @@
 'use strict';
 
 import React, { Component } from 'react';
+import { makeToolbarList, makeToolbarTitle } from './selectors';
 
 import BodyAreaPane from './components/BodyAreaPane';
 import ToolbarAreaPane from './components/ToolbarAreaPane';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { log } from '@Log';
-import { makeToolbarList } from './selectors';
 import reducers from './reducers';
 import { styles } from './styles';
 import { throwAlert } from '../Alerts/actions';
@@ -51,7 +51,7 @@ class TestField extends Component {
   };
 
   render() {
-    const { classes: styles, toolbarList } = this.props;
+    const { classes: styles, toolbarList, toolbarTitle } = this.props;
     return (
       <div className={styles.root}>
         <div className={styles.grid}>
@@ -60,6 +60,7 @@ class TestField extends Component {
             toolbarList={toolbarList}
             handleDoubleClickToolBar={this._handleDoubleClickToolBar}
             handleToolbarAction={this._handleToolbarAction}
+            toolbarTitle={toolbarTitle}
           />
           <BodyAreaPane onSendAlertsBtn={this._handleSendAlertsBtn} />
         </div>
@@ -84,7 +85,8 @@ const mapDispatchToProps = (dispatch, ownProps) =>
 
 const mapStateToProps = (state, props) => {
   return {
-    toolbarList: makeToolbarList(state)
+    toolbarList: makeToolbarList(state),
+    toolbarTitle: makeToolbarTitle(state)
   };
 };
 

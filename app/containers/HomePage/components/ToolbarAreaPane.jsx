@@ -3,10 +3,11 @@
 /* eslint no-case-declarations: off */
 
 import React, { PureComponent } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+
+import ToolbarBody from './ToolbarBody';
 import { log } from '@Log';
 import { styles } from '../styles/ToolbarAreaPane';
-import ToolbarBody from './ToolbarBody';
+import { withStyles } from '@material-ui/core/styles';
 
 class ToolbarAreaPane extends PureComponent {
   render() {

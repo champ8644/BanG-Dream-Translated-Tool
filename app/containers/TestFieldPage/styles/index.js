@@ -1,12 +1,12 @@
 'use strict';
 
-import { variables, mixins } from '../../../styles/js';
+import { mixins, variables } from '../../../styles/js';
 
 export const styles = theme => {
   return {
     root: {},
     grid: {
-      width: `100%`
+      height: `100vh`
     }
   };
 };
