@@ -4,10 +4,12 @@ import React, { PureComponent } from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
+import { Link } from 'react-router-dom';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import classNames from 'classnames';
 import { imgsrc } from '../../../utils/imgsrc';
+import { routes } from '../../../routing';
 
 export default class ToolbarAreaPane extends PureComponent {
   activeToolbarList = ({ ...args }) => {
@@ -34,12 +36,7 @@ export default class ToolbarAreaPane extends PureComponent {
   };
 
   render() {
-    const {
-      styles,
-      toolbarList,
-      handleDoubleClickToolBar,
-      handleToolbarAction
-    } = this.props;
+    const { styles, toolbarList, handleDoubleClickToolBar } = this.props;
 
     /* Control what items should be enabled on the titlebar */
     const _toolbarList = this.activeToolbarList({
@@ -62,21 +59,22 @@ export default class ToolbarAreaPane extends PureComponent {
                 return (
                   <Tooltip key={a} title={item.label}>
                     <div className={`${styles.navBtns} ${styles.noAppDrag}`}>
-                      <IconButton
-                        aria-label={item.label}
-                        disabled={!item.enabled}
-                        onClick={() => handleToolbarAction(a)}
-                        className={classNames({
-                          [styles.disabledNavBtns]: !item.enabled,
-                          [styles.invertedNavBtns]: item.invert
-                        })}
-                      >
-                        <img
-                          alt={item.label}
-                          src={imgsrc(item.imgSrc, false)}
-                          className={classNames(styles.navBtnImgs)}
-                        />
-                      </IconButton>
+                      <Link to={routes.Home.path}>
+                        <IconButton
+                          aria-label={item.label}
+                          disabled={!item.enabled}
+                          className={classNames({
+                            [styles.disabledNavBtns]: !item.enabled,
+                            [styles.invertedNavBtns]: item.invert
+                          })}
+                        >
+                          <img
+                            alt={item.label}
+                            src={imgsrc(item.imgSrc, false)}
+                            className={classNames(styles.navBtnImgs)}
+                          />
+                        </IconButton>
+                      </Link>
                     </div>
                   </Tooltip>
                 );

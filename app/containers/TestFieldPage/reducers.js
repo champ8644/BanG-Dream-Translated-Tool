@@ -4,8 +4,8 @@ export const initialState = {
   toolbarList: {
     settings: {
       enabled: true,
-      label: 'Settings',
-      imgSrc: 'Toolbar/settings.svg',
+      label: 'Back',
+      imgSrc: 'Toolbar/chevron_left.svg',
       invert: false
     }
   }
