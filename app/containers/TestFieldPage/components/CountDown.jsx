@@ -2,7 +2,7 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { PureComponent } from 'react';
 
-import Grow from '@material-ui/core/Grow';
+import { GrowingText } from './BuildingBlocks';
 import { styles } from '../styles/CountDown';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -40,12 +40,11 @@ class CountDown extends PureComponent {
     return (
       <div className={styles.root}>
         <div className={styles.centeredText}>
-          <Grow
-            in={this.state.showNumber}
-            timeout={{ enter: this.props.fade, exit: this.props.fade }}
-          >
-            <div>{this.state.countNumber}</div>
-          </Grow>
+          <GrowingText
+            show={this.state.showNumber}
+            fade={this.props.fade}
+            text={this.state.countNumber}
+          />
         </div>
       </div>
     );

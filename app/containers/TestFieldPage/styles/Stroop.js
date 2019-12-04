@@ -12,7 +12,8 @@ export const styles = theme => {
       top: '50%',
       position: 'absolute',
       transform: 'translate(-50%,-50%)',
-      fontSize: '15em'
-    }
+      fontSize: '10em'
+    },
+    linearProgress: {}
   };
 };
