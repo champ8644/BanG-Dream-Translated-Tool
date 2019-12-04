@@ -55,7 +55,7 @@
   "build": {
     "productName": "Cognitive Fatigue Evaluator for P Pete Thesis",
     "appId": "temp",
-    "forceCodeSigning": true,
+    "forceCodeSigning": false,
     "copyright": "© Varis Ratanasirisawad",
     "readonly": true,
     "publish": [
