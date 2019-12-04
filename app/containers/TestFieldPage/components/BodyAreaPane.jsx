@@ -72,9 +72,10 @@ class BodyAreaPane extends Component {
       case 2:
         MainComponent = (
           <Stroop
-            interval={2000}
+            interval={5000}
             fade={300}
             testData={testData[0]}
+            onSendAlertsBtn={onSendAlertsBtn}
             callBack={() => this.progressStep()}
           />
         );
@@ -92,9 +93,10 @@ class BodyAreaPane extends Component {
       case 4:
         MainComponent = (
           <Stroop
-            interval={2000}
+            interval={5000}
             fade={300}
             testData={testData[1]}
+            onSendAlertsBtn={onSendAlertsBtn}
             callBack={() => this.progressStep()}
           />
         );
@@ -112,9 +114,10 @@ class BodyAreaPane extends Component {
       case 6:
         MainComponent = (
           <Stroop
-            interval={2000}
+            interval={5000}
             fade={300}
             testData={testData[2]}
+            onSendAlertsBtn={onSendAlertsBtn}
             callBack={() => this.progressStep()}
           />
         );

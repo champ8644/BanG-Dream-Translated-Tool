@@ -2,6 +2,7 @@ import { BorderLinearProgress, GrowingText } from './BuildingBlocks';
 /* eslint-disable no-await-in-loop  */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-console */
+/* eslint-disable prefer-template */
 import React, { Component } from 'react';
 
 import Hotkeys from 'react-hot-keys';
@@ -64,22 +65,32 @@ class CountDown extends Component {
   }
 
   onKeyDown(keyName) {
+    const throwSuccess = () =>
+      this.props.onSendAlertsBtn({
+        variant: 'success',
+        message: this.state.answer + ' is the correct answer.'
+      });
+    const throwError = text =>
+      this.props.onSendAlertsBtn({
+        variant: 'warning',
+        message: text + ' is wrong.'
+      });
     switch (keyName) {
       case 'j':
-        if (this.state.answer === 'yellow') console.log('correct!');
-        else console.log('wrong');
+        if (this.state.answer === 'yellow') throwSuccess();
+        else throwError('yellow');
         break;
       case 'k':
-        if (this.state.answer === 'green') console.log('correct!');
-        else console.log('wrong');
+        if (this.state.answer === 'green') throwSuccess();
+        else throwError('green');
         break;
       case 'l':
-        if (this.state.answer === 'blue') console.log('correct!');
-        else console.log('wrong');
+        if (this.state.answer === 'blue') throwSuccess();
+        else throwError('blue');
         break;
       case ';':
-        if (this.state.answer === 'red') console.log('correct!');
-        else console.log('wrong');
+        if (this.state.answer === 'red') throwSuccess();
+        else throwError('red');
         break;
       default:
         break;
