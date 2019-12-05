@@ -12,6 +12,7 @@ import { imgsrc } from '../../../utils/imgsrc';
 import { log } from '@Log';
 import { routes } from '../../../routing';
 import { styles } from '../styles/BodyAreaPane';
+import { timeOut } from '../../../utils/asyncHelper';
 import { withStyles } from '@material-ui/core/styles';
 
 const testData = [
@@ -56,8 +57,12 @@ class BodyAreaPane extends Component {
     let MainComponent;
     switch (step) {
       case 0:
-        MainComponent = <div className={styles.centeredText}>Hello</div>;
-        this.progressStep();
+        MainComponent = <div className={styles.centeredText}>Stroop</div>;
+        timeOut(1000)
+          .then(() => this.progressStep())
+          .catch(err => {
+            throw err;
+          });
         break;
       case 1:
         MainComponent = (

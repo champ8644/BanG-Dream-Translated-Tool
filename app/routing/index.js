@@ -12,6 +12,7 @@ import React from 'react';
 import ReportBugsPage from '../containers/ReportBugsPage/Loadable';
 import SecondPage from '../containers/SecondPage/Loadable';
 import TestFieldPage from '../containers/TestFieldPage/Loadable';
+import TestingPage from '../containers/TestFieldPage/test';
 
 export const routes = {
   Home: {
@@ -48,6 +49,11 @@ export const routes = {
     path: '/testFieldPage',
     exact: true,
     component: TestFieldPage
+  },
+  TestingPage: {
+    path: '/testingPage',
+    exact: true,
+    component: TestingPage
   },
   NotFound: {
     component: NotFoundPage

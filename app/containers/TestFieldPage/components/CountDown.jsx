@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 
 import { GrowingText } from './BuildingBlocks';
 import { styles } from '../styles/CountDown';
+import { timeOut } from '../../../utils/asyncHelper';
 import { withStyles } from '@material-ui/core/styles';
 
 class CountDown extends PureComponent {
@@ -22,7 +23,6 @@ class CountDown extends PureComponent {
   }
 
   async startAnimations() {
-    const timeOut = ms => new Promise(resolve => setTimeout(resolve, ms));
     while (this.state.countNumber > 0) {
       this.setState({ showNumber: true });
       await timeOut(this.state.interval - this.state.fade);
@@ -39,13 +39,12 @@ class CountDown extends PureComponent {
     const { classes: styles } = this.props;
     return (
       <div className={styles.root}>
-        <div className={styles.centeredText}>
-          <GrowingText
-            show={this.state.showNumber}
-            fade={this.props.fade}
-            text={this.state.countNumber}
-          />
-        </div>
+        <GrowingText
+          className={styles.centeredText}
+          show={this.state.showNumber}
+          fade={this.props.fade}
+          text={this.state.countNumber}
+        />
       </div>
     );
   }

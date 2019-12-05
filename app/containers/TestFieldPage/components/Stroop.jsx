@@ -7,9 +7,10 @@ import React, { Component } from 'react';
 
 import Hotkeys from 'react-hot-keys';
 import { styles } from '../styles/Stroop';
+import { timeOut } from '../../../utils/asyncHelper';
 import { withStyles } from '@material-ui/core/styles';
 
-class CountDown extends Component {
+class Stroop extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -18,7 +19,8 @@ class CountDown extends Component {
       color: '',
       backgroundColor: '',
       text: '',
-      answer: ''
+      answer: '',
+      frame: 0
     };
   }
 
@@ -41,7 +43,6 @@ class CountDown extends Component {
   }
 
   async startAnimations() {
-    const timeOut = ms => new Promise(resolve => setTimeout(resolve, ms));
     for (let i = 0; i < this.props.testData.length; i += 1) {
       const {
         color,
@@ -49,14 +50,15 @@ class CountDown extends Component {
         text,
         answer
       } = this.props.testData[i];
-      this.setState({
+      this.setState(state => ({
         color,
         backgroundColor,
         text,
         answer,
         show: true,
-        progress: 0
-      });
+        progress: 0,
+        frame: state.frame + 1
+      }));
       await timeOut(this.props.interval - this.props.fade);
       this.setState({ show: false });
       await timeOut(this.props.fade);
@@ -103,24 +105,22 @@ class CountDown extends Component {
     return (
       <Hotkeys keyName='j,k,l,;' onKeyDown={this.onKeyDown.bind(this)}>
         <BorderLinearProgress
-          className={styles.linearProgress}
           variant='determinate'
           color='secondary'
           value={this.state.progress}
+          key={this.state.frame}
         />
 
         <div className={styles.root} style={{ backgroundColor, color }}>
-          <div className={styles.centeredText}>
-            <GrowingText
-              show={this.state.show}
-              fade={this.props.fade}
-              text={this.state.text}
-            />
-          </div>
+          <GrowingText
+            show={this.state.show}
+            fade={this.props.fade}
+            text={this.state.text}
+          />
         </div>
       </Hotkeys>
     );
   }
 }
 
-export default withStyles(styles)(CountDown);
+export default withStyles(styles)(Stroop);

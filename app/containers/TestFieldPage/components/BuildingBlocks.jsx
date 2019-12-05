@@ -1,14 +1,28 @@
+import { makeStyles, withStyles } from '@material-ui/styles';
+
 import Grow from '@material-ui/core/Grow';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  root: {
+    left: '50%',
+    top: '50%',
+    position: 'absolute',
+    transform: 'translate(-50%,-50%)',
+    fontSize: '10em'
+  }
+});
 
 export function GrowingText(props) {
+  const styles = useStyles();
   const { show, fade, text } = props;
   return (
-    <Grow in={show} timeout={{ enter: fade, exit: fade }}>
-      <div>{text}</div>
-    </Grow>
+    <div className={styles.root}>
+      <Grow in={show} timeout={{ enter: fade, exit: fade }}>
+        <div>{text}</div>
+      </Grow>
+    </div>
   );
 }
 

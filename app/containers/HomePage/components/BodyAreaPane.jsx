@@ -5,6 +5,7 @@
 import { Link, withRouter } from 'react-router-dom';
 import React, { PureComponent } from 'react';
 
+import { APP_VERSION } from '../../../constants/meta';
 import Button from '@material-ui/core/Button';
 import { log } from '@Log';
 import { routes } from '../../../routing';
@@ -18,8 +19,12 @@ class BodyAreaPane extends PureComponent {
     return (
       <div className={styles.root}>
         <div className={styles.title}>Cognitive-Fatique-Evaluater</div>
+        <div className={styles.subTitle}>{APP_VERSION}</div>
         <Link to={routes.TestFieldPage.path} style={{ textDecoration: 'none' }}>
-          <Button className={styles.btn}>Start Test</Button>
+          <Button className={styles.btn}>Stroop</Button>
+        </Link>
+        <Link to={routes.TestingPage.path} style={{ textDecoration: 'none' }}>
+          <Button className={styles.btn2}>PVSAT</Button>
         </Link>
         {/*         
         <div className={styles.btnWrapper}>
