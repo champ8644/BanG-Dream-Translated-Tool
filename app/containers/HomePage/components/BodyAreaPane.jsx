@@ -19,7 +19,7 @@ class BodyAreaPane extends PureComponent {
     return (
       <div className={styles.root}>
         <div className={styles.title}>Cognitive-Fatique-Evaluater</div>
-        <div className={styles.subTitle}>{APP_VERSION}</div>
+        <div className={styles.subTitle}>version {APP_VERSION}</div>
         <Link to={routes.TestFieldPage.path} style={{ textDecoration: 'none' }}>
           <Button className={styles.btn}>Stroop</Button>
         </Link>

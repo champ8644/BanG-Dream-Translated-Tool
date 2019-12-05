@@ -19,7 +19,7 @@ export const styles = theme => {
       marginTop: '.5em'
     },
     subTitle: {
-      fontSize: '3em',
+      fontSize: '2em',
       marginTop: '.5em'
     },
     btn: {
