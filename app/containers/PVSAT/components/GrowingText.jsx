@@ -1,8 +1,6 @@
-import { makeStyles, withStyles } from '@material-ui/styles';
-
 import Grow from '@material-ui/core/Grow';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
+import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
   root: {
@@ -14,7 +12,7 @@ const useStyles = makeStyles({
   }
 });
 
-export function GrowingText(props) {
+export default function GrowingText(props) {
   const styles = useStyles();
   const { show, fade, text } = props;
   return (
@@ -25,15 +23,3 @@ export function GrowingText(props) {
     </div>
   );
 }
-
-export const BorderLinearProgress = withStyles({
-  root: {
-    height: 10,
-    backgroundColor: '#FFB1A8'
-  },
-  bar: props => ({
-    borderRadius: 20,
-    backgroundColor: '#FF6C5C',
-    transition: `transform ${props.delay}ms linear`
-  })
-})(LinearProgress);

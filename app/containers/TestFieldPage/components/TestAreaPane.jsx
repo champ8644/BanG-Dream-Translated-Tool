@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 
 import Button from '@material-ui/core/Button';
 import CountDown from './CountDown';
-import PVSAT from './PVSAT';
+import PVSAT from '../../PVSAT';
 import Stroop from './Stroop';
 import { imgsrc } from '../../../utils/imgsrc';
 import { log } from '@Log';
@@ -30,7 +30,7 @@ class TestAreaPane extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      step: 0
+      step: 2
     };
   }
 
@@ -69,7 +69,9 @@ class TestAreaPane extends Component {
             fade={300}
             testData={testData}
             onSendAlertsBtn={onSendAlertsBtn}
-            callBack={() => this.progressStep()}
+            callBack={results => {
+              this.progressStep();
+            }}
           />
         );
         break;

@@ -105,10 +105,11 @@ class Stroop extends Component {
     return (
       <Hotkeys keyName='j,k,l,;' onKeyDown={this.onKeyDown.bind(this)}>
         <BorderLinearProgress
+          key={this.state.frame}
           variant='determinate'
           color='secondary'
+          delay={this.props.interval}
           value={this.state.progress}
-          key={this.state.frame}
         />
 
         <div className={styles.root} style={{ backgroundColor, color }}>
