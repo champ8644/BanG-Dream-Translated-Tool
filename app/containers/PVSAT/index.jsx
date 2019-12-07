@@ -44,10 +44,12 @@ class PVSAT extends Component {
     this.props.answerCorrect();
   }
 
-  throwError(text) {
+  throwError(clickedIndex) {
     this.props.onSendAlertsBtn({
       variant: 'warning',
-      message: `${text} is wrong.`
+      message: `${clickedIndex} is wrong. The correct answer is ${
+        this.props.answer
+      }`
     });
     this.props.answerWrong();
   }
@@ -62,7 +64,8 @@ class PVSAT extends Component {
       text,
       answer,
       frame,
-      showButton
+      showButton,
+      disabledButton
     } = this.props;
     return (
       <div className={styles.root}>
@@ -79,6 +82,7 @@ class PVSAT extends Component {
           show={showButton}
           fade={fade}
           answer={answer}
+          disabled={disabledButton}
           throwSuccess={this.throwSuccess.bind(this)}
           throwError={this.throwError.bind(this)}
         />

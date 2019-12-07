@@ -26,10 +26,12 @@ const useStyles = makeStyles({
     };
   },
   fab: props => {
-    const { index } = props;
+    const { index, disabled } = props;
     let background = 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)';
     if (index % 2 === 0)
       background = 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)';
+    if (disabled)
+      background = 'linear-gradient(45deg, #DCDCDC 30%, #C0C0C0 90%)';
     return {
       fontSize: '2.8rem',
       background,
@@ -43,10 +45,15 @@ const useStyles = makeStyles({
 
 function EachCircularNumber(props) {
   const styles = useStyles(props);
-  const { index, total, text, onClick } = props;
+  const { index, total, text, onClick, disabled } = props;
   return (
     <div className={styles.eachNode} index={index} total={total}>
-      <Fab className={styles.fab} index={index} onClick={onClick}>
+      <Fab
+        className={styles.fab}
+        index={index}
+        onClick={onClick}
+        disabled={disabled}
+      >
         {text}
       </Fab>
     </div>
@@ -55,7 +62,15 @@ function EachCircularNumber(props) {
 
 export default function CircularNumber(props) {
   const styles = useStyles(props);
-  const { total, answer, throwSuccess, throwError, show, fade } = props;
+  const {
+    total,
+    answer,
+    throwSuccess,
+    throwError,
+    show,
+    fade,
+    disabled
+  } = props;
   return (
     <Grow in={show} timeout={{ enter: fade, exit: fade }}>
       <div className={styles.root}>
@@ -66,6 +81,7 @@ export default function CircularNumber(props) {
             total={total}
             text={x}
             radius={250}
+            disabled={disabled}
             onClick={
               x === Number(answer) ? () => throwSuccess() : () => throwError(x)
             }

@@ -3,9 +3,9 @@
 import { createSelector } from 'reselect';
 import { initialState } from './reducers';
 
-const make = (state, props) => (state ? state.Home : {});
+const make = (state, props) => (state ? state.PVSAT : {});
 
-export const makeToolbarList = createSelector(
+export const makePVSAT = createSelector(
   make,
-  state => (state ? state.toolbarList : initialState.toolbarList)
+  state => (state ? state.PVSAT : initialState.PVSAT)
 );

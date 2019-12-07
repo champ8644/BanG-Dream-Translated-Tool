@@ -7,7 +7,9 @@ const PVSATActions = actionTypes;
 export const initialState = {
   show: true,
   showButton: false,
+  disabledButton: true,
   progress: 0,
+  session: 0,
   text: '',
   answer: '',
   frame: 0,
@@ -23,6 +25,8 @@ export default function Home(state = initialState, action) {
   switch (type) {
     case PVSATActions.PROP_TO_STATE:
       return { ...state, ...payload };
+    case PVSATActions.TOGGLE_SHOW_BUTTON:
+      return { ...state, showButton: true };
     case PVSATActions.TIMER_PLAY:
       return {
         ...state,
@@ -38,7 +42,7 @@ export default function Home(state = initialState, action) {
           ...state.results,
           [state.currentStep]: payload
         },
-        showButton: false
+        disabledButton: true
       };
     case PVSATActions.FADE_OUT:
       return { ...state, show: false };
@@ -48,6 +52,7 @@ export default function Home(state = initialState, action) {
         currentStep: 0,
         isPause: false,
         show: true,
+        session: state.session + 1,
         ...payload
       };
     case PVSATActions.TEST_ITERATE:
@@ -55,11 +60,11 @@ export default function Home(state = initialState, action) {
         ...state,
         currentStep: state.currentStep + 1,
         show: true,
-        showButton: true,
+        disabledButton: false,
         ...payload
       };
     case PVSATActions.TEST_RESET:
-      return initialState;
+      return { ...initialState, session: state.session };
     case PVSATActions.TEST_FINISH:
       return state;
     default:

@@ -6,6 +6,7 @@ import { timeOut } from '../../utils/asyncHelper';
 const prefix = '@@PVSAT';
 const actionTypesList = [
   'PROP_TO_STATE',
+  'TOGGLE_SHOW_BUTTON',
   'TIMER_PLAY',
   'TIMER_RESET',
   'SET_ANSWER',
@@ -86,15 +87,17 @@ function fadeOut() {
   };
 }
 
-function animate(id) {
+function animate(id, session) {
   return async (dispatch, getState) => {
     dispatch(timerRestart());
     const { iTime, eTime } = getState().PVSAT;
     await timeOut(iTime);
-    if (getState().PVSAT.currentStep !== id) return false;
+    const { currentStep: _id, session: _session } = getState().PVSAT;
+    if (_id !== id || _session !== session) return false;
     dispatch(fadeOut());
     await timeOut(eTime);
-    if (getState().PVSAT.currentStep !== id) return false;
+    const { currentStep: __id, session: __session } = getState().PVSAT;
+    if (__id !== id || __session !== session) return false;
     return true;
   };
 }
@@ -106,13 +109,20 @@ function _testStart(payload) {
   };
 }
 
+export function toggleShowButton() {
+  return {
+    type: actionTypes.TOGGLE_SHOW_BUTTON
+  };
+}
+
 export function testStart() {
   return async (dispatch, getState) => {
     const state = getState().PVSAT;
     const { text, answer } = state.testData[0];
     dispatch(_testStart({ text, answer }));
-    const notTerminated = await dispatch(animate(0));
+    const notTerminated = await dispatch(animate(0, state.session + 1));
     if (notTerminated) {
+      dispatch(toggleShowButton());
       dispatch(testIterate());
     }
   };
@@ -127,14 +137,14 @@ function _testIterate(payload) {
 
 function testIterate() {
   return async (dispatch, getState) => {
-    const { currentStep, length, testData } = getState().PVSAT;
+    const { currentStep, length, testData, session } = getState().PVSAT;
     if (currentStep + 1 === length) {
       dispatch(testFinish());
       return;
     }
     const { text, answer } = testData[currentStep + 1];
     dispatch(_testIterate({ text, answer }));
-    const notTerminated = await dispatch(animate(currentStep + 1));
+    const notTerminated = await dispatch(animate(currentStep + 1, session));
     if (notTerminated) {
       dispatch(answerTimeOut());
       dispatch(testIterate());
