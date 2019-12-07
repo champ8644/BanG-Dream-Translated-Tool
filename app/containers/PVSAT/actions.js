@@ -6,16 +6,14 @@ import { timeOut } from '../../utils/asyncHelper';
 const prefix = '@@PVSAT';
 const actionTypesList = [
   'PROP_TO_STATE',
-  'SHOW_BUTTONS',
   'TIMER_PLAY',
   'TIMER_RESET',
   'SET_ANSWER',
-  'ANSWER_CORRECT',
-  'ANSWER_WRONG',
-  'NUMBER_IN',
-  'NUMBER_OUT',
+  'FADE_OUT',
+  'TEST_START',
+  'TEST_ITERATE',
   'TEST_FINISH',
-  'PROGRESS_STEP'
+  'TEST_RESET'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -27,25 +25,19 @@ export function propToState(payload) {
   };
 }
 
-export function showButtons() {
-  return {
-    type: actionTypes.SHOW_BUTTONS
-  };
-}
-
-export function timerPlay() {
+function timerPlay() {
   return {
     type: actionTypes.TIMER_PLAY
   };
 }
 
-export function timerReset() {
+function timerReset() {
   return {
     type: actionTypes.TIMER_RESET
   };
 }
 
-export function timerRestart() {
+function timerRestart() {
   return async dispatch => {
     dispatch(timerReset());
     await timeOut(1);
@@ -53,46 +45,64 @@ export function timerRestart() {
   };
 }
 
-export function setAnswer(payload) {
+function setAnswer(payload) {
   return {
     type: actionTypes.SET_ANSWER,
     payload
   };
 }
 
-export function answerTimeOut() {
+function answerTimeOut() {
   return async (dispatch, getState) => {
     const state = getState().PVSAT;
     let reactionTime = new Date().getTime() - state.beginTs;
     if (reactionTime > state.interval) reactionTime = state.interval;
-    dispatch(setAnswer({ reactionTime, correct: false, type: 'time out' }));
-    dispatch(progressStep());
-    dispatch(testIterate());
+    if (state.results[state.currentState] === undefined)
+      dispatch(setAnswer({ reactionTime, correct: false, type: 'time out' }));
   };
 }
 
 export function answerCorrect() {
-  return {
-    type: actionTypes.ANSWER_CORRECT
+  return async (dispatch, getState) => {
+    const state = getState().PVSAT;
+    const reactionTime = new Date().getTime() - state.beginTs;
+    if (state.results[state.currentState] === undefined)
+      dispatch(setAnswer({ reactionTime, correct: true, type: 'correct' }));
   };
 }
 
 export function answerWrong() {
-  return {
-    type: actionTypes.ANSWER_WRONG
+  return async (dispatch, getState) => {
+    const state = getState().PVSAT;
+    const reactionTime = new Date().getTime() - state.beginTs;
+    if (state.results[state.currentState] === undefined)
+      dispatch(setAnswer({ reactionTime, correct: false, type: 'wrong' }));
   };
 }
 
-export function numberIn(payload) {
+function fadeOut() {
   return {
-    type: actionTypes.NUMBER_IN,
+    type: actionTypes.FADE_OUT
+  };
+}
+
+function animate(id) {
+  return async (dispatch, getState) => {
+    dispatch(timerRestart());
+    const { iTime, eTime } = getState().PVSAT;
+    await timeOut(iTime);
+    if (getState().PVSAT.currentStep !== id) return false;
+    dispatch(fadeOut());
+    await timeOut(eTime);
+    if (getState().PVSAT.currentStep !== id) return false;
+    return true;
+  };
+}
+
+function _testStart(payload) {
+  return {
+    type: actionTypes.TEST_START,
     payload
-  };
-}
-
-export function numberOut() {
-  return {
-    type: actionTypes.NUMBER_OUT
   };
 }
 
@@ -100,45 +110,54 @@ export function testStart() {
   return async (dispatch, getState) => {
     const state = getState().PVSAT;
     const { text, answer } = state.testData[0];
-    dispatch(numberIn({ text, answer }));
-    dispatch(timerRestart());
-    await timeOut(state.iTime);
-    dispatch(numberOut());
-    await timeOut(state.eTime);
-    dispatch(progressStep());
-    dispatch(showButtons());
-    dispatch(testIterate());
+    dispatch(_testStart({ text, answer }));
+    const notTerminated = await dispatch(animate(0));
+    if (notTerminated) {
+      dispatch(testIterate());
+    }
   };
 }
 
-export function testIterate() {
+function _testIterate(payload) {
+  return {
+    type: actionTypes.TEST_ITERATE,
+    payload
+  };
+}
+
+function testIterate() {
   return async (dispatch, getState) => {
-    const state = getState().PVSAT;
-    const { currentStep } = state;
-    if (currentStep === state.length) {
+    const { currentStep, length, testData } = getState().PVSAT;
+    if (currentStep + 1 === length) {
       dispatch(testFinish());
       return;
     }
-    const { text, answer } = state.testData[state.currentStep];
-    dispatch(numberIn({ text, answer }));
-    dispatch(timerRestart());
-    await timeOut(state.iTime);
-    if (state.currentStep !== currentStep) return;
-    dispatch(numberOut());
-    await timeOut(state.eTime);
-    if (state.currentStep !== currentStep) return;
-    dispatch(answerTimeOut());
+    const { text, answer } = testData[currentStep + 1];
+    dispatch(_testIterate({ text, answer }));
+    const notTerminated = await dispatch(animate(currentStep + 1));
+    if (notTerminated) {
+      dispatch(answerTimeOut());
+      dispatch(testIterate());
+    }
   };
 }
 
-export function testFinish() {
+function _testFinish() {
   return {
     type: actionTypes.TEST_FINISH
   };
 }
 
-export function progressStep() {
+function testFinish() {
+  return async (dispatch, getState) => {
+    const state = getState().PVSAT;
+    state.callBack(state.results);
+    dispatch(_testFinish());
+  };
+}
+
+export function testReset() {
   return {
-    type: actionTypes.PROGRESS_STEP
+    type: actionTypes.TEST_RESET
   };
 }

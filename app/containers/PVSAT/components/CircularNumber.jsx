@@ -1,10 +1,18 @@
 import Fab from '@material-ui/core/Fab';
+import Grow from '@material-ui/core/Grow';
 import React from 'react';
 import _ from 'lodash';
 import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
-  root: props => {
+  root: {
+    display: 'block',
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    transform: 'translate(-50%,-50%)'
+  },
+  eachNode: props => {
     const { index, total, radius } = props;
     const rad = (2 * index * Math.PI) / total;
     const [transX, transY] = [radius * Math.sin(rad), radius * Math.cos(rad)];
@@ -37,7 +45,7 @@ function EachCircularNumber(props) {
   const styles = useStyles(props);
   const { index, total, text, onClick } = props;
   return (
-    <div className={styles.root} index={index} total={total}>
+    <div className={styles.eachNode} index={index} total={total}>
       <Fab className={styles.fab} index={index} onClick={onClick}>
         {text}
       </Fab>
@@ -46,21 +54,24 @@ function EachCircularNumber(props) {
 }
 
 export default function CircularNumber(props) {
-  const { total, answer, throwSuccess, throwError } = props;
+  const styles = useStyles(props);
+  const { total, answer, throwSuccess, throwError, show, fade } = props;
   return (
-    <>
-      {_.range(1, total + 1).map(x => (
-        <EachCircularNumber
-          key={x}
-          index={x}
-          total={total}
-          text={x}
-          radius={250}
-          onClick={
-            x === Number(answer) ? () => throwSuccess() : () => throwError(x)
-          }
-        />
-      ))}
-    </>
+    <Grow in={show} timeout={{ enter: fade, exit: fade }}>
+      <div className={styles.root}>
+        {_.range(1, total + 1).map(x => (
+          <EachCircularNumber
+            key={x}
+            index={x}
+            total={total}
+            text={x}
+            radius={250}
+            onClick={
+              x === Number(answer) ? () => throwSuccess() : () => throwError(x)
+            }
+          />
+        ))}
+      </div>
+    </Grow>
   );
 }
