@@ -16,7 +16,8 @@ export const styles = theme => {
     },
     title: {
       fontSize: '7em',
-      marginTop: '.5em'
+      marginTop: '.5em',
+      textAlign: 'center'
     },
     subTitle: {
       fontSize: '2em',

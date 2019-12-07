@@ -64,7 +64,6 @@ class TestAreaPane extends Component {
       case 2:
         MainComponent = (
           <PVSAT
-            from={3}
             interval={4000}
             fade={300}
             testData={testData}
