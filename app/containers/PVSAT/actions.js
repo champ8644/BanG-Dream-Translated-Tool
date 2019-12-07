@@ -56,8 +56,7 @@ function setAnswer(payload) {
 function answerTimeOut() {
   return async (dispatch, getState) => {
     const state = getState().PVSAT;
-    let reactionTime = new Date().getTime() - state.beginTs;
-    if (reactionTime > state.interval) reactionTime = state.interval;
+    const reactionTime = state.interval;
     if (state.results[state.currentState] === undefined)
       dispatch(setAnswer({ reactionTime, correct: false, type: 'time out' }));
   };
@@ -159,10 +158,10 @@ function _testFinish() {
 }
 
 function testFinish() {
-  return async (dispatch, getState) => {
+  return (dispatch, getState) => {
     const state = getState().PVSAT;
-    state.callBack(state.results);
     dispatch(_testFinish());
+    state.callBack(state.results);
   };
 }
 

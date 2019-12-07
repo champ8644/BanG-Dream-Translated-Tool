@@ -2,10 +2,35 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { PureComponent } from 'react';
 
-import { GrowingText } from './BuildingBlocks';
-import { styles } from '../styles/CountDown';
-import { timeOut } from '../../../utils/asyncHelper';
+import Grow from '@material-ui/core/Grow';
+import { timeOut } from '../utils/asyncHelper';
 import { withStyles } from '@material-ui/core/styles';
+
+function stroke(stroke, color) {
+  let shadow = `0px 0px 0 ${color} `;
+  for (let i = -stroke; i <= stroke; i += 1) {
+    for (let j = -stroke; j <= stroke; j += 1) {
+      shadow += `, ${i}px ${j}px 0 ${color}`;
+    }
+  }
+  return shadow;
+}
+
+const stroke5 = stroke(5, '#000');
+
+const styles = theme => {
+  return {
+    root: {
+      left: '50%',
+      top: '50%',
+      position: 'absolute',
+      transform: 'translate(-50%,-50%)',
+      fontSize: '10em',
+      color: '#FFF',
+      textShadow: stroke5
+    }
+  };
+};
 
 class CountDown extends PureComponent {
   constructor(props) {
@@ -39,12 +64,9 @@ class CountDown extends PureComponent {
     const { classes: styles } = this.props;
     return (
       <div className={styles.root}>
-        <GrowingText
-          className={styles.countDown}
-          show={this.state.showNumber}
-          fade={this.props.fade}
-          text={this.state.countNumber}
-        />
+        <Grow in={this.state.showNumber} timeout={this.props.fade}>
+          <div>{this.state.countNumber}</div>
+        </Grow>
       </div>
     );
   }

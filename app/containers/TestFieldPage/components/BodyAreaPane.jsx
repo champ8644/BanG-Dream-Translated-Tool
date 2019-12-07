@@ -77,7 +77,7 @@ class BodyAreaPane extends Component {
       case 2:
         MainComponent = (
           <Stroop
-            interval={5000}
+            interval={1000}
             fade={300}
             testData={testData[0]}
             onSendAlertsBtn={onSendAlertsBtn}

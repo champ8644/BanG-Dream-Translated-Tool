@@ -51,7 +51,7 @@ class Testing extends Component {
   };
 
   render() {
-    const { classes: styles, toolbarList } = this.props;
+    const { classes: styles, toolbarList, toolbarTitle } = this.props;
     return (
       <div className={styles.root}>
         <div className={styles.grid}>
@@ -60,7 +60,7 @@ class Testing extends Component {
             toolbarList={toolbarList}
             handleDoubleClickToolBar={this._handleDoubleClickToolBar}
             handleToolbarAction={this._handleToolbarAction}
-            toolbarTitle='PVSAT'
+            toolbarTitle={toolbarTitle}
           />
           <TestAreaPane onSendAlertsBtn={this._handleSendAlertsBtn} />
         </div>
