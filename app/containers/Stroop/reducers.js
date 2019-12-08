@@ -11,7 +11,8 @@ export const initialState = {
   results: {},
   frame: 0,
   session: 0,
-  showStatus: '',
+  showStatus: false,
+  feedback: '',
   showX: false,
   showText: false
 };
@@ -30,7 +31,7 @@ export default function Home(state = initialState, action) {
     case stroopActions.TEST_PRE_X:
       return {
         ...state,
-        showStatus: '',
+        showStatus: false,
         showX: false,
         showText: false,
         currentStep: state.currentStep + 1,
@@ -55,8 +56,8 @@ export default function Home(state = initialState, action) {
     case stroopActions.SET_ANSWER:
       return {
         ...state,
-        showStatus: payload.type,
-        showText: false,
+        showStatus: true,
+        feedback: payload.type,
         results: {
           ...state.results,
           [state.currentStep]: payload

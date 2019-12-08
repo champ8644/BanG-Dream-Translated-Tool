@@ -40,8 +40,9 @@ class Stroop extends Component {
   onKeyDown(keyName) {
     hotkey.forEach(item => {
       if (item.key === keyName) {
-        if (this.props.answer === item.color) this.props.answerCorrect();
-        else this.props.answerWrong();
+        if (this.props.answer === item.color)
+          this.props.answerCorrect(item.color);
+        else this.props.answerWrong(item.color);
       }
     });
   }
@@ -57,11 +58,13 @@ class Stroop extends Component {
       text,
       showStatus,
       showX,
-      showText
+      showText,
+      feedback
     } = this.props;
 
     return (
       <Hotkeys keyName={hotkeyString} onKeyDown={this.onKeyDown.bind(this)}>
+        {console.log('hotkeyString: ', hotkeyString)}
         <div className={styles.root}>
           <BorderLinearProgress
             key={frame}
@@ -72,7 +75,7 @@ class Stroop extends Component {
           />
           <CrossHair show={showX} backgroundColor={backgroundColor} />
           <CenteredText show={showText} color={color} text={text} />
-          <PopoverStatus show={showStatus} />
+          <PopoverStatus show={showStatus} type={feedback} />
         </div>
       </Hotkeys>
     );

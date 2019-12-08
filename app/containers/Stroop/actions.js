@@ -41,6 +41,7 @@ function testIterate() {
       session,
       interval
     } = getState().Stroop;
+    const currentSession = { currentStep: currentStep + 1, session };
     if (currentStep + 1 === length) {
       dispatch(testFinish());
       return;
@@ -50,26 +51,17 @@ function testIterate() {
     ];
     dispatch(testPreX());
     await timeOut(time.preX);
-    if (isOutDate({ currentStep: currentStep + 1, session }, getState().Stroop))
-      return;
+    if (isOutDate(currentSession, getState().Stroop)) return;
     dispatch(testX());
     await timeOut(time.X);
-    if (isOutDate({ currentStep: currentStep + 1, session }, getState().Stroop))
-      return;
+    if (isOutDate(currentSession, getState().Stroop)) return;
     dispatch(testPostX());
     await timeOut(time.postX);
-    if (isOutDate({ currentStep: currentStep + 1, session }, getState().Stroop))
-      return;
+    if (isOutDate(currentSession, getState().Stroop)) return;
     dispatch(testInterval({ color, backgroundColor, text, answer }));
     await timeOut(interval);
-    if (isOutDate({ currentStep: currentStep + 1, session }, getState().Stroop))
-      return;
+    if (isOutDate(currentSession, getState().Stroop)) return;
     dispatch(answerTimeOut());
-    await timeOut(time.answer);
-    if (isOutDate({ currentStep: currentStep + 1, session }, getState().Stroop))
-      return;
-    // dispatch(answerTimeOut());
-    dispatch(testIterate());
   };
 }
 
@@ -101,10 +93,21 @@ function testInterval(payload) {
   };
 }
 
-function setAnswer(payload) {
+function _setAnswer(payload) {
   return {
     type: actionTypes.SET_ANSWER,
     payload
+  };
+}
+
+function setAnswer(payload) {
+  return async (dispatch, getState) => {
+    const { currentStep, session } = getState().Stroop;
+    dispatch(_setAnswer(payload));
+    await timeOut(time.answer);
+    if (isOutDate({ currentStep, session }, getState().Stroop)) return;
+    // dispatch(answerTimeOut());
+    dispatch(testIterate());
   };
 }
 
@@ -121,13 +124,14 @@ function answerTimeOut() {
           reactionTime,
           correct: false,
           type: 'time out',
+          response: '',
           progress: 100
         })
       );
   };
 }
 
-export function answerCorrect() {
+export function answerCorrect(response) {
   return async (dispatch, getState) => {
     const state = getState().Stroop;
     const reactionTime = new Date().getTime() - state.beginTs;
@@ -140,13 +144,14 @@ export function answerCorrect() {
           reactionTime,
           correct: true,
           type: 'correct',
+          response,
           progress: (100 * reactionTime) / state.interval
         })
       );
   };
 }
 
-export function answerWrong() {
+export function answerWrong(response) {
   return async (dispatch, getState) => {
     const state = getState().Stroop;
     const reactionTime = new Date().getTime() - state.beginTs;
@@ -159,6 +164,7 @@ export function answerWrong() {
           reactionTime,
           correct: false,
           type: 'wrong',
+          response,
           progress: (100 * reactionTime) / state.interval
         })
       );

@@ -5,14 +5,47 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
+  popover: {},
   typography: {
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    fontSize: '5rem'
   }
 }));
 
 export default function PPopover(props) {
-  const { text } = props;
-  return <div>{text}</div>;
+  const { type, show } = props;
+  const styles = useStyles();
+  let text;
+  switch (type) {
+    case 'time out':
+      text = 'หมดเวลา';
+      break;
+    case 'wrong':
+      text = 'ผิด';
+      break;
+    case 'correct':
+      text = 'ถูกต้อง';
+      break;
+    default:
+      text = '';
+      break;
+  }
+  return (
+    <Popover
+      open={show}
+      className={styles.popover}
+      anchorOrigin={{
+        vertical: 'center',
+        horizontal: 'center'
+      }}
+      transformOrigin={{
+        vertical: 'center',
+        horizontal: 'center'
+      }}
+    >
+      <Typography className={styles.typography}>{text}</Typography>
+    </Popover>
+  );
 }
 
 // eslint-disable-next-line no-unused-vars

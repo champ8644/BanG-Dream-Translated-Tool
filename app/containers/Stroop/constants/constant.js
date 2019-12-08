@@ -13,4 +13,4 @@ export const hotkey = [
   { key: 'm', color: 'green' }
 ];
 
-export const hotkeyString = hotkey.reduce((base, next) => `${base}, ${next}`);
+export const hotkeyString = hotkey.map(x => x.key).join(',');
