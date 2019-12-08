@@ -94,9 +94,10 @@ function testPostX() {
     type: actionTypes.TEST_POST_X
   };
 }
-function testInterval() {
+function testInterval(payload) {
   return {
-    type: actionTypes.TEST_INTERVAL
+    type: actionTypes.TEST_INTERVAL,
+    payload
   };
 }
 

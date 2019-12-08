@@ -1,20 +1,11 @@
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 export default withStyles({
   root: props => {
-    if (
-      props.colorbackground === 'black' ||
-      props.colorbackground === '#000' ||
-      props.colorbackground === '#000000'
-    )
-      return {
-        height: 10,
-        backgroundColor: '#000000'
-      };
     return {
       height: 10,
-      backgroundColor: '#FFB1A8'
+      backgroundColor: props.background || '#FFB1A8'
     };
   },
   bar: props => ({

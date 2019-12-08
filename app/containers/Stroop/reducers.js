@@ -4,15 +4,6 @@ import { actionTypes } from './actions';
 
 const stroopActions = actionTypes;
 
-const initialDisplay = {
-  color: '#000',
-  backgroundColor: '#000',
-  text: '',
-  showStatus: '',
-  showX: false,
-  showText: false
-};
-
 export const initialState = {
   progress: 0,
   answer: '',
@@ -20,8 +11,9 @@ export const initialState = {
   results: {},
   frame: 0,
   session: 0,
-  initialDisplay,
-  ...initialDisplay
+  showStatus: '',
+  showX: false,
+  showText: false
 };
 
 export default function Home(state = initialState, action) {
@@ -38,22 +30,27 @@ export default function Home(state = initialState, action) {
     case stroopActions.TEST_PRE_X:
       return {
         ...state,
-        ...state.initialDisplay,
+        showStatus: '',
+        showX: false,
+        showText: false,
         currentStep: state.currentStep + 1,
         frame: state.frame + 1,
         progress: 0,
-        beginTs: NaN
+        beginTs: NaN,
+        backgroundColor: 'black',
+        color: 'white'
       };
     case stroopActions.TEST_X:
       return { ...state, showX: true };
     case stroopActions.TEST_POST_X:
-      return { ...state, ...state.initialDisplay };
+      return { ...state, showStatus: '', showX: false, showText: false };
     case stroopActions.TEST_INTERVAL:
       return {
         ...state,
         showText: true,
         progress: 100,
-        beginTs: new Date().getTime()
+        beginTs: new Date().getTime(),
+        ...payload
       };
     case stroopActions.SET_ANSWER:
       return {

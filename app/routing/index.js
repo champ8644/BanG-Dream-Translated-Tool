@@ -63,13 +63,16 @@ export const routes = {
 export default () => (
   <HashRouter>
     <Switch>
-      {Object.keys(routes).map(a => (
-        <Route
-          key={routes[a].path || 'notfound'}
-          {...routes[a]}
-          component={routes[a].component}
-        />
-      ))}
+      {Object.keys(routes).map(a => {
+        const Render = routes[a].component;
+        return (
+          <Route
+            key={routes[a].path || 'notfound'}
+            {...routes[a]}
+            component={props => <Render {...props} />}
+          />
+        );
+      })}
     </Switch>
   </HashRouter>
 );

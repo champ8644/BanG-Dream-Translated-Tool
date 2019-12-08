@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop  */
 /* eslint-disable react/destructuring-assignment */
 import React, { PureComponent } from 'react';
+import { isDark, toHex } from '../utils/colorHelper';
 
 import Grow from '@material-ui/core/Grow';
 import { timeOut } from '../utils/asyncHelper';
@@ -16,18 +17,37 @@ function stroke(stroke, color) {
   return shadow;
 }
 
-const stroke5 = stroke(5, '#000');
-
 const styles = theme => {
   return {
-    root: {
-      left: '50%',
-      top: '50%',
-      position: 'absolute',
-      transform: 'translate(-50%,-50%)',
-      fontSize: '10em',
-      color: '#FFF',
-      textShadow: stroke5
+    root: props => {
+      return {
+        height: '100%',
+        backgroundColor: 'black'
+      };
+    },
+    centeredText: props => {
+      const backgroundColor = 'black';
+      let hex = toHex(backgroundColor);
+      if (hex === null) hex = '#000000';
+      if (isDark(hex))
+        return {
+          left: '50%',
+          top: '50%',
+          position: 'absolute',
+          transform: 'translate(-50%,-50%)',
+          fontSize: '10em',
+          color: '#000000',
+          textShadow: stroke(5, '#FFFFFF')
+        };
+      return {
+        left: '50%',
+        top: '50%',
+        position: 'absolute',
+        transform: 'translate(-50%,-50%)',
+        fontSize: '10em',
+        color: '#0000FFFFFF00',
+        textShadow: stroke(5, '#000000')
+      };
     }
   };
 };
@@ -57,6 +77,7 @@ class CountDown extends PureComponent {
         countNumber: state.countNumber - 1
       }));
     }
+    await timeOut(1000);
     this.props.callBack();
   }
 
@@ -64,9 +85,11 @@ class CountDown extends PureComponent {
     const { classes: styles } = this.props;
     return (
       <div className={styles.root}>
-        <Grow in={this.state.showNumber} timeout={this.props.fade}>
-          <div>{this.state.countNumber}</div>
-        </Grow>
+        <div className={styles.centeredText}>
+          <Grow in={this.state.showNumber} timeout={this.props.fade}>
+            <div>{this.state.countNumber}</div>
+          </Grow>
+        </div>
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import Grow from '@material-ui/core/Grow';
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   root: {

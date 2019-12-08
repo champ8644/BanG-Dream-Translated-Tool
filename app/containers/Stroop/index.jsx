@@ -9,6 +9,7 @@ import { hotkey, hotkeyString } from './constants/constant';
 
 import BorderLinearProgress from './components/BorderLinearProgress';
 import CenteredText from './components/CenteredText';
+import CrossHair from './components/CrossHair';
 import Hotkeys from 'react-hot-keys';
 import PopoverStatus from './components/PopoverStatus';
 import { bindActionCreators } from 'redux';
@@ -54,7 +55,9 @@ class Stroop extends Component {
       interval,
       progress,
       text,
-      showStatus
+      showStatus,
+      showX,
+      showText
     } = this.props;
 
     return (
@@ -63,14 +66,13 @@ class Stroop extends Component {
           <BorderLinearProgress
             key={frame}
             variant='determinate'
-            colorbackground={backgroundColor}
+            background={backgroundColor}
             delay={interval}
             value={progress}
           />
-          <div className={styles.root} style={{ backgroundColor, color }}>
-            <CenteredText>{text}</CenteredText>
-          </div>
-          <PopoverStatus text={showStatus} />
+          <CrossHair show={showX} backgroundColor={backgroundColor} />
+          <CenteredText show={showText} color={color} text={text} />
+          <PopoverStatus show={showStatus} />
         </div>
       </Hotkeys>
     );

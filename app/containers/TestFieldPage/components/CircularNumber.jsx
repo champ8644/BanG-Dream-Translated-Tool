@@ -1,7 +1,7 @@
 import Fab from '@material-ui/core/Fab';
 import React from 'react';
 import _ from 'lodash';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
   root: props => {

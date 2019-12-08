@@ -1,4 +1,4 @@
-import { makeStyles, withStyles } from '@material-ui/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import Grow from '@material-ui/core/Grow';
 import LinearProgress from '@material-ui/core/LinearProgress';

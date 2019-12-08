@@ -25,11 +25,11 @@ const testData = [
     { color: 'blue', background: 'blue', text: '', answer: 'blue' }
   ],
   [
-    { color: 'black', background: 'white', text: 'แดง', answer: 'red' },
-    { color: 'black', background: 'white', text: 'เหลือง', answer: 'yellow' },
-    { color: 'black', background: 'white', text: 'เขียว', answer: 'green' },
-    { color: 'black', background: 'white', text: 'น้ำเงิน', answer: 'blue' },
-    { color: 'black', background: 'white', text: 'เหลือง', answer: 'yellow' }
+    { color: 'white', background: 'black', text: 'แดง', answer: 'red' },
+    { color: 'white', background: 'black', text: 'เหลือง', answer: 'yellow' },
+    { color: 'white', background: 'black', text: 'เขียว', answer: 'green' },
+    { color: 'white', background: 'black', text: 'น้ำเงิน', answer: 'blue' },
+    { color: 'white', background: 'black', text: 'เหลือง', answer: 'yellow' }
   ],
   [
     { color: 'red', background: 'black', text: 'เหลือง', answer: 'red' },
@@ -54,7 +54,7 @@ class TestAreaPane extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      step: 2
+      step: 0
     };
   }
 
@@ -89,7 +89,7 @@ class TestAreaPane extends Component {
         MainComponent = (
           <Stroop
             interval={2000}
-            testData={testData[2]}
+            testData={testData[0]}
             onSendAlertsBtn={onSendAlertsBtn}
             callBack={() => this.progressStep()}
           />
