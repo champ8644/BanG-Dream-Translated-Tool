@@ -1,8 +1,8 @@
 'use strict';
 
-import prefixer from '../../utils/reducerPrefixer';
+import prefixer from '../../../utils/reducerPrefixer';
 
-const prefix = '@@Home';
+const prefix = '@@Toolbar';
 const actionTypesList = [];
 
 export const actionTypes = prefixer(prefix, actionTypesList);

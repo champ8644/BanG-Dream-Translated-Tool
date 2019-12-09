@@ -1,18 +1,15 @@
 'use strict';
 
-/* eslint no-case-declarations: off, no-unused-vars: off */
+/* eslint no-case-declarations: off */
 
-import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
 
-import Button from '@material-ui/core/Button';
 import CountDown from './CountDown';
 import Stroop from './Stroop';
-import { imgsrc } from '../../../utils/imgsrc';
 import { log } from '@Log';
-import { routes } from '../../../routing';
 import { styles } from '../styles/BodyAreaPane';
 import { timeOut } from '../../../utils/asyncHelper';
+import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
 const testData = [

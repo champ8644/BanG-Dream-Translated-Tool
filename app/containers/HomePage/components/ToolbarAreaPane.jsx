@@ -2,19 +2,90 @@
 
 /* eslint no-case-declarations: off */
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 
 import ToolbarBody from './ToolbarBody';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { log } from '@Log';
+import { makeToolbarList } from './selectors';
+import path from 'path';
+import reducers from './reducers';
 import { styles } from '../styles/ToolbarAreaPane';
+import { throwAlert } from '../../Alerts/actions';
+import { toggleSettings } from '../../Settings/actions';
+import { toggleWindowSizeOnDoubleClick } from '../../../utils/titlebarDoubleClick';
+import { withReducer } from '../../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
-class ToolbarAreaPane extends PureComponent {
+class ToolbarAreaPane extends Component {
+  handleDoubleClickToolBar = event => {
+    if (event.target !== event.currentTarget) {
+      return null;
+    }
+
+    toggleWindowSizeOnDoubleClick();
+  };
+
+  handleToggleSettings = () => {
+    const { handleToggleSettings } = this.props;
+    handleToggleSettings(true);
+  };
+
+  handleToolbarAction = itemType => {
+    const { history, location } = this.props;
+    switch (itemType) {
+      case 'settings':
+        this._handleToggleSettings(true);
+        break;
+      case 'back':
+        history.push(path.join(location.pathname, '../').replace(/\\/g, '/'));
+        break;
+      case 'home':
+        history.push('/');
+        break;
+      default:
+        break;
+    }
+  };
+
   render() {
     const { classes: styles, ...parentProps } = this.props;
-
-    return <ToolbarBody styles={styles} {...parentProps} />;
+    return (
+      <ToolbarBody
+        styles={styles}
+        {...parentProps}
+        handleToolbarAction={this.handleToolbarAction}
+        handleToggleSettings={this.handleToolbarAction}
+        handleDoubleClickToolBar={this.handleDoubleClickToolBar}
+      />
+    );
   }
 }
 
-export default withStyles(styles)(ToolbarAreaPane);
+const mapDispatchToProps = (dispatch, ownProps) =>
+  bindActionCreators(
+    {
+      handleToggleSettings: data => (_, getState) => {
+        dispatch(toggleSettings(data));
+      },
+
+      handleThrowAlert: data => (_, getState) => {
+        dispatch(throwAlert({ ...data }));
+      }
+    },
+    dispatch
+  );
+
+const mapStateToProps = (state, props) => {
+  return {
+    toolbarList: makeToolbarList(state)
+  };
+};
+
+export default withReducer('Toolbar', reducers)(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(withStyles(styles)(ToolbarAreaPane))
+);

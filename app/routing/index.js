@@ -1,29 +1,27 @@
 'use strict';
 
-import { Route, Switch } from 'react-router';
+import { Redirect, Route, Switch } from 'react-router';
 
 import { HashRouter } from 'react-router-dom';
 import HomePage from '../containers/HomePage/Loadable';
 import NotFoundPage from '../containers/NotFoundPage/Loadable';
-import OpenCV from '../containers/OpenCVPage/Loadable';
 import PrivacyPolicyPage from '../containers/PrivacyPolicyPage/Loadable';
 import ProgressbarPage from '../containers/ProgressbarPage';
 import React from 'react';
 import ReportBugsPage from '../containers/ReportBugsPage/Loadable';
-import SecondPage from '../containers/SecondPage/Loadable';
 import TestFieldPage from '../containers/TestFieldPage/Loadable';
 import TestingPage from '../containers/TestFieldPage/test';
 
 export const routes = {
-  Home: {
+  Root: {
     path: '/',
     exact: true,
-    component: HomePage
+    component: () => <Redirect exact from='/' to='home' />
   },
-  SecondPage: {
-    path: '/secondPage',
-    exact: true,
-    component: SecondPage
+  Home: {
+    path: '/home',
+    exact: false,
+    component: HomePage
   },
   ReportBugsPage: {
     path: '/reportBugsPage',
@@ -39,11 +37,6 @@ export const routes = {
     path: '/privacyPolicyPage',
     exact: true,
     component: PrivacyPolicyPage
-  },
-  OpenCV: {
-    path: '/opencv',
-    exact: true,
-    component: OpenCV
   },
   TestFieldPage: {
     path: '/testFieldPage',
@@ -64,12 +57,11 @@ export default () => (
   <HashRouter>
     <Switch>
       {Object.keys(routes).map(a => {
-        const Render = routes[a].component;
         return (
           <Route
             key={routes[a].path || 'notfound'}
             {...routes[a]}
-            component={props => <Render {...props} />}
+            component={routes[a].component}
           />
         );
       })}

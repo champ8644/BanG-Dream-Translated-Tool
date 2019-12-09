@@ -1,7 +1,7 @@
 {
   "name": "cognitive-fatigue-evaluator",
   "productName": "Cognitive Fatigue Evaluator",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Cognitive Fatigue Evaluator for P Pete Thesis",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",

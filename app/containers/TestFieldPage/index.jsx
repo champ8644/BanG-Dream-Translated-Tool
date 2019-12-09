@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import { makeToolbarList, makeToolbarTitle } from './selectors';
 
 import BodyAreaPane from './components/BodyAreaPane';
-import ToolbarAreaPane from './components/ToolbarAreaPane';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { log } from '@Log';
@@ -51,17 +50,10 @@ class TestField extends Component {
   };
 
   render() {
-    const { classes: styles, toolbarList, toolbarTitle } = this.props;
+    const { classes: styles } = this.props;
     return (
       <div className={styles.root}>
         <div className={styles.grid}>
-          <ToolbarAreaPane
-            showMenu
-            toolbarList={toolbarList}
-            handleDoubleClickToolBar={this._handleDoubleClickToolBar}
-            handleToolbarAction={this._handleToolbarAction}
-            toolbarTitle={toolbarTitle}
-          />
           <BodyAreaPane onSendAlertsBtn={this._handleSendAlertsBtn} />
         </div>
       </div>

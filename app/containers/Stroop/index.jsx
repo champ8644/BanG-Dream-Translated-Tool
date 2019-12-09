@@ -25,6 +25,7 @@ const mapStateToProps = state => {
 
 class Stroop extends Component {
   componentDidMount() {
+    console.log('mount stroop');
     this.props.testStart({
       interval: this.props.interval || 2000,
       testData: this.props.testData,
@@ -34,6 +35,7 @@ class Stroop extends Component {
   }
 
   componentWillUnmount() {
+    console.log('unmount stroop');
     this.props.testReset();
   }
 
