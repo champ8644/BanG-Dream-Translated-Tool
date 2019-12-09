@@ -38,7 +38,8 @@ export default class ToolbarAreaPane extends PureComponent {
       styles,
       toolbarList,
       handleDoubleClickToolBar,
-      handleToolbarAction
+      handleToolbarAction,
+      toolbarTitle
     } = this.props;
 
     /* Control what items should be enabled on the titlebar */
@@ -82,6 +83,7 @@ export default class ToolbarAreaPane extends PureComponent {
                 );
               })}
             </div>
+            <div className={styles.toolbarTitle}>{toolbarTitle}</div>
           </Toolbar>
         </AppBar>
       </div>

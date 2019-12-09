@@ -3,12 +3,12 @@
 /* eslint no-case-declarations: off */
 
 import React, { PureComponent } from 'react';
+import { makeToolbarList, makeToolbarTitle } from './selectors';
 
 import ToolbarBody from './components/ToolbarBody';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { log } from '@Log';
-import { makeToolbarList } from './selectors';
 import path from 'path';
 import reducers from './reducers';
 import { routes } from '../../routing/mainMenu';
@@ -87,7 +87,8 @@ const mapDispatchToProps = (dispatch, ownProps) =>
 
 const mapStateToProps = (state, props) => {
   return {
-    toolbarList: makeToolbarList(state)
+    toolbarList: makeToolbarList(state),
+    toolbarTitle: makeToolbarTitle(state)
   };
 };
 

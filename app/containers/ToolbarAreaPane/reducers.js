@@ -38,10 +38,24 @@ export default function Toolbar(state = initialState, action) {
   switch (type) {
     case LOCATION_CHANGE: {
       if (payload.pathname === '/home')
-        return { ...state, toolbarList: { settings } };
+        return { ...state, toolbarList: { settings }, toolbarTitle: '' };
       const res = /^(\/home\/)([^/]*)/.exec(payload.pathname);
+      let toolbarTitle;
       if (res) {
-        const toolbarTitle = res[2].replace(/^\w/, c => c.toUpperCase());
+        switch (res[2]) {
+          case 'mainmenu':
+            toolbarTitle = 'Main Menu';
+            break;
+          case 'pvsat':
+            toolbarTitle = 'PVSAT';
+            break;
+          case 'stroop':
+            toolbarTitle = 'Stroop';
+            break;
+          default:
+            toolbarTitle = '';
+            break;
+        }
         return { ...state, toolbarList: { back }, toolbarTitle };
       }
       return initialState;
