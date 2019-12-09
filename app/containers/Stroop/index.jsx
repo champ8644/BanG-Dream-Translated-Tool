@@ -24,6 +24,11 @@ const mapStateToProps = state => {
 };
 
 class Stroop extends Component {
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+  }
+
   componentDidMount() {
     console.log('mount stroop');
     this.props.testStart({
@@ -67,7 +72,7 @@ class Stroop extends Component {
     return (
       <Hotkeys keyName={hotkeyString} onKeyDown={this.onKeyDown.bind(this)}>
         {console.log('hotkeyString: ', hotkeyString)}
-        <div className={styles.root}>
+        <div className={styles.root} ref={this.myRef}>
           <BorderLinearProgress
             key={frame}
             variant='determinate'
@@ -77,7 +82,11 @@ class Stroop extends Component {
           />
           <CrossHair show={showX} backgroundColor={backgroundColor} />
           <CenteredText show={showText} color={color} text={text} />
-          <PopoverStatus show={showStatus} type={feedback} />
+          <PopoverStatus
+            show={showStatus}
+            type={feedback}
+            myRef={this.myRef.current}
+          />
         </div>
       </Hotkeys>
     );
