@@ -9,6 +9,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { log } from '@Log';
 import { makeToolbarList } from './selectors';
+import path from 'path';
 import reducers from './reducers';
 import { routes } from '../../routing/mainMenu';
 import { styles } from './styles/ToolbarAreaPane';
@@ -33,14 +34,18 @@ class ToolbarAreaPane extends PureComponent {
   };
 
   _handleToolbarAction = itemType => {
-    const { history } = this.props;
+    const { history, location } = this.props;
     switch (itemType) {
       case 'settings':
         this._handleToggleSettings(true);
         break;
-      case 'back':
-        history.push(routes.Home.path);
-        break;
+      case 'back': {
+        if (/^\/home/.test(location.pathname))
+          return history.push(
+            path.join(location.pathname, '../').replace(/\\/g, '/')
+          );
+        return history.push(routes.Home.path);
+      }
       case 'home':
         history.push('/');
         break;

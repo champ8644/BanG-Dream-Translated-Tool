@@ -21,15 +21,9 @@ class BodyAreaPane extends PureComponent {
         <div className={styles.subTitle}>version {APP_VERSION}</div>
         <Button
           className={styles.btn}
-          onClick={() => history.push(`${routes.Stroop.locate}`)}
+          onClick={() => history.push(routes.MainMenu.locate)}
         >
-          Stroop
-        </Button>
-        <Button
-          className={styles.btn2}
-          onClick={() => history.push(`${routes.PVSAT.locate}/1`)}
-        >
-          PVSAT
+          Start!
         </Button>
       </div>
     );

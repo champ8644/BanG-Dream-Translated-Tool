@@ -26,7 +26,8 @@ export const initialState = {
     settings,
     back,
     home
-  }
+  },
+  toolbarTitle: ''
 };
 
 const LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
@@ -35,12 +36,16 @@ export default function Toolbar(state = initialState, action) {
   // eslint-disable-next-line prefer-const, no-unused-vars
   let { type, payload } = action;
   switch (type) {
-    case LOCATION_CHANGE:
+    case LOCATION_CHANGE: {
       if (payload.pathname === '/home')
         return { ...state, toolbarList: { settings } };
-      if (/^\/home\/(pvsat|stroop)/.test(payload.pathname))
-        return { ...state, toolbarList: { back } };
+      const res = /^(\/home\/)([^/]*)/.exec(payload.pathname);
+      if (res) {
+        const toolbarTitle = res[2].replace(/^\w/, c => c.toUpperCase());
+        return { ...state, toolbarList: { back }, toolbarTitle };
+      }
       return initialState;
+    }
     default:
       return state;
   }
