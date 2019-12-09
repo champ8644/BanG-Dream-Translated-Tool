@@ -4,11 +4,11 @@
 
 import React, { PureComponent } from 'react';
 
-import { APP_VERSION } from '../../constants/meta';
+import { APP_VERSION } from '../../../constants/meta';
 import Button from '@material-ui/core/Button';
 import { log } from '@Log';
-import { routes } from '../../routing/mainSub';
-import { styles } from './styles/BodyAreaPane';
+import { routes } from '../../../routing/mainSub';
+import { styles } from '../styles/BodyAreaPane';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 

@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,7 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import classNames from 'classnames';
 import { imgsrc } from '../../../utils/imgsrc';
 
-export default class ToolbarAreaPane extends Component {
+export default class ToolbarAreaPane extends PureComponent {
   activeToolbarList = ({ ...args }) => {
     const { toolbarList } = args;
 

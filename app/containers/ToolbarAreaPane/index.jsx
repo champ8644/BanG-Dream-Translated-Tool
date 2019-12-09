@@ -2,7 +2,7 @@
 
 /* eslint no-case-declarations: off */
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import ToolbarBody from './components/ToolbarBody';
 import { bindActionCreators } from 'redux';
@@ -18,7 +18,7 @@ import { toggleWindowSizeOnDoubleClick } from '../../utils/titlebarDoubleClick';
 import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
-class ToolbarAreaPane extends Component {
+class ToolbarAreaPane extends PureComponent {
   _handleDoubleClickToolBar = event => {
     if (event.target !== event.currentTarget) {
       return null;
