@@ -53,7 +53,7 @@ class MainMenu extends Component {
                 className={styles.btn}
                 onClick={() => history.push(`${routes.Stroop.locate}/0`)}
               >
-                Stroop 0
+                Stroop All
               </Button>
             </Paper>
           </Grid>
