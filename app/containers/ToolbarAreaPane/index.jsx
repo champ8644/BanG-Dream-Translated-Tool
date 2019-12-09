@@ -42,7 +42,10 @@ class ToolbarAreaPane extends PureComponent {
       case 'back': {
         if (/^\/home/.test(location.pathname))
           return history.push(
-            path.join(location.pathname, '../').replace(/\\/g, '/')
+            path
+              .join(location.pathname, '../')
+              .replace(/\\/g, '/')
+              .slice(0, -1)
           );
         return history.push(routes.Home.path);
       }

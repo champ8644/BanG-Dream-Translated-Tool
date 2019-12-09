@@ -22,7 +22,7 @@ export const routes = {
     component: MainMenu
   },
   RootStroop: {
-    path: '/home/stroop/',
+    path: '/home/stroop',
     exact: true,
     component: () => <Redirect to='/home/mainmenu' />
   },
@@ -33,7 +33,7 @@ export const routes = {
     component: Stroop
   },
   RootPVSAT: {
-    path: '/home/pvsat/',
+    path: '/home/pvsat',
     exact: true,
     component: () => <Redirect to='/home/mainmenu' />
   },
