@@ -22,14 +22,24 @@ const mapStateToProps = state => {
 
 class PVSAT extends Component {
   componentDidMount() {
-    this.props.propToState({
-      iTime: this.props.interval - this.props.fade,
-      eTime: this.props.fade,
-      length: this.props.testData.length,
-      testData: this.props.testData,
-      callBack: this.props.callBack.bind(this)
+    const {
+      match: { params },
+      propToState,
+      testStart,
+      interval,
+      fade,
+      testData,
+      callBack
+    } = this.props;
+    console.log('params', params);
+    propToState({
+      iTime: interval - fade,
+      eTime: fade,
+      length: testData.length,
+      testData,
+      callBack: callBack.bind(this)
     });
-    this.props.testStart();
+    testStart();
   }
 
   componentWillUnmount() {

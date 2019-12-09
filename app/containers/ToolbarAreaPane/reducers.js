@@ -36,14 +36,11 @@ export default function Toolbar(state = initialState, action) {
   let { type, payload } = action;
   switch (type) {
     case LOCATION_CHANGE:
-      switch (payload.pathname) {
-        case '/home/':
-          return { ...state, toolbarList: { settings } };
-        case '/home/pvsat':
-          return { ...state, toolbarList: { back } };
-        default:
-          return initialState;
-      }
+      if (payload.pathname === '/home')
+        return { ...state, toolbarList: { settings } };
+      if (/^\/home\/(pvsat|stroop)/.test(payload.pathname))
+        return { ...state, toolbarList: { back } };
+      return initialState;
     default:
       return state;
   }

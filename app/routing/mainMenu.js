@@ -3,7 +3,7 @@
 import { Route, Switch } from 'react-router';
 
 import BodyAreaPane from '../containers/HomePage/component/BodyAreaPane';
-import MainSubcomponent from '../containers/MainSubcomponent/Loadable';
+import MainMenu from '../containers/MainMenu/Loadable';
 import PVSAT from '../containers/TestFieldPage/test';
 import React from 'react';
 import Stroop from '../containers/TestFieldPage';
@@ -17,15 +17,17 @@ export const routes = {
   Main: {
     path: '/home/main',
     exact: true,
-    component: MainSubcomponent
+    component: MainMenu
   },
   Stroop: {
-    path: '/home/stroop',
+    path: '/home/stroop/:id',
+    locate: '/home/stroop',
     exact: true,
     component: Stroop
   },
   PVSAT: {
-    path: '/home/pvsat',
+    path: '/home/pvsat/:id',
+    locate: '/home/pvsat',
     exact: true,
     component: PVSAT
   }

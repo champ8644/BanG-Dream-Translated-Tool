@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 
-import RoutesSub from '../../routing/mainSub';
+import RoutesSub from '../../routing/mainMenu';
 import ToolbarAreaPane from '../ToolbarAreaPane';
 import { log } from '@Log';
 import { styles } from './styles';
