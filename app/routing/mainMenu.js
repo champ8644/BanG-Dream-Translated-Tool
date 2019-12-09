@@ -6,7 +6,7 @@ import BodyAreaPane from '../containers/HomePage/component/BodyAreaPane';
 import MainMenu from '../containers/MainMenu/Loadable';
 import PVSAT from '../containers/TestFieldPage/test';
 import React from 'react';
-import Stroop from '../containers/TestFieldPage';
+import Stroop from '../containers/Stroop/Loadable';
 
 export const routes = {
   Home: {

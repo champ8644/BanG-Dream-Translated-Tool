@@ -1,8 +1,8 @@
 'use strict';
 
-import prefixer from '../../utils/reducerPrefixer';
-import { time } from './constants/constant';
-import { timeOut } from '../../utils/asyncHelper';
+import prefixer from '../../../utils/reducerPrefixer';
+import { time } from '../constants/constant';
+import { timeOut } from '../../../utils/asyncHelper';
 
 const prefix = '@@Stroop';
 const actionTypesList = [

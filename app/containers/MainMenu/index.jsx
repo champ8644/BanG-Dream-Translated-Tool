@@ -34,12 +34,6 @@ class MainMenu extends Component {
           <Grid item xs={12}>
             <Paper className={styles.paper}>
               <Button
-                className={styles.btn}
-                onClick={() => history.push(`${routes.Stroop.locate}`)}
-              >
-                Stroop
-              </Button>
-              <Button
                 className={styles.btn2}
                 onClick={() => history.push(`${routes.PVSAT.locate}/1`)}
               >
@@ -54,16 +48,44 @@ class MainMenu extends Component {
             <Paper className={styles.paper}>xs=12 sm=6</Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Paper className={styles.paper}>xs=6 sm=3</Paper>
+            <Paper className={styles.paper}>
+              <Button
+                className={styles.btn}
+                onClick={() => history.push(`${routes.Stroop.locate}/0`)}
+              >
+                Stroop 0
+              </Button>
+            </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Paper className={styles.paper}>xs=6 sm=3</Paper>
+            <Paper className={styles.paper}>
+              <Button
+                className={styles.btn}
+                onClick={() => history.push(`${routes.Stroop.locate}/1`)}
+              >
+                Stroop 1
+              </Button>
+            </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Paper className={styles.paper}>xs=6 sm=3</Paper>
+            <Paper className={styles.paper}>
+              <Button
+                className={styles.btn}
+                onClick={() => history.push(`${routes.Stroop.locate}/2`)}
+              >
+                Stroop 2
+              </Button>
+            </Paper>
           </Grid>
           <Grid item xs={6} sm={3}>
-            <Paper className={styles.paper}>xs=6 sm=3</Paper>
+            <Paper className={styles.paper}>
+              <Button
+                className={styles.btn}
+                onClick={() => history.push(`${routes.Stroop.locate}/3`)}
+              >
+                Stroop 3
+              </Button>
+            </Paper>
           </Grid>
         </Grid>
       </div>

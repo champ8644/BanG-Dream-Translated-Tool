@@ -44,7 +44,7 @@ export default function Home(state = initialState, action) {
     case stroopActions.TEST_X:
       return { ...state, showX: true };
     case stroopActions.TEST_POST_X:
-      return { ...state, showStatus: '', showX: false, showText: false };
+      return { ...state, showStatus: false, showX: false, showText: false };
     case stroopActions.TEST_INTERVAL:
       return {
         ...state,

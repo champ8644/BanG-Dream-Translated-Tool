@@ -6,7 +6,7 @@ import { BorderLinearProgress, GrowingText } from './BuildingBlocks';
 import React, { Component } from 'react';
 
 import Hotkeys from 'react-hot-keys';
-import { styles } from '../styles/Stroop';
+import { styles } from '../../Stroop/styles/Stroop';
 import { timeOut } from '../../../utils/asyncHelper';
 import { withStyles } from '@material-ui/core/styles';
 

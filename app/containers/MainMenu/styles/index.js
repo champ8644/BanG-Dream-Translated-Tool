@@ -12,10 +12,10 @@ export const styles = theme => {
       borderRadius: 3,
       boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
       color: 'white',
-      height: '3em',
-      width: '10em',
+      height: '2.5em',
+      width: '8em',
       marginTop: '1.5em',
-      fontSize: '3em',
+      fontSize: '2.5em',
       textDecoration: 'none !important'
     },
     btn2: {
@@ -24,10 +24,10 @@ export const styles = theme => {
       borderRadius: 3,
       boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
       color: 'white',
-      height: '3em',
-      width: '10em',
+      height: '2.5em',
+      width: '8em',
       marginTop: '1.5em',
-      fontSize: '3em',
+      fontSize: '2.5em',
       textDecoration: 'none !important'
     }
   };

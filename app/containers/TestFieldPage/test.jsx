@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { makeToolbarList, makeToolbarTitle } from './selectors';
 
-import TestAreaPane from './components/TestAreaPane';
+import TestAreaPane from '../Stroop';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { log } from '@Log';
