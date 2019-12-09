@@ -4,22 +4,22 @@
 
 import React, { Component } from 'react';
 
-import ToolbarBody from './ToolbarBody';
+import ToolbarBody from './components/ToolbarBody';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { log } from '@Log';
 import { makeToolbarList } from './selectors';
 import path from 'path';
 import reducers from './reducers';
-import { styles } from '../styles/ToolbarAreaPane';
-import { throwAlert } from '../../Alerts/actions';
-import { toggleSettings } from '../../Settings/actions';
-import { toggleWindowSizeOnDoubleClick } from '../../../utils/titlebarDoubleClick';
-import { withReducer } from '../../../store/reducers/withReducer';
+import { styles } from './styles/ToolbarAreaPane';
+import { throwAlert } from '../Alerts/actions';
+import { toggleSettings } from '../Settings/actions';
+import { toggleWindowSizeOnDoubleClick } from '../../utils/titlebarDoubleClick';
+import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
 class ToolbarAreaPane extends Component {
-  handleDoubleClickToolBar = event => {
+  _handleDoubleClickToolBar = event => {
     if (event.target !== event.currentTarget) {
       return null;
     }
@@ -27,12 +27,12 @@ class ToolbarAreaPane extends Component {
     toggleWindowSizeOnDoubleClick();
   };
 
-  handleToggleSettings = () => {
+  _handleToggleSettings = () => {
     const { handleToggleSettings } = this.props;
     handleToggleSettings(true);
   };
 
-  handleToolbarAction = itemType => {
+  _handleToolbarAction = itemType => {
     const { history, location } = this.props;
     switch (itemType) {
       case 'settings':
@@ -55,9 +55,9 @@ class ToolbarAreaPane extends Component {
       <ToolbarBody
         styles={styles}
         {...parentProps}
-        handleToolbarAction={this.handleToolbarAction}
-        handleToggleSettings={this.handleToolbarAction}
-        handleDoubleClickToolBar={this.handleDoubleClickToolBar}
+        handleToolbarAction={this._handleToolbarAction}
+        handleToggleSettings={this._handleToolbarAction}
+        handleDoubleClickToolBar={this._handleDoubleClickToolBar}
       />
     );
   }

@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 
 import RoutesSub from '../../routing/mainSub';
-import ToolbarAreaPane from './components/ToolbarAreaPane';
+import ToolbarAreaPane from '../ToolbarAreaPane';
 import { log } from '@Log';
 import { styles } from './styles';
 import { withStyles } from '@material-ui/core/styles';
@@ -23,7 +23,12 @@ class Home extends Component {
     return (
       <div className={styles.root}>
         <div className={styles.grid}>
-          <ToolbarAreaPane showMenu history={history} location={location} />
+          <ToolbarAreaPane
+            showMenu
+            history={history}
+            location={location}
+            handleToggleSettings={this.handleToggleSettings}
+          />
           <RoutesSub match={match} />
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import { Route, Switch } from 'react-router';
 
-import BodyAreaPane from '../containers/HomePage/components/BodyAreaPane';
+import BodyAreaPane from '../containers/HomePage/BodyAreaPane';
 import MainSubcomponent from '../containers/MainSubcomponent/Loadable';
 import PVSAT from '../containers/TestFieldPage/test';
 import React from 'react';
