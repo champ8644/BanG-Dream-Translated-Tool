@@ -16,6 +16,12 @@ import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
 class Testing extends Component {
+  componentDidMount() {
+    // const {
+    //   match: { params }
+    // } = this.props;
+  }
+
   _handleDoubleClickToolBar = event => {
     if (event.target !== event.currentTarget) {
       return null;
