@@ -7,11 +7,11 @@ import * as actions from './actions';
 import React, { Component } from 'react';
 import { hotkey, hotkeyString } from '../constants/constant';
 
-import BorderLinearProgress from '../components/BorderLinearProgress';
-import CenteredText from '../components/CenteredText';
-import CrossHair from '../components/CrossHair';
+import BorderLinearProgress from '../../../components/BorderLinearProgress';
+import CenteredText from '../../../components/CenteredText';
+import CrossHair from '../../../components/CrossHair';
 import Hotkeys from 'react-hot-keys';
-import PopoverStatus from '../components/PopoverStatus';
+import PopoverStatus from '../../../components/PopoverStatus';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import reducers from './reducers';

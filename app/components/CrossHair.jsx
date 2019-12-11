@@ -1,9 +1,10 @@
 import React from 'react';
-import { isDark } from '../../../utils/colorHelper';
+import { isDark } from '../utils/colorHelper';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
-  root: props => {
+  root: { height: '100%' },
+  crossHair: props => {
     let color = 'white';
     if (props.backgroundColor !== undefined)
       if (!isDark(props.backgroundColor)) color = 'black';
@@ -22,5 +23,9 @@ export default function CrossHair(props) {
   const styles = useStyles(props);
   const { show } = props;
   if (!show) return <></>;
-  return <div className={styles.root}>+</div>;
+  return (
+    <div className={styles.root}>
+      <div className={styles.crossHair}>+</div>
+    </div>
+  );
 }

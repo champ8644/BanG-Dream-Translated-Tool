@@ -3,6 +3,7 @@
 import React, { PureComponent } from 'react';
 import { isDark, toHex } from '../utils/colorHelper';
 
+import CrossHair from './CrossHair';
 import Grow from '@material-ui/core/Grow';
 import { timeOut } from '../utils/asyncHelper';
 import { withStyles } from '@material-ui/core/styles';
@@ -59,7 +60,8 @@ class CountDown extends PureComponent {
       countNumber: props.from,
       showNumber: false,
       interval: props.interval,
-      fade: props.fade
+      fade: props.fade,
+      showCrossHair: false
     };
   }
 
@@ -77,7 +79,10 @@ class CountDown extends PureComponent {
         countNumber: state.countNumber - 1
       }));
     }
-    await timeOut(1000);
+    this.setState({ showCrossHair: true });
+    await timeOut(this.state.interval - this.state.fade);
+    this.setState({ showCrossHair: false });
+    await timeOut(500);
     this.props.callBack();
   }
 
@@ -90,6 +95,11 @@ class CountDown extends PureComponent {
             <div>{this.state.countNumber}</div>
           </Grow>
         </div>
+        <CrossHair
+          className={styles.centeredText}
+          show={this.state.showCrossHair}
+          backgroundColor='black'
+        />
       </div>
     );
   }
