@@ -16,8 +16,3 @@ export const makeHN = createSelector(
     return initialState.HN;
   }
 );
-
-export const makeRawHN = createSelector(
-  make,
-  state => (state ? state.HN : initialState.HN)
-);

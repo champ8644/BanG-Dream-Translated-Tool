@@ -3,91 +3,78 @@
 import * as actions from './actions';
 
 import React, { Component } from 'react';
+import { makeHN, makeRawHN } from './selectors';
 
 import { APP_TITLE } from '../../constants/meta';
-import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import { Helmet } from 'react-helmet';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import InputLabel from '@material-ui/core/InputLabel';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Paper from '@material-ui/core/Paper';
+import Routes from '../../routing/subComponent';
+import SearchIcon from '@material-ui/icons/Search';
 import { bindActionCreators } from 'redux';
+import clsx from 'clsx';
 import { connect } from 'react-redux';
 import reducers from './reducers';
-import { routes } from '../../routing/mainMenu';
 import { styles } from './styles';
 import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
 const mapStateToProps = (state, props) => {
-  return {};
+  return { HN: makeHN(state), rawHN: makeRawHN(state) };
 };
-
 class MainMenu extends Component {
+  handleSubmitHN() {
+    const { history, rawHN } = this.props;
+    if (rawHN === '') history.push('/home/mainmenu');
+    else history.push(`/home/mainmenu/user?${rawHN}`);
+  }
+
   render() {
-    const { classes: styles, history } = this.props;
+    const { classes: styles, handleChangeHN, HN } = this.props;
     return (
       <div className={styles.root}>
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
           <title>Main Menu!</title>
         </Helmet>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Paper className={styles.paper}>
-              <Button
-                className={styles.btn2}
-                onClick={() => history.push(`${routes.PVSAT.locate}/1`)}
+        <Grid container spacing={3} className={styles.padding}>
+          <Grid container item spacing={3} justify='center'>
+            <Paper className={clsx(styles.paper, styles.doubleMargin)}>
+              <FormControl
+                className={clsx(styles.margin, styles.textField)}
+                variant='outlined'
               >
-                PVSAT
-              </Button>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper className={styles.paper}>xs=12 sm=6</Paper>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper className={styles.paper}>xs=12 sm=6</Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper className={styles.paper}>
-              <Button
-                className={styles.btn}
-                onClick={() => history.push(`${routes.Stroop.locate}/0`)}
-              >
-                Stroop All
-              </Button>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper className={styles.paper}>
-              <Button
-                className={styles.btn}
-                onClick={() => history.push(`${routes.Stroop.locate}/1`)}
-              >
-                Stroop 1
-              </Button>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper className={styles.paper}>
-              <Button
-                className={styles.btn}
-                onClick={() => history.push(`${routes.Stroop.locate}/2`)}
-              >
-                Stroop 2
-              </Button>
-            </Paper>
-          </Grid>
-          <Grid item xs={6} sm={3}>
-            <Paper className={styles.paper}>
-              <Button
-                className={styles.btn}
-                onClick={() => history.push(`${routes.Stroop.locate}/3`)}
-              >
-                Stroop 3
-              </Button>
+                <InputLabel>Enter HN</InputLabel>
+                <OutlinedInput
+                  id='input-hn'
+                  type='text'
+                  value={HN}
+                  onChange={e => handleChangeHN(e.target.value)}
+                  onKeyPress={e =>
+                    e.key === 'Enter' ? this.handleSubmitHN() : null
+                  }
+                  endAdornment={
+                    <InputAdornment position='end'>
+                      <IconButton
+                        onClick={() => this.handleSubmitHN()}
+                        edge='end'
+                      >
+                        <SearchIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  labelWidth={70}
+                />
+              </FormControl>
             </Paper>
           </Grid>
         </Grid>
+        <Routes />
       </div>
     );
   }

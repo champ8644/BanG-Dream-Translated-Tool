@@ -18,7 +18,7 @@ export const routes = {
   MainMenu: {
     path: '/home/mainmenu',
     locate: '/home/mainmenu',
-    exact: true,
+    exact: false,
     component: MainMenu
   },
   RootStroop: {

@@ -44,7 +44,7 @@ export default function Toolbar(state = initialState, action) {
       if (res) {
         switch (res[2]) {
           case 'mainmenu':
-            toolbarTitle = 'Main Menu';
+            toolbarTitle = 'Cognitive Fatigue Evaluator';
             break;
           case 'pvsat':
             toolbarTitle = 'PVSAT';
