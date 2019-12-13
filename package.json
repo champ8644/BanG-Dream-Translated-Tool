@@ -244,6 +244,7 @@
     "moment": "^2.22.2",
     "mousetrap": "^1.6.3",
     "prop-types": "^15.6.2",
+    "query-string": "^6.9.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-helmet": "^5.2.0",

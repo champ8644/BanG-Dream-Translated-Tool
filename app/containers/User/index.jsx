@@ -3,15 +3,16 @@
 import * as actions from './actions';
 
 import React, { Component } from 'react';
+import { makeData, makeHN, makeQuery } from './selectors';
 
 import { APP_TITLE } from '../../constants/meta';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { Helmet } from 'react-helmet';
+import LoadingIndicator from '../../components/LoadingIndicator';
 import Paper from '@material-ui/core/Paper';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { makeHN } from './selectors';
 import reducers from './reducers';
 import { routes } from '../../routing/mainMenu';
 import { styles } from './styles';
@@ -19,11 +20,24 @@ import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
 const mapStateToProps = (state, props) => {
-  return { HN: makeHN(state) };
+  return { HN: makeHN(state), data: makeData(state), query: makeQuery(props) };
 };
-class MainMenu extends Component {
+class User extends Component {
+  componentDidMount() {
+    const { query, fetchFireData } = this.props;
+    fetchFireData(query);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { query, fetchFireData } = this.props;
+    if (prevProps.query !== query) {
+      fetchFireData(query);
+    }
+  }
+
   render() {
-    const { classes: styles, history } = this.props;
+    const { classes: styles, history, data } = this.props;
+    if (data === null) return <LoadingIndicator />;
     return (
       <div className={styles.root}>
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
@@ -32,7 +46,7 @@ class MainMenu extends Component {
 
         <Grid container spacing={3} className={styles.padding}>
           <Grid item xs={12} sm={6}>
-            <Paper className={styles.paper}>xs=12 sm=6</Paper>
+            <Paper className={styles.paper}>{data}</Paper>
           </Grid>
           <Grid item xs={12} sm={6}>
             <Paper className={styles.paper}>
@@ -93,9 +107,9 @@ class MainMenu extends Component {
 const mapDispatchToProps = (dispatch, ownProps) =>
   bindActionCreators(actions, dispatch);
 
-export default withReducer('MainMenu', reducers)(
+export default withReducer('User', reducers)(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(withStyles(styles)(MainMenu))
+  )(withStyles(styles)(User))
 );

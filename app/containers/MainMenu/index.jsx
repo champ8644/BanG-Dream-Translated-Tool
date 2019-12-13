@@ -3,21 +3,14 @@
 import * as actions from './actions';
 
 import React, { Component } from 'react';
-import { makeHN, makeRawHN } from './selectors';
+import { makeData, makeDisplayHN, makeHN, makeLoading } from './selectors';
 
 import { APP_TITLE } from '../../constants/meta';
-import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
+import HNsearchbox from './components/HNsearchbox';
 import { Helmet } from 'react-helmet';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import InputLabel from '@material-ui/core/InputLabel';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import Paper from '@material-ui/core/Paper';
-import Routes from '../../routing/subComponent';
-import SearchIcon from '@material-ui/icons/Search';
+import User from './components/User';
 import { bindActionCreators } from 'redux';
-import clsx from 'clsx';
 import { connect } from 'react-redux';
 import reducers from './reducers';
 import { styles } from './styles';
@@ -25,56 +18,51 @@ import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
 const mapStateToProps = (state, props) => {
-  return { HN: makeHN(state), rawHN: makeRawHN(state) };
+  return {
+    HN: makeHN(state),
+    displayHN: makeDisplayHN(state),
+    loading: makeLoading(state),
+    data: makeData(state)
+  };
 };
-class MainMenu extends Component {
-  handleSubmitHN() {
-    const { history, rawHN } = this.props;
-    if (rawHN === '') history.push('/home/mainmenu');
-    else history.push(`/home/mainmenu/user?${rawHN}`);
-  }
 
+class MainMenu extends Component {
   render() {
-    const { classes: styles, handleChangeHN, HN } = this.props;
+    const {
+      classes: styles,
+      handleChangeHN,
+      handleSubmitHN,
+      displayHN,
+      HN,
+      history,
+      fetchFireData,
+      loading,
+      data
+    } = this.props;
     return (
       <div className={styles.root}>
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
           <title>Main Menu!</title>
         </Helmet>
-
         <Grid container spacing={3} className={styles.padding}>
           <Grid container item spacing={3} justify='center'>
-            <Paper className={clsx(styles.paper, styles.doubleMargin)}>
-              <FormControl
-                className={clsx(styles.margin, styles.textField)}
-                variant='outlined'
-              >
-                <InputLabel>Enter HN</InputLabel>
-                <OutlinedInput
-                  id='input-hn'
-                  type='text'
-                  value={HN}
-                  onChange={e => handleChangeHN(e.target.value)}
-                  onKeyPress={e =>
-                    e.key === 'Enter' ? this.handleSubmitHN() : null
-                  }
-                  endAdornment={
-                    <InputAdornment position='end'>
-                      <IconButton
-                        onClick={() => this.handleSubmitHN()}
-                        edge='end'
-                      >
-                        <SearchIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  labelWidth={70}
-                />
-              </FormControl>
-            </Paper>
+            <HNsearchbox
+              HN={displayHN}
+              handleChangeHN={handleChangeHN}
+              handleSubmitHN={handleSubmitHN}
+            />
+          </Grid>
+
+          <Grid container item spacing={3} justify='center'>
+            <User
+              fetchFireData={fetchFireData}
+              history={history}
+              HN={HN}
+              loading={loading}
+              data={data}
+            />
           </Grid>
         </Grid>
-        <Routes />
       </div>
     );
   }

@@ -1,17 +1,38 @@
 'use strict';
 
 import prefixer from '../../utils/reducerPrefixer';
+import { timeOut } from '../../utils/asyncHelper';
 
 const prefix = '@@MainMenu';
-const actionTypesList = ['HANDLE_SUBMITHN', 'HANDLE_CHANGEHN'];
+const actionTypesList = [
+  'HANDLE_SUBMITHN',
+  'HANDLE_CHANGEHN',
+  'LOAD_FIRE_DATA',
+  'FETCH_FIRE_DATA',
+  'EMPTY_FIRE_DATA'
+];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
 
-// export function handleSubmitHN() {
-//   return {
-//     type: actionTypes.HANDLE_SUBMITHN
-//   };
-// }
+export function _handleSubmitHN() {
+  return {
+    type: actionTypes.HANDLE_SUBMITHN
+  };
+}
+
+export function handleSubmitHN() {
+  return async (dispatch, getState) => {
+    const state = getState().MainMenu;
+    if (state.HN === state.displayHN) return;
+    dispatch(loadFireData());
+    if (state.displayHN !== '') {
+      await timeOut(2000);
+      dispatch(_fetchFireData(state.displayHN));
+      return;
+    }
+    dispatch(emptyFireData());
+  };
+}
 
 export function handleChangeHN(payload) {
   return dispatch => {
@@ -20,5 +41,24 @@ export function handleChangeHN(payload) {
         type: actionTypes.HANDLE_CHANGEHN,
         payload: payload.replace(/\//g, '')
       });
+  };
+}
+
+export function loadFireData() {
+  return {
+    type: actionTypes.LOAD_FIRE_DATA
+  };
+}
+
+export function _fetchFireData(payload) {
+  return {
+    type: actionTypes.FETCH_FIRE_DATA,
+    payload
+  };
+}
+
+export function emptyFireData() {
+  return {
+    type: actionTypes.EMPTY_FIRE_DATA
   };
 }

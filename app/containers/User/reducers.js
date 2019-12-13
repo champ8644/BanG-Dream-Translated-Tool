@@ -3,7 +3,8 @@
 import { actionTypes } from './actions';
 
 export const initialState = {
-  HN: ''
+  HN: '',
+  data: null
 };
 
 export default function MainMenu(state = initialState, action) {
@@ -14,6 +15,10 @@ export default function MainMenu(state = initialState, action) {
       return state;
     case actionTypes.HANDLE_CHANGEHN:
       return { ...state, HN: payload };
+    case actionTypes.FETCH_FIRE_DATA:
+      return { ...state, data: payload };
+    case actionTypes.RESET_FIRE_DATA:
+      return { ...state, data: null };
     default:
       return state;
   }

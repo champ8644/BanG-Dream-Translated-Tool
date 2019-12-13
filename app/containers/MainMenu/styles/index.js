@@ -9,6 +9,24 @@ export const styles = theme => {
       background: variables().styles.backgroundColor.main
     },
     paper: { display: 'flex', justifyContent: 'center', padding: '1em' },
+    paper1: {
+      display: 'flex',
+      justifyContent: 'center',
+      padding: '1em',
+      background: 'lightpink'
+    },
+    paper2: {
+      display: 'flex',
+      justifyContent: 'center',
+      padding: '1em',
+      background: 'lightblue'
+    },
+    paper3: {
+      display: 'flex',
+      justifyContent: 'center',
+      padding: '1em'
+    },
+    titlePaper1: {},
     btn: {
       background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
       border: 0,
@@ -20,7 +38,7 @@ export const styles = theme => {
       fontSize: '1.3em',
       textDecoration: 'none !important'
     },
-    btn2: {
+    btn3: {
       background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
       border: 0,
       borderRadius: 3,
@@ -41,6 +59,30 @@ export const styles = theme => {
       marginTop: theme.spacing(3)
     },
     textField: { margin: theme.spacing(1) },
-    padding: { padding: '2em' }
+    rootBody: {
+      marginTop: theme.spacing(3),
+      display: 'contents'
+    },
+    chip: {
+      marginRight: theme.spacing(1)
+    },
+    section1: {
+      margin: theme.spacing(1)
+      // width: '70em'
+    },
+    section2: {
+      margin: theme.spacing(1)
+    },
+    section3: {
+      margin: theme.spacing(3, 1, 1)
+    },
+    padding: { padding: '2em' },
+    frontHN: {
+      margin: theme.spacing(0, 2, 0, 1)
+    },
+    flex: { display: 'flex' },
+    indent: {
+      margin: theme.spacing(0, 0, 0, 3)
+    }
   };
 };

@@ -2,8 +2,9 @@
 
 import { createSelector } from 'reselect';
 import { initialState } from './reducers';
+import queryString from 'query-string';
 
-const make = (state, props) => (state ? state.MainMenu : {});
+const make = (state, props) => (state ? state.User : {});
 
 export const makeHN = createSelector(
   make,
@@ -14,5 +15,18 @@ export const makeHN = createSelector(
       return output;
     }
     return initialState.HN;
+  }
+);
+
+export const makeData = createSelector(
+  make,
+  state => (state ? state.data : initialState.data)
+);
+
+export const makeQuery = createSelector(
+  props => (props ? props.location : {}),
+  location => {
+    const query = queryString.parse(location.search);
+    return query.hn || '';
   }
 );
