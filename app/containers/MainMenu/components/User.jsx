@@ -76,13 +76,13 @@ class User extends Component {
                           title={x.title}
                           subTitle={x.subTitle}
                           onClickDemo={() =>
-                            history.push(`${routes.Stroop.locate}/${x.index}`)
+                            history.push(`${routes.Stroop.locate}/D${x.index}`)
                           }
                           onClickPreTest={() =>
-                            history.push(`${routes.Stroop.locate}/${x.index}`)
+                            history.push(`${routes.Stroop.locate}/A${x.index}`)
                           }
                           onClickPostTest={() =>
-                            history.push(`${routes.Stroop.locate}/${x.index}`)
+                            history.push(`${routes.Stroop.locate}/B${x.index}`)
                           }
                         />
                       </Grid>
