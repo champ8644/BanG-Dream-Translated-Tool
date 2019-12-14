@@ -44,8 +44,8 @@ class MainMenu extends Component {
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
           <title>Main Menu!</title>
         </Helmet>
-        <Grid container spacing={3} className={styles.padding}>
-          <Grid container item spacing={3} justify='center'>
+        <Grid container spacing={3} className={styles.padding} justify='center'>
+          <Grid item>
             <HNsearchbox
               HN={displayHN}
               handleChangeHN={handleChangeHN}
@@ -53,7 +53,7 @@ class MainMenu extends Component {
             />
           </Grid>
 
-          <Grid container item spacing={3} justify='center'>
+          <Grid item>
             <User
               fetchFireData={fetchFireData}
               history={history}

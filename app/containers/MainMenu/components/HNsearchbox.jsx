@@ -7,6 +7,7 @@ import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
 import SearchIcon from '@material-ui/icons/Search';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import { styles } from '../styles';
@@ -34,9 +35,11 @@ function HNsearchbox(props) {
               onKeyPress={e => (e.key === 'Enter' ? handleSubmitHN() : null)}
               endAdornment={
                 <InputAdornment position='end'>
-                  <IconButton onClick={handleSubmitHN} edge='end'>
-                    <SearchIcon />
-                  </IconButton>
+                  <Tooltip title='Confirm HN'>
+                    <IconButton onClick={handleSubmitHN} edge='end'>
+                      <SearchIcon />
+                    </IconButton>
+                  </Tooltip>
                 </InputAdornment>
               }
               labelWidth={120}

@@ -4,6 +4,8 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
 import React from 'react';
+import Stats from './Stats';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -18,11 +20,14 @@ const useStyles = makeStyles({
     margin: '0 2px',
     transform: 'scale(0.8)'
   },
+  justCenter: {
+    justifyContent: 'center'
+  },
   title: {
     fontSize: 14
   },
-  pos: {
-    marginBottom: 12
+  subtitle: {
+    margin: '0 0 1em 0'
   },
   btn: {
     background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
@@ -46,63 +51,71 @@ const useStyles = makeStyles({
     fontSize: '1.3em',
     textDecoration: 'none !important'
   },
+  btn3: {
+    background: 'linear-gradient(45deg, #3cac02 30%, #abd130 90%)',
+    boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+    border: 0,
+    borderRadius: 3,
+    color: 'white',
+    height: '2.5em',
+    flexGrow: 0.4,
+    fontSize: '1.3em',
+    textDecoration: 'none !important'
+  },
   body: {
     fontSize: '20px'
+  },
+  cardContent: {
+    paddingBottom: '0'
   }
 });
 
 export default function SimpleCard(props) {
-  const classes = useStyles();
+  const styles = useStyles();
   const { onClick, title, subTitle } = props;
-  const bull = <span className={classes.bullet}>•</span>;
 
   return (
-    <Card className={classes.card}>
-      <CardContent>
+    <Card className={styles.card}>
+      <CardContent className={styles.cardContent}>
         <Typography variant='h5' component='h2' gutterBottom>
-          {title}
+          <u>{title}</u>
         </Typography>
-        <Divider />
-        <Typography className={classes.pos} color='textSecondary'>
+        <Typography
+          variant='p'
+          className={styles.subtitle}
+          color='textSecondary'
+        >
           {subTitle}
         </Typography>
-        <Typography
-          variant='h5'
-          component='h6'
-          className={classes.body}
-          gutterBottom
-        >
-          Reaction Time
-        </Typography>
-        <Typography variant='body1' component='body1' gutterBottom>
-          {bull} Max
-          <br />
-          {bull} Mean
-          <br />
-        </Typography>
-        <Typography
-          variant='h5'
-          component='h6'
-          className={classes.body}
-          gutterBottom
-        >
-          Accuracy
-        </Typography>
-        <Typography variant='body1' component='body1' gutterBottom>
-          {bull} Final
-        </Typography>
       </CardContent>
-      <Divider />
-      <CardActions>
-        <Button className={classes.btn} onClick={onClick}>
-          Pre Test
-        </Button>
+      <CardActions className={styles.justCenter}>
+        <Tooltip title='Start test with no time limit.'>
+          <Button className={styles.btn3} onClick={onClick}>
+            Demo
+          </Button>
+        </Tooltip>
       </CardActions>
       <Divider />
+      <CardContent className={styles.cardContent}>
+        <Stats />
+      </CardContent>
       <CardActions>
-        <Button className={classes.btn2} onClick={onClick}>
-          Post Test
-        </Button>
+        <Tooltip title='Record test before medication'>
+          <Button className={styles.btn} onClick={onClick}>
+            Pre Test
+          </Button>
+        </Tooltip>
+      </CardActions>
+      <Divider />
+      <CardContent className={styles.cardContent}>
+        <Stats />
+      </CardContent>
+      <CardActions>
+        <Tooltip title='Record test after medication.'>
+          <Button className={styles.btn2} onClick={onClick}>
+            Post Test
+          </Button>
+        </Tooltip>
       </CardActions>
     </Card>
   );
