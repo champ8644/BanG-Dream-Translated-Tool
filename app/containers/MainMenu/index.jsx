@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { makeData, makeDisplayHN, makeHN, makeLoading } from './selectors';
 
 import { APP_TITLE } from '../../constants/meta';
+import Demographic from './components/Demographic';
 import Grid from '@material-ui/core/Grid';
 import HNsearchbox from './components/HNsearchbox';
 import { Helmet } from 'react-helmet';
@@ -52,8 +53,14 @@ class MainMenu extends Component {
               handleSubmitHN={handleSubmitHN}
             />
           </Grid>
-
-          <Grid item>
+          {data !== null ? (
+            <Grid item>
+              <Demographic data={data} />
+            </Grid>
+          ) : (
+            <></>
+          )}
+          <Grid item xs={12}>
             <User
               fetchFireData={fetchFireData}
               history={history}

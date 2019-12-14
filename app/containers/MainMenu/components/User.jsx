@@ -56,8 +56,7 @@ class User extends Component {
                 <Grid direction='column' className={styles.section1}>
                   <Typography
                     gutterBottom
-                    variant='h4'
-                    component='h2'
+                    variant='h3'
                     className={styles.titlePaper}
                   >
                     Stroop
@@ -91,8 +90,7 @@ class User extends Component {
                 <Grid direction='column' className={styles.section2}>
                   <Typography
                     gutterBottom
-                    variant='h4'
-                    component='h2'
+                    variant='h3'
                     className={styles.titlePaper}
                   >
                     PVSAT

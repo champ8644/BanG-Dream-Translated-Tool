@@ -13,20 +13,25 @@ export const styles = theme => {
       display: 'flex',
       justifyContent: 'center',
       padding: '1em',
-      background: 'lightpink'
+      background: '#86A8E7'
     },
     paper2: {
       display: 'flex',
       justifyContent: 'center',
       padding: '1em',
-      background: 'lightblue'
+      background: '#F26DAF'
     },
     paper3: {
       display: 'flex',
       justifyContent: 'center',
       padding: '1em'
     },
-    titlePaper: { justifyContent: 'center', display: 'flex' },
+    titlePaper: {
+      justifyContent: 'center',
+      display: 'flex',
+      color: 'white',
+      textShadow: '2px 2px #000000'
+    },
     btn: {
       background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
       border: 0,
