@@ -8,6 +8,13 @@ export const styles = theme => {
       height: '100vh',
       background: variables().styles.backgroundColor.main
     },
+    marginDivider: { margin: '1em' },
+    paperTop: {
+      height: '100px',
+      display: 'flex',
+      justifyContent: 'center',
+      padding: '2em'
+    },
     paper: { display: 'flex', justifyContent: 'center', padding: '1em' },
     paper1: {
       display: 'flex',

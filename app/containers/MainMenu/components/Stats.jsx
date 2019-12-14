@@ -30,7 +30,7 @@ export default function SimpleCard(props) {
       >
         Reaction Time
       </Typography>
-      <Typography variant='p' gutterBottom color='textSecondary'>
+      <Typography variant='body2' gutterBottom color='textSecondary'>
         {bull} Mean 248 ms(SD = 50 ms)
       </Typography>
       <Typography
@@ -41,7 +41,7 @@ export default function SimpleCard(props) {
       >
         Accuracy
       </Typography>
-      <Typography variant='p' gutterBottom color='textSecondary'>
+      <Typography variant='body2' gutterBottom color='textSecondary'>
         {bull} 100%
       </Typography>
     </>

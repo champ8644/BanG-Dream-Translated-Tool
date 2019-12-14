@@ -72,7 +72,13 @@ const useStyles = makeStyles({
 
 export default function SimpleCard(props) {
   const styles = useStyles();
-  const { onClick, title, subTitle } = props;
+  const {
+    onClickDemo,
+    onClickPreTest,
+    onClickPostTest,
+    title,
+    subTitle
+  } = props;
 
   return (
     <Card className={styles.card}>
@@ -81,7 +87,7 @@ export default function SimpleCard(props) {
           <u>{title}</u>
         </Typography>
         <Typography
-          variant='p'
+          variant='body2'
           className={styles.subtitle}
           color='textSecondary'
         >
@@ -90,7 +96,7 @@ export default function SimpleCard(props) {
       </CardContent>
       <CardActions className={styles.justCenter}>
         <Tooltip title='Start test with no time limit.'>
-          <Button className={styles.btn3} onClick={onClick}>
+          <Button className={styles.btn3} onClick={onClickDemo}>
             Demo
           </Button>
         </Tooltip>
@@ -101,7 +107,7 @@ export default function SimpleCard(props) {
       </CardContent>
       <CardActions>
         <Tooltip title='Record test before medication'>
-          <Button className={styles.btn} onClick={onClick}>
+          <Button className={styles.btn} onClick={onClickPreTest}>
             Pre Test
           </Button>
         </Tooltip>
@@ -112,7 +118,7 @@ export default function SimpleCard(props) {
       </CardContent>
       <CardActions>
         <Tooltip title='Record test after medication.'>
-          <Button className={styles.btn2} onClick={onClick}>
+          <Button className={styles.btn2} onClick={onClickPostTest}>
             Post Test
           </Button>
         </Tooltip>

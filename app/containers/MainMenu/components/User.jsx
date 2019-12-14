@@ -53,7 +53,7 @@ class User extends Component {
           >
             <Grid item>
               <Paper className={styles.paper1}>
-                <Grid direction='column' className={styles.section1}>
+                <Grid container direction='column' className={styles.section1}>
                   <Typography
                     gutterBottom
                     variant='h3'
@@ -75,7 +75,13 @@ class User extends Component {
                         <Card
                           title={x.title}
                           subTitle={x.subTitle}
-                          onClick={() =>
+                          onClickDemo={() =>
+                            history.push(`${routes.Stroop.locate}/${x.index}`)
+                          }
+                          onClickPreTest={() =>
+                            history.push(`${routes.Stroop.locate}/${x.index}`)
+                          }
+                          onClickPostTest={() =>
                             history.push(`${routes.Stroop.locate}/${x.index}`)
                           }
                         />
@@ -87,7 +93,7 @@ class User extends Component {
             </Grid>
             <Grid item xs>
               <Paper className={styles.paper2}>
-                <Grid direction='column' className={styles.section2}>
+                <Grid container direction='column' className={styles.section2}>
                   <Typography
                     gutterBottom
                     variant='h3'

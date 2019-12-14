@@ -2,10 +2,12 @@
 
 import React, { Component } from 'react';
 
+import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import { styles } from '../styles';
@@ -17,7 +19,7 @@ class Demographic extends Component {
     return (
       <div className={styles.rootDemog}>
         <Grow in={data !== null}>
-          <Paper className={clsx(styles.paper, styles.doubleMargin)}>
+          <Paper className={clsx(styles.paperTop, styles.doubleMargin)}>
             <Grid
               item
               container
@@ -33,8 +35,17 @@ class Demographic extends Component {
                   ชาย, 60 ปี
                 </Typography>
               </Grid>
-              <Divider orientation='vertical' />
-              <Grid item>Hello</Grid>
+              <Divider
+                orientation='vertical'
+                className={styles.marginDivider}
+              />
+              <Grid item>
+                <Tooltip title='Start test with no time limit.'>
+                  <Button className={styles.btn} onClick={() => {}}>
+                    Update Data
+                  </Button>
+                </Tooltip>
+              </Grid>
             </Grid>
           </Paper>
         </Grow>
