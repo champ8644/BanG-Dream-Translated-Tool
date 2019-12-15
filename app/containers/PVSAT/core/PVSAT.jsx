@@ -29,36 +29,12 @@ class PVSAT extends Component {
   }
 
   componentDidMount() {
-    const {
-      propToState,
-      testStart,
-      interval,
-      fade,
+    const { testStart, mode, testData, callBack } = this.props;
+    testStart({
       mode,
       testData,
       callBack
-    } = this.props;
-    console.log('mode: ', mode);
-    if (mode === 'Demo') {
-      propToState({
-        iTime: interval - fade,
-        eTime: fade,
-        length: testData.length,
-        mode,
-        testData,
-        callBack: callBack.bind(this)
-      });
-    } else {
-      propToState({
-        iTime: interval - fade,
-        eTime: fade,
-        length: testData.length,
-        mode,
-        testData,
-        callBack: callBack.bind(this)
-      });
-    }
-    testStart();
+    });
   }
 
   componentWillUnmount() {

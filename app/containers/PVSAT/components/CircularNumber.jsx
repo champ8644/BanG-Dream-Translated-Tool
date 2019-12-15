@@ -62,15 +62,7 @@ function EachCircularNumber(props) {
 
 export default function CircularNumber(props) {
   const styles = useStyles(props);
-  const {
-    total,
-    answer,
-    answerCorrect,
-    answerWrong,
-    show,
-    fade,
-    disabled
-  } = props;
+  const { total, answering, show, fade, disabled } = props;
   return (
     <Grow in={show} timeout={{ enter: fade, exit: fade }}>
       <div className={styles.root}>
@@ -82,11 +74,7 @@ export default function CircularNumber(props) {
             text={x}
             radius={250}
             disabled={disabled}
-            onClick={
-              x === Number(answer)
-                ? () => answerCorrect(x)
-                : () => answerWrong(x)
-            }
+            onClick={() => answering(Number(x))}
           />
         ))}
       </div>

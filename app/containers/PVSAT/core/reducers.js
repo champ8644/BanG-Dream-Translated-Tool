@@ -5,82 +5,100 @@ import { actionTypes } from './actions';
 const PVSATActions = actionTypes;
 
 export const initialState = {
-  show: true,
+  show: false,
   showButton: false,
   disabledButton: true,
   progress: 0,
   session: 0,
   text: '',
   answer: '',
-  frame: 0,
   beginTs: NaN,
-  currentStep: NaN,
+  currentStep: 0,
   results: {},
-  isPause: true,
   showStatus: false,
-  feedback: ''
+  showProgress: false,
+  feedback: '',
+  testData: {},
+  mode: null,
+  callBack: null
 };
 /*
-PROP_TO_STATE,
-  TEST_START,
-  TEST_SHOW_0,
-  TEST_ITERATE,
-  TEST_SHOW,
-  SET_ANSWER,
-  TEST_FINISH,
-  TEST_RESET;
+  PROP_TO_STATE
+  TEST_START
+  TEST_SHOW_0
+  TEST_ITERATE
+  TEST_SHOW
+  SET_ANSWER
+  TEST_FINISH
+  TEST_RESET
 */
+
 export default function Home(state = initialState, action) {
   // eslint-disable-next-line prefer-const, no-unused-vars
   let { type, payload } = action;
   switch (type) {
-    case PVSATActions.PROP_TO_STATE:
-      return { ...state, ...payload };
-    case PVSATActions.TOGGLE_SHOW_BUTTON:
-      return { ...state, showButton: true };
-    case PVSATActions.TIMER_PLAY:
-      return {
-        ...state,
-        progress: 100,
-        beginTs: new Date().getTime()
-      };
-    case PVSATActions.TIMER_RESET:
-      return { ...state, frame: state.frame + 1, progress: 0 };
-    case PVSATActions.SET_ANSWER:
-      return {
-        ...state,
-        showStatus: true,
-        feedback: payload.type,
-        results: {
-          ...state.results,
-          [state.currentStep]: payload
-        },
-        disabledButton: true
-      };
-    case PVSATActions.FADE_OUT:
-      return { ...state, show: false };
     case PVSATActions.TEST_START:
       return {
         ...state,
-        showStatus: false,
-        currentStep: 0,
-        isPause: false,
-        show: true,
         session: state.session + 1,
+        showProgress: false,
+        show: false,
+        showButton: false,
+        progress: 0,
+        text: '',
+        answer: '',
+        currentStep: 0,
+        results: {},
+        showStatus: false,
+        feedback: '',
         ...payload
+      };
+    case PVSATActions.TEST_SHOW_0:
+      return {
+        ...state,
+        show: true,
+        ...state.testData[0]
       };
     case PVSATActions.TEST_ITERATE:
       return {
         ...state,
+        show: false,
+        showButton: false,
+        showStatus: false,
+        showProgress: true,
         currentStep: state.currentStep + 1,
+        progress: 0
+      };
+    case PVSATActions.TEST_SHOW:
+      return {
+        ...state,
         show: true,
+        showButton: true,
         disabledButton: false,
+        progress: 1000,
+        ...state.testData[state.currentStep],
+        beginTs: new Date().getTime(),
+        feedback: ''
+      };
+    case PVSATActions.SET_ANSWER:
+      return {
+        ...state,
+        disabledButton: true,
+        showStatus: true,
+        feedback: '',
+        results: {
+          ...state.results,
+          [state.currentStep]: payload
+        },
         ...payload
+      };
+    case PVSATActions.HIDE_MSG:
+      return {
+        ...state,
+        showStatus: false
       };
     case PVSATActions.TEST_RESET:
       return { ...initialState, session: state.session };
-    case PVSATActions.TEST_FINISH:
-      return state;
     default:
       return state;
   }
