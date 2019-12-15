@@ -2,7 +2,6 @@
 
 /* eslint no-case-declarations: off, no-unused-vars: off */
 
-import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
 import { maxNum, numOfTests } from './constants/constant';
 
@@ -12,6 +11,7 @@ import { imgsrc } from '../../utils/imgsrc';
 import { log } from '@Log';
 import { styles } from './styles';
 import { timeOut } from '../../utils/asyncHelper';
+import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
 const randomNum = (a, b) => a + Math.floor(Math.random() * (b - a + 1));

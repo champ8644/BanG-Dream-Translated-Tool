@@ -13,7 +13,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { maxNum } from '../constants/constant';
 import reducers from './reducers';
-import { styles } from '../styles';
+import { styles } from '../styles/PVSAT';
 import { withReducer } from '../../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 

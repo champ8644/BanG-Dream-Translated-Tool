@@ -38,7 +38,7 @@ export default function Home(state = initialState, action) {
       return {
         ...state,
         session: state.session + 1,
-        showProgress: false,
+        showProgress: true,
         show: false,
         showButton: false,
         progress: 0,
@@ -50,33 +50,39 @@ export default function Home(state = initialState, action) {
         feedback: '',
         ...payload
       };
-    case PVSATActions.TEST_SHOW_0:
+    case PVSATActions.TEST_SHOW_0: {
+      const data = state.testData || {};
+      const obj = data[0] || {};
       return {
         ...state,
         show: true,
-        ...state.testData[0]
+        progress: 100,
+        ...obj
       };
+    }
     case PVSATActions.TEST_ITERATE:
       return {
         ...state,
         show: false,
         showButton: false,
         showStatus: false,
-        showProgress: true,
         currentStep: state.currentStep + 1,
         progress: 0
       };
-    case PVSATActions.TEST_SHOW:
+    case PVSATActions.TEST_SHOW: {
+      const data = state.testData || {};
+      const obj = data[state.currentStep] || {};
       return {
         ...state,
         show: true,
         showButton: true,
         disabledButton: false,
         progress: 100,
-        ...state.testData[state.currentStep],
+        ...obj,
         beginTs: new Date().getTime(),
         feedback: ''
       };
+    }
     case PVSATActions.SET_ANSWER:
       return {
         ...state,

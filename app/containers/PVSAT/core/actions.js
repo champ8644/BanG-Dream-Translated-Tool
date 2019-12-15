@@ -25,9 +25,10 @@ async function forStepPermission(time, getState) {
 }
 
 export function testStart(payload) {
-  return dispatch => {
+  return async dispatch => {
     if (payload.testData.length === 0) return dispatch(testFinish());
     dispatch({ type: actionTypes.TEST_START, payload });
+    await timeOut(1);
     dispatch(testShow0());
   };
 }
@@ -35,7 +36,8 @@ export function testStart(payload) {
 function testShow0() {
   return async (dispatch, getState) => {
     dispatch({ type: actionTypes.TEST_SHOW_0 });
-    if (await forStepPermission(time.show, getState)) dispatch(testIterate());
+    if (await forStepPermission(getState().PVSAT.interval, getState))
+      dispatch(testIterate());
   };
 }
 
