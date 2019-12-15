@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function PPopover(props) {
-  const { type, show, myRef } = props;
+  const { type, show, myRef, answer, demo } = props;
   const styles = useStyles();
   let text;
   switch (type) {
@@ -30,6 +30,7 @@ export default function PPopover(props) {
       text = '';
       break;
   }
+  if (demo && type !== 'correct') text += ` [${answer}]`;
   return (
     <div className={styles.root}>
       <Popover

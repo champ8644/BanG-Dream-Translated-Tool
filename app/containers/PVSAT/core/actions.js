@@ -1,6 +1,7 @@
 'use strict';
 
 import prefixer from '../../../utils/reducerPrefixer';
+import { saveTestResults } from '../../MainMenu/actions';
 import { time } from '../constants/constant';
 import { timeOut } from '../../../utils/asyncHelper';
 
@@ -53,9 +54,11 @@ function testIterate() {
 
 function testShow() {
   return async (dispatch, getState) => {
+    const { mode } = getState().PVSAT;
     dispatch({ type: actionTypes.TEST_SHOW });
-    if (await forStepPermission(getState().PVSAT.interval, getState))
-      dispatch(testCheckTimeOut());
+    if (mode !== 'DEMO')
+      if (await forStepPermission(getState().PVSAT.interval, getState))
+        dispatch(testCheckTimeOut());
   };
 }
 
@@ -77,6 +80,12 @@ export function answering(response) {
       currentStep,
       testData
     } = getState().PVSAT;
+    let question1 = null;
+    let question2 = null;
+    if (testData !== undefined) {
+      question1 = testData[currentStep - 1].text;
+      question2 = testData[currentStep].text;
+    }
     let reactionTime = new Date().getTime() - beginTs;
     if (response < 0) reactionTime = time.interval;
     let feedback;
@@ -87,9 +96,9 @@ export function answering(response) {
       dispatch(
         setAnswer({
           reactionTime,
-          interval,
-          question1: testData[currentStep - 1].text,
-          question2: testData[currentStep].text,
+          percentReactionTime: (reactionTime * 100) / interval,
+          question1,
+          question2,
           answer,
           response,
           correct: response === answer,
@@ -101,16 +110,21 @@ export function answering(response) {
 
 function setAnswer(payload) {
   return async (dispatch, getState) => {
+    const { mode } = getState().PVSAT;
     dispatch({ type: actionTypes.SET_ANSWER, payload });
-    if (await forStepPermission(time.msg, getState))
+    if (await forStepPermission(time.msg, getState)) {
       dispatch({ type: actionTypes.HIDE_MSG });
+      if (mode === 'DEMO') dispatch(testIterate());
+    }
   };
 }
 
 function testFinish() {
   return (dispatch, getState) => {
-    const state = getState().PVSAT;
-    state.callBack(state.results);
+    const { results, callBack, mode } = getState().PVSAT;
+    if (mode !== 'DEMO')
+      saveTestResults({ type: 'PVSAT', subtype: 'test', mode, results });
+    callBack();
   };
 }
 

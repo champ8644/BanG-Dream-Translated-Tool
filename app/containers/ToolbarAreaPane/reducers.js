@@ -39,22 +39,47 @@ export default function Toolbar(state = initialState, action) {
     case LOCATION_CHANGE: {
       if (payload.pathname === '/home')
         return { ...state, toolbarList: { settings }, toolbarTitle: '' };
-      const res = /^(\/home\/)([^/]*)/.exec(payload.pathname);
-      let toolbarTitle;
+      const res = /^\/home\/(.*)/.exec(payload.pathname);
+      let toolbarTitle = '';
       if (res) {
-        switch (res[2]) {
+        const ress = res[1].split('/');
+        switch (ress[0]) {
           case 'mainmenu':
-            toolbarTitle = 'Cognitive Fatigue Evaluator';
+            toolbarTitle += 'Cognitive Fatigue Evaluator';
             break;
           case 'pvsat':
-            toolbarTitle = 'PVSAT';
+            toolbarTitle += 'PVSAT';
             break;
           case 'stroop':
-            toolbarTitle = 'Stroop';
+            toolbarTitle += 'Stroop';
             break;
           default:
-            toolbarTitle = '';
-            break;
+        }
+        if (ress[1]) {
+          switch (ress[1][0]) {
+            case 'D':
+              toolbarTitle += ': DEMO';
+              break;
+            case 'A':
+              toolbarTitle += ': Pre-test';
+              break;
+            case 'B':
+              toolbarTitle += ': Post-test';
+              break;
+            default:
+          }
+          switch (ress[1][1]) {
+            case '1':
+              toolbarTitle += ' - Background';
+              break;
+            case '2':
+              toolbarTitle += ' - Text';
+              break;
+            case '3':
+              toolbarTitle += ' - Color';
+              break;
+            default:
+          }
         }
         return { ...state, toolbarList: { back }, toolbarTitle };
       }

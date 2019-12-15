@@ -48,6 +48,8 @@ class PVSAT extends Component {
       progress,
       show,
       text,
+      answer,
+      mode,
       answering,
       showButton,
       disabledButton,
@@ -77,6 +79,8 @@ class PVSAT extends Component {
         <PopoverStatus
           show={showStatus}
           type={feedback}
+          answer={answer}
+          demo={mode === 'DEMO'}
           myRef={this.myRef.current}
         />
       </div>

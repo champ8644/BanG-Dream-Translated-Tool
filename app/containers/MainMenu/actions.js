@@ -9,7 +9,8 @@ const actionTypesList = [
   'HANDLE_CHANGEHN',
   'LOAD_FIRE_DATA',
   'FETCH_FIRE_DATA',
-  'EMPTY_FIRE_DATA'
+  'EMPTY_FIRE_DATA',
+  'SAVE_TEST_RESULTS'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -60,5 +61,12 @@ export function _fetchFireData(payload) {
 export function emptyFireData() {
   return {
     type: actionTypes.EMPTY_FIRE_DATA
+  };
+}
+
+export function saveTestResults(payload) {
+  return {
+    type: actionTypes.SAVE_TEST_RESULTS,
+    payload
   };
 }

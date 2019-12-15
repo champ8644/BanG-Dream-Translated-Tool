@@ -60,18 +60,28 @@ export default function Home(state = initialState, action) {
         ...obj
       };
     }
-    case PVSATActions.TEST_ITERATE:
+    case PVSATActions.TEST_ITERATE: {
+      const demoMode = {};
+      if (state.mode === 'DEMO') {
+        demoMode.interval = 0;
+      }
       return {
         ...state,
         show: false,
         showButton: false,
         showStatus: false,
         currentStep: state.currentStep + 1,
-        progress: 0
+        progress: 0,
+        ...demoMode
       };
+    }
     case PVSATActions.TEST_SHOW: {
       const data = state.testData || {};
       const obj = data[state.currentStep] || {};
+      const demoMode = {};
+      if (state.mode === 'DEMO') {
+        demoMode.progress = 0;
+      }
       return {
         ...state,
         show: true,
@@ -80,7 +90,8 @@ export default function Home(state = initialState, action) {
         progress: 100,
         ...obj,
         beginTs: new Date().getTime(),
-        feedback: ''
+        feedback: '',
+        ...demoMode
       };
     }
     case PVSATActions.SET_ANSWER:

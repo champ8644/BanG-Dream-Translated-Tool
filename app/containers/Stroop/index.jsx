@@ -68,7 +68,7 @@ class StroopWrapper extends Component {
     const type = params.id[1];
     switch (mode) {
       case 'D':
-        this.mode = 'Demo';
+        this.mode = 'DEMO';
         break;
       case 'A':
         this.mode = 'PreTest';

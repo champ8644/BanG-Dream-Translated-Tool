@@ -3,7 +3,7 @@ export const numOfTests = 10;
 
 export const time = {
   interval: 4000,
-  blank: 500,
+  blank: 300,
   fade: 300,
   msg: 1000
 };

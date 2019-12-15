@@ -37,7 +37,7 @@ class PVSATWrapper extends Component {
     } = this.props;
     switch (params.id) {
       case 'D':
-        this.mode = 'Demo';
+        this.mode = 'DEMO';
         break;
       case 'A':
         this.mode = 'PreTest';
