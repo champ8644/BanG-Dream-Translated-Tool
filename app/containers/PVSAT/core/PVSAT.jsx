@@ -2,7 +2,6 @@ import * as actions from './actions';
 
 /* eslint-disable no-await-in-loop  */
 /* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-console */
 /* eslint-disable prefer-template */
 import React, { Component } from 'react';
 
@@ -29,11 +28,12 @@ class PVSAT extends Component {
   }
 
   componentDidMount() {
-    const { testStart, mode, testData, callBack } = this.props;
+    const { testStart, mode, testData, callBack, interval } = this.props;
     testStart({
       mode,
       testData,
-      callBack
+      callBack,
+      interval
     });
   }
 
@@ -44,38 +44,35 @@ class PVSAT extends Component {
   render() {
     const {
       classes: styles,
-      interval,
+      currentStep,
       progress,
       show,
-      fade,
       text,
-      answer,
-      frame,
+      answering,
       showButton,
-      answerCorrect,
-      answerWrong,
       disabledButton,
       showStatus,
-      feedback
+      feedback,
+      showProgress,
+      interval
     } = this.props;
     return (
       <div className={styles.root} ref={this.myRef}>
-        <BorderLinearProgress
-          key={frame}
-          variant='determinate'
-          color='secondary'
-          delay={interval}
-          value={progress}
-        />
-        <GrowingText show={show} fade={fade} text={text} />
+        {showProgress && (
+          <BorderLinearProgress
+            key={currentStep}
+            variant='determinate'
+            delay={interval}
+            color='secondary'
+            value={progress}
+          />
+        )}
+        <GrowingText show={show} text={text} />
         <CircularNumber
           total={maxNum}
           show={showButton}
-          fade={fade}
-          answer={answer}
+          answering={answering}
           disabled={disabledButton}
-          answerCorrect={answerCorrect}
-          answerWrong={answerWrong}
         />
         <PopoverStatus
           show={showStatus}

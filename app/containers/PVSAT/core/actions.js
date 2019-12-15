@@ -21,13 +21,12 @@ async function forStepPermission(time, getState) {
   const prev = getState().PVSAT;
   await timeOut(time);
   const next = getState().PVSAT;
-  if (prev.currentStep !== next.currentStep) return true;
-  if (prev.session !== next.session) return true;
-  return false;
+  return prev.currentStep === next.currentStep && prev.session === next.session;
 }
 
 export function testStart(payload) {
   return dispatch => {
+    if (payload.testData.length === 0) return dispatch(testFinish());
     dispatch({ type: actionTypes.TEST_START, payload });
     dispatch(testShow0());
   };
@@ -44,10 +43,7 @@ function testIterate() {
   return async (dispatch, getState) => {
     const { currentStep, length } = getState().PVSAT;
     const step = currentStep + 1;
-    if (step === length) {
-      dispatch(testFinish());
-      return;
-    }
+    if (step === length) return dispatch(testFinish());
     dispatch({ type: actionTypes.TEST_ITERATE });
     if (await forStepPermission(time.blank, getState)) dispatch(testShow());
   };
@@ -56,7 +52,7 @@ function testIterate() {
 function testShow() {
   return async (dispatch, getState) => {
     dispatch({ type: actionTypes.TEST_SHOW });
-    if (await forStepPermission(time.interval, getState))
+    if (await forStepPermission(getState().PVSAT.interval, getState))
       dispatch(testCheckTimeOut());
   };
 }
@@ -75,6 +71,7 @@ export function answering(response) {
       beginTs,
       answer,
       results,
+      interval,
       currentStep,
       testData
     } = getState().PVSAT;
@@ -88,13 +85,13 @@ export function answering(response) {
       dispatch(
         setAnswer({
           reactionTime,
+          interval,
           question1: testData[currentStep - 1].text,
           question2: testData[currentStep].text,
           answer,
           response,
           correct: response === answer,
-          feedback,
-          progress: (100 * reactionTime) / time.interval
+          feedback
         })
       );
   };

@@ -4,6 +4,8 @@ import React from 'react';
 import _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { time } from '../constants/constant';
+
 const useStyles = makeStyles({
   root: {
     display: 'block',
@@ -62,9 +64,9 @@ function EachCircularNumber(props) {
 
 export default function CircularNumber(props) {
   const styles = useStyles(props);
-  const { total, answering, show, fade, disabled } = props;
+  const { total, answering, show, disabled } = props;
   return (
-    <Grow in={show} timeout={{ enter: fade, exit: fade }}>
+    <Grow in={show} timeout={{ enter: time.fade, exit: time.fade }}>
       <div className={styles.root}>
         {_.range(1, total + 1).map(x => (
           <EachCircularNumber

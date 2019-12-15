@@ -15,7 +15,8 @@ function stroke(stroke, color) {
 export const styles = theme => {
   return {
     root: {
-      height: '100%'
+      height: '100%',
+      display: 'grid'
     },
     centeredText: {
       left: '50%',

@@ -81,11 +81,9 @@ class PVSATWrapper extends Component {
       case 2:
         MainComponent = (
           <PVSAT
-            interval={4000}
-            fade={300}
             mode={this.mode}
             testData={testData}
-            onSendAlertsBtn={onSendAlertsBtn}
+            interval={4000}
             callBack={() => this.progressStep()}
           />
         );

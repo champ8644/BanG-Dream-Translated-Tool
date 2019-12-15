@@ -17,10 +17,7 @@ export const initialState = {
   results: {},
   showStatus: false,
   showProgress: false,
-  feedback: '',
-  testData: {},
-  mode: null,
-  callBack: null
+  feedback: ''
 };
 /*
   PROP_TO_STATE
@@ -75,7 +72,7 @@ export default function Home(state = initialState, action) {
         show: true,
         showButton: true,
         disabledButton: false,
-        progress: 1000,
+        progress: 100,
         ...state.testData[state.currentStep],
         beginTs: new Date().getTime(),
         feedback: ''

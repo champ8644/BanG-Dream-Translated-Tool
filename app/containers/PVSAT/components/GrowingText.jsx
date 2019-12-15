@@ -1,6 +1,7 @@
 import Grow from '@material-ui/core/Grow';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { time } from '../constants/constant';
 
 const useStyles = makeStyles({
   root: {
@@ -14,10 +15,10 @@ const useStyles = makeStyles({
 
 export default function GrowingText(props) {
   const styles = useStyles();
-  const { show, fade, text } = props;
+  const { show, text } = props;
   return (
     <div className={styles.root}>
-      <Grow in={show} timeout={{ enter: fade, exit: fade }}>
+      <Grow in={show} timeout={{ enter: time.fade, exit: time.fade }}>
         <div>{text}</div>
       </Grow>
     </div>
