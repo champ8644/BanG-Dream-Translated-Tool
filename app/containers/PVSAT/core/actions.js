@@ -160,11 +160,14 @@ function makePVSATReport(resultsObj) {
     (base, { reactionTime: x }) => (base < x ? x : base),
     -999999
   );
-  analyse.sumCorrect = results.reduce(
+  analyse.correct = results.reduce(
     (base, { correct: ans }) => (ans ? base + 1 : base),
     0
   );
-  analyse.accuracy = (analyse.sumCorrect * 100) / results.length;
+  analyse.accuracy = (analyse.correct * 100) / results.length;
+  analyse.length = results.length;
+  // eslint-disable-next-line no-alert
+  alert(JSON.stringify(analyse, null, 2));
   return { analyse, results };
 }
 

@@ -9,6 +9,7 @@ import CountDown from '../../components/CountDown';
 import Stroop from './core/Stroop';
 import { imgsrc } from '../../utils/imgsrc';
 import { log } from '@Log';
+import { routes } from '../../routing/mainMenu';
 import { styles } from './styles';
 import { timeOut } from '../../utils/asyncHelper';
 import { withStyles } from '@material-ui/core/styles';
@@ -82,15 +83,19 @@ class StroopWrapper extends Component {
     switch (type) {
       case '0':
         this.orders = [true, true, true, true, true, true, true];
+        this.subtype = 'all';
         break;
       case '1':
         this.orders = [true, true, true, false, false, false, false];
+        this.subtype = 'bg';
         break;
       case '2':
         this.orders = [true, false, false, true, true, false, false];
+        this.subtype = 'text';
         break;
       case '3':
         this.orders = [true, false, false, false, false, true, true];
+        this.subtype = 'color';
         break;
       default:
         this.orders = [true, false, false, false, false, false, false];
@@ -143,6 +148,7 @@ class StroopWrapper extends Component {
             testData={testData[0]}
             onSendAlertsBtn={onSendAlertsBtn}
             mode={this.mode}
+            subtype={this.subtype}
             callBack={() => this.progressStep()}
           />
         );
@@ -172,6 +178,7 @@ class StroopWrapper extends Component {
             testData={testData[1]}
             onSendAlertsBtn={onSendAlertsBtn}
             mode={this.mode}
+            subtype={this.subtype}
             callBack={() => this.progressStep()}
           />
         );
@@ -201,6 +208,7 @@ class StroopWrapper extends Component {
             testData={testData[2]}
             onSendAlertsBtn={onSendAlertsBtn}
             mode={this.mode}
+            subtype={this.subtype}
             callBack={() => this.progressStep()}
           />
         );
@@ -209,6 +217,11 @@ class StroopWrapper extends Component {
         MainComponent = (
           <div className={styles.centeredText}>End of the test.</div>
         );
+        timeOut(1000)
+          .then(() => history.push(routes.MainMenu.path))
+          .catch(err => {
+            throw err;
+          });
     }
     return <div className={styles.root}>{MainComponent}</div>;
   }

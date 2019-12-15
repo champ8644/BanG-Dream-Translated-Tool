@@ -26,11 +26,11 @@ export default function SimpleCard(props) {
   try {
     paragraph = [
       <span>
-        {bull} Mean {analyse.avg.toFixed(2)} ms (SD = {analyse.SD.toFixed(2)}{' '}
-        ms)
+        {bull} Mean {analyse.avg.toFixed(2)} ms (SD = {analyse.SD.toFixed(2)})
       </span>,
       <span>
-        {bull} {analyse.accuracy.toFixed(2)}%
+        {bull} {analyse.accuracy.toFixed(2)}% ({analyse.correct}/
+        {analyse.length})
       </span>
     ];
   } catch {

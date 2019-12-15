@@ -9,6 +9,7 @@ import CountDown from '../../components/CountDown';
 import PVSAT from './core/PVSAT';
 import { imgsrc } from '../../utils/imgsrc';
 import { log } from '@Log';
+import { routes } from '../../routing/mainMenu';
 import { styles } from './styles';
 import { timeOut } from '../../utils/asyncHelper';
 import { withRouter } from 'react-router-dom';
@@ -55,7 +56,7 @@ class PVSATWrapper extends Component {
   }
 
   render() {
-    const { classes: styles, onSendAlertsBtn } = this.props;
+    const { classes: styles, history } = this.props;
     const { step } = this.state;
     let MainComponent;
     switch (step) {
@@ -83,7 +84,7 @@ class PVSATWrapper extends Component {
           <PVSAT
             mode={this.mode}
             testData={testData}
-            interval={1000}
+            interval={3000}
             callBack={() => this.progressStep()}
           />
         );
@@ -92,6 +93,11 @@ class PVSATWrapper extends Component {
         MainComponent = (
           <div className={styles.centeredText}>End of the test.</div>
         );
+        timeOut(1000)
+          .then(() => history.push(routes.MainMenu.path))
+          .catch(err => {
+            throw err;
+          });
     }
     return <div className={styles.root}>{MainComponent}</div>;
   }

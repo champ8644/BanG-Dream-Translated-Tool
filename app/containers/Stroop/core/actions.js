@@ -1,6 +1,7 @@
 'use strict';
 
 import prefixer from '../../../utils/reducerPrefixer';
+import { saveTestResults } from '../../MainMenu/actions';
 import { time } from '../constants/constant';
 import { timeOut } from '../../../utils/asyncHelper';
 
@@ -164,9 +165,18 @@ export function answerWrong(response) {
 
 function testFinish() {
   return (dispatch, getState) => {
-    const state = getState().Stroop;
-    dispatch(_testFinish(state.results));
-    state.callBack(state.results);
+    const { results, callBack, mode, subtype } = getState().Stroop;
+    if (mode !== 'DEMO')
+      dispatch(
+        saveTestResults({
+          type: 'Stroop',
+          subtype,
+          mode,
+          results: makeStroopReport(results)
+        })
+      );
+    dispatch(_testFinish(results));
+    callBack();
   };
 }
 
@@ -180,4 +190,33 @@ export function testReset() {
   return {
     type: actionTypes.TEST_RESET
   };
+}
+
+function makeStroopReport(resultsObj) {
+  const results = Object.keys(resultsObj).map(key => resultsObj[key]);
+  const analyse = {};
+  analyse.sum = results.reduce((base, { reactionTime: x }) => base + x, 0);
+  analyse.avg = analyse.sum / results.length;
+  analyse.variance =
+    results.reduce(
+      (base, { reactionTime: x }) =>
+        base + (x - analyse.avg) * (x - analyse.avg),
+      0
+    ) / results.length;
+  analyse.SD = Math.sqrt(analyse.variance);
+  analyse.min = results.reduce(
+    (base, { reactionTime: x }) => (base > x ? x : base),
+    999999
+  );
+  analyse.max = results.reduce(
+    (base, { reactionTime: x }) => (base < x ? x : base),
+    -999999
+  );
+  analyse.correct = results.reduce(
+    (base, { correct: ans }) => (ans ? base + 1 : base),
+    0
+  );
+  analyse.accuracy = (analyse.correct * 100) / results.length;
+  analyse.length = results.length;
+  return { analyse, results };
 }

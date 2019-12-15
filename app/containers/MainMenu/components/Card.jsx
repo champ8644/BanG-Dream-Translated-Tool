@@ -1,3 +1,4 @@
+import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -67,6 +68,14 @@ const useStyles = makeStyles({
   },
   cardContent: {
     paddingBottom: '0'
+  },
+  preTestBadge: {
+    top: '-7px',
+    right: '-60px'
+  },
+  postTestBadge: {
+    top: '-7px',
+    right: '-54px'
   }
 });
 
@@ -108,7 +117,14 @@ export default function SimpleCard(props) {
       <CardActions>
         <Tooltip title='Record test before medication'>
           <Button className={styles.btn} onClick={onClickPreTest}>
-            Pre Test
+            <Badge
+              badgeContent='New'
+              color='secondary'
+              classes={{ badge: styles.preTestBadge }}
+              invisible={data.PreTest.analyse}
+            >
+              Pre Test
+            </Badge>
           </Button>
         </Tooltip>
       </CardActions>
@@ -119,7 +135,14 @@ export default function SimpleCard(props) {
       <CardActions>
         <Tooltip title='Record test after medication.'>
           <Button className={styles.btn2} onClick={onClickPostTest}>
-            Post Test
+            <Badge
+              badgeContent='New'
+              color='secondary'
+              classes={{ badge: styles.postTestBadge }}
+              invisible={data.PostTest.analyse}
+            >
+              Post Test
+            </Badge>
           </Button>
         </Tooltip>
       </CardActions>

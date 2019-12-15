@@ -30,12 +30,20 @@ class Stroop extends Component {
   }
 
   componentDidMount() {
-    const { mode, testStart, interval, testData, callBack } = this.props;
+    const {
+      mode,
+      subtype,
+      testStart,
+      interval,
+      testData,
+      callBack
+    } = this.props;
     console.log('mode: ', mode);
     if (mode === 'Demo') {
       testStart({
         interval: interval || 2000,
         mode,
+        subtype,
         testData,
         length: testData.length,
         callBack: callBack.bind(this)
@@ -44,6 +52,7 @@ class Stroop extends Component {
       testStart({
         interval: interval || 2000,
         mode,
+        subtype,
         testData,
         length: testData.length,
         callBack: callBack.bind(this)
