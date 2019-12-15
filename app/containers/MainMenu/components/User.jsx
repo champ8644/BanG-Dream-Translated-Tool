@@ -114,7 +114,15 @@ class User extends Component {
                       <Card
                         title='PVSAT'
                         subTitle='PVSAT'
-                        onClick={() => history.push(`${routes.PVSAT.locate}/1`)}
+                        onClickDemo={() =>
+                          history.push(`${routes.PVSAT.locate}/D`)
+                        }
+                        onClickPreTest={() =>
+                          history.push(`${routes.PVSAT.locate}/A`)
+                        }
+                        onClickPostTest={() =>
+                          history.push(`${routes.PVSAT.locate}/B`)
+                        }
                       />
                     </Grid>
                   </Grid>

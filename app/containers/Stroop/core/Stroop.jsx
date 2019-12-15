@@ -30,17 +30,28 @@ class Stroop extends Component {
   }
 
   componentDidMount() {
-    console.log('mount stroop');
-    this.props.testStart({
-      interval: this.props.interval || 2000,
-      testData: this.props.testData,
-      length: this.props.testData.length,
-      callBack: this.props.callBack.bind(this)
-    });
+    const { mode, testStart, interval, testData, callBack } = this.props;
+    console.log('mode: ', mode);
+    if (mode === 'Demo') {
+      testStart({
+        interval: interval || 2000,
+        mode,
+        testData,
+        length: testData.length,
+        callBack: callBack.bind(this)
+      });
+    } else {
+      testStart({
+        interval: interval || 2000,
+        mode,
+        testData,
+        length: testData.length,
+        callBack: callBack.bind(this)
+      });
+    }
   }
 
   componentWillUnmount() {
-    console.log('unmount stroop');
     this.props.testReset();
   }
 
@@ -68,7 +79,6 @@ class Stroop extends Component {
       showText,
       feedback
     } = this.props;
-    console.log('this.props: ', this.props);
 
     return (
       <Hotkeys keyName={hotkeyString} onKeyDown={this.onKeyDown.bind(this)}>

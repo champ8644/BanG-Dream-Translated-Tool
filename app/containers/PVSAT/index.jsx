@@ -1,112 +1,102 @@
-import * as actions from './actions';
+'use strict';
 
-/* eslint-disable no-await-in-loop  */
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-console */
-/* eslint-disable prefer-template */
+/* eslint no-case-declarations: off, no-unused-vars: off */
+
+import { Link, withRouter } from 'react-router-dom';
 import React, { Component } from 'react';
+import { maxNum, numOfTests } from './constants/constant';
 
-import BorderLinearProgress from './components/BorderLinearProgress';
-import CircularNumber from './components/CircularNumber';
-import GrowingText from './components/GrowingText';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import reducers from './reducers';
+import CountDown from '../../components/CountDown';
+import PVSAT from './core/PVSAT';
+import { imgsrc } from '../../utils/imgsrc';
+import { log } from '@Log';
 import { styles } from './styles';
-import { withReducer } from '../../store/reducers/withReducer';
+import { timeOut } from '../../utils/asyncHelper';
 import { withStyles } from '@material-ui/core/styles';
 
-const mapStateToProps = state => {
-  return state.PVSAT;
-};
+const randomNum = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const testData = [{ text: randomNum(1, maxNum - 1), answer: null }];
 
-class PVSAT extends Component {
+for (let i = 1; i < numOfTests; i += 1) {
+  const r = randomNum(1, maxNum - testData[i - 1].text);
+  testData.push({ text: r, answer: testData[i - 1].text + r });
+}
+
+class PVSATWrapper extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      step: 0
+    };
+    this.orders = [];
+  }
+
   componentDidMount() {
     const {
-      match: { params },
-      propToState,
-      testStart,
-      interval,
-      fade,
-      testData,
-      callBack
+      match: { params }
     } = this.props;
-    console.log('params', params);
-    propToState({
-      iTime: interval - fade,
-      eTime: fade,
-      length: testData.length,
-      testData,
-      callBack: callBack.bind(this)
-    });
-    testStart();
+    switch (params.id) {
+      case 'D':
+        this.mode = 'Demo';
+        break;
+      case 'A':
+        this.mode = 'PreTest';
+        break;
+      case 'B':
+        this.mode = 'PostTest';
+        break;
+      default:
+        this.mode = '';
+    }
   }
 
-  componentWillUnmount() {
-    this.props.testReset();
-  }
-
-  throwSuccess() {
-    this.props.onSendAlertsBtn({
-      variant: 'success',
-      message: `${this.props.answer} is the correct answer.`
-    });
-    this.props.answerCorrect();
-  }
-
-  throwError(clickedIndex) {
-    this.props.onSendAlertsBtn({
-      variant: 'warning',
-      message: `${clickedIndex} is wrong. The correct answer is ${
-        this.props.answer
-      }`
-    });
-    this.props.answerWrong();
+  progressStep() {
+    this.setState(state => ({ step: state.step + 1 }));
   }
 
   render() {
-    const {
-      classes: styles,
-      interval,
-      progress,
-      show,
-      fade,
-      text,
-      answer,
-      frame,
-      showButton,
-      disabledButton
-    } = this.props;
-    return (
-      <div className={styles.root}>
-        <BorderLinearProgress
-          key={frame}
-          variant='determinate'
-          color='secondary'
-          delay={interval}
-          value={progress}
-        />
-        <GrowingText show={show} fade={fade} text={text} />
-        <CircularNumber
-          total={14}
-          show={showButton}
-          fade={fade}
-          answer={answer}
-          disabled={disabledButton}
-          throwSuccess={this.throwSuccess.bind(this)}
-          throwError={this.throwError.bind(this)}
-        />
-      </div>
-    );
+    const { classes: styles, onSendAlertsBtn } = this.props;
+    const { step } = this.state;
+    let MainComponent;
+    switch (step) {
+      case 0:
+        MainComponent = <div className={styles.centeredText}>PVSAT</div>;
+        timeOut(1000)
+          .then(() => this.progressStep())
+          .catch(err => {
+            throw err;
+          });
+        break;
+      case 1:
+        MainComponent = (
+          <CountDown
+            from={3}
+            interval={1000}
+            fade={300}
+            background='white'
+            callBack={() => this.progressStep()}
+          />
+        );
+        break;
+      case 2:
+        MainComponent = (
+          <PVSAT
+            interval={4000}
+            fade={300}
+            mode={this.mode}
+            testData={testData}
+            onSendAlertsBtn={onSendAlertsBtn}
+            callBack={() => this.progressStep()}
+          />
+        );
+        break;
+      default:
+        MainComponent = (
+          <div className={styles.centeredText}>End of the test.</div>
+        );
+    }
+    return <div className={styles.root}>{MainComponent}</div>;
   }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) =>
-  bindActionCreators(actions, dispatch);
-
-export default withReducer('PVSAT', reducers)(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(withStyles(styles)(PVSAT))
-);
+export default withRouter(withStyles(styles)(PVSATWrapper));

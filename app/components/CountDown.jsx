@@ -23,11 +23,11 @@ const styles = theme => {
     root: props => {
       return {
         height: '100%',
-        backgroundColor: 'black'
+        backgroundColor: props.background || 'black'
       };
     },
     centeredText: props => {
-      const backgroundColor = 'black';
+      const backgroundColor = props.background || 'black';
       let hex = toHex(backgroundColor);
       if (hex === null) hex = '#000000';
       if (isDark(hex))
@@ -46,7 +46,7 @@ const styles = theme => {
         position: 'absolute',
         transform: 'translate(-50%,-50%)',
         fontSize: '10em',
-        color: '#0000FFFFFF00',
+        color: '#FFFFFF',
         textShadow: stroke(5, '#000000')
       };
     }

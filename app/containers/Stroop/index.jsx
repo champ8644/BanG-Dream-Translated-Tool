@@ -60,7 +60,26 @@ class StroopWrapper extends Component {
     const {
       match: { params }
     } = this.props;
-    switch (params.id) {
+    if (params.id === undefined) {
+      this.orders = [true, false, false, false, false, false, false];
+      return;
+    }
+    const mode = params.id[0];
+    const type = params.id[1];
+    switch (mode) {
+      case 'D':
+        this.mode = 'Demo';
+        break;
+      case 'A':
+        this.mode = 'PreTest';
+        break;
+      case 'B':
+        this.mode = 'PostTest';
+        break;
+      default:
+        this.mode = undefined;
+    }
+    switch (type) {
       case '0':
         this.orders = [true, true, true, true, true, true, true];
         break;
@@ -75,7 +94,6 @@ class StroopWrapper extends Component {
         break;
       default:
         this.orders = [true, false, false, false, false, false, false];
-        break;
     }
   }
 
@@ -124,6 +142,7 @@ class StroopWrapper extends Component {
             interval={2000}
             testData={testData[0]}
             onSendAlertsBtn={onSendAlertsBtn}
+            mode={this.mode}
             callBack={() => this.progressStep()}
           />
         );
@@ -152,6 +171,7 @@ class StroopWrapper extends Component {
             interval={2000}
             testData={testData[1]}
             onSendAlertsBtn={onSendAlertsBtn}
+            mode={this.mode}
             callBack={() => this.progressStep()}
           />
         );
@@ -180,6 +200,7 @@ class StroopWrapper extends Component {
             interval={2000}
             testData={testData[2]}
             onSendAlertsBtn={onSendAlertsBtn}
+            mode={this.mode}
             callBack={() => this.progressStep()}
           />
         );

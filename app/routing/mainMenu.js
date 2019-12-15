@@ -4,7 +4,7 @@ import { Redirect, Route, Switch } from 'react-router';
 
 import BodyAreaPane from '../containers/HomePage/component/BodyAreaPane';
 import MainMenu from '../containers/MainMenu/Loadable';
-import PVSAT from '../containers/TestFieldPage/test';
+import PVSAT from '../containers/PVSAT/Loadable';
 import React from 'react';
 import Stroop from '../containers/Stroop/Loadable';
 
