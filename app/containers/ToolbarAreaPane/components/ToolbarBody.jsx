@@ -39,6 +39,7 @@ export default class ToolbarAreaPane extends PureComponent {
       toolbarList,
       handleDoubleClickToolBar,
       handleToolbarAction,
+      handleToggleSetting,
       toolbarTitle
     } = this.props;
 
@@ -84,6 +85,24 @@ export default class ToolbarAreaPane extends PureComponent {
               })}
             </div>
             <div className={styles.toolbarTitle}>{toolbarTitle}</div>
+            <Tooltip title='Settings'>
+              <div
+                className={`${styles.navBtns} ${styles.noAppDrag} ${
+                  styles.rightMargin
+                }`}
+              >
+                <IconButton
+                  aria-label='Settings'
+                  onClick={() => handleToggleSetting()}
+                >
+                  <img
+                    alt='Settings'
+                    src={imgsrc('Toolbar/settings.svg', false)}
+                    className={classNames(styles.navBtnImgs)}
+                  />
+                </IconButton>
+              </div>
+            </Tooltip>
           </Toolbar>
         </AppBar>
       </div>

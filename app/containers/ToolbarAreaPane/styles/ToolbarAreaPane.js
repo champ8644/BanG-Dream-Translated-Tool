@@ -22,7 +22,8 @@ export const styles = theme => {
       fontSize: '1.5em',
       marginLeft: '1em',
       fontWeight: 'bold',
-      color: 'white'
+      color: 'white',
+      flexGrow: 1
     },
     appBar: {},
     navBtns: {
@@ -48,6 +49,9 @@ export const styles = theme => {
         filter: `invert(100)`,
         background: variables().styles.primaryColor.main
       }
+    },
+    rightMargin: {
+      marginRight: '1em'
     }
   };
 };

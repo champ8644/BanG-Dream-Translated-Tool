@@ -83,7 +83,7 @@ class PVSATWrapper extends Component {
           <PVSAT
             mode={this.mode}
             testData={testData}
-            interval={4000}
+            interval={1000}
             callBack={() => this.progressStep()}
           />
         );

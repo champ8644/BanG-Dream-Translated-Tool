@@ -28,7 +28,10 @@ async function forStepPermission(time, getState) {
 export function testStart(payload) {
   return async dispatch => {
     if (payload.testData.length === 0) return dispatch(testFinish());
-    dispatch({ type: actionTypes.TEST_START, payload });
+    dispatch({
+      type: actionTypes.TEST_START,
+      payload: { ...payload, length: payload.testData.length }
+    });
     await timeOut(1);
     dispatch(testShow0());
   };
@@ -87,10 +90,11 @@ export function answering(response) {
       question2 = testData[currentStep].text;
     }
     let reactionTime = new Date().getTime() - beginTs;
-    if (response < 0) reactionTime = time.interval;
     let feedback;
-    if (response < 0) feedback = 'time out';
-    else if (response === answer) feedback = 'correct';
+    if (reactionTime > interval) {
+      reactionTime = interval;
+      feedback = 'time out';
+    } else if (response === answer) feedback = 'correct';
     else feedback = 'wrong';
     if (results[currentStep] === undefined)
       dispatch(
@@ -123,9 +127,45 @@ function testFinish() {
   return (dispatch, getState) => {
     const { results, callBack, mode } = getState().PVSAT;
     if (mode !== 'DEMO')
-      saveTestResults({ type: 'PVSAT', subtype: 'test', mode, results });
+      dispatch(
+        saveTestResults({
+          type: 'PVSAT',
+          subtype: 'test',
+          mode,
+          results: makePVSATReport(results)
+        })
+      );
+    dispatch({ type: actionTypes.TEST_RESET });
     callBack();
   };
+}
+
+function makePVSATReport(resultsObj) {
+  const results = Object.keys(resultsObj).map(key => resultsObj[key]);
+  const analyse = {};
+  analyse.sum = results.reduce((base, { reactionTime: x }) => base + x, 0);
+  analyse.avg = analyse.sum / results.length;
+  analyse.variance =
+    results.reduce(
+      (base, { reactionTime: x }) =>
+        base + (x - analyse.avg) * (x - analyse.avg),
+      0
+    ) / results.length;
+  analyse.SD = Math.sqrt(analyse.variance);
+  analyse.min = results.reduce(
+    (base, { reactionTime: x }) => (base > x ? x : base),
+    999999
+  );
+  analyse.max = results.reduce(
+    (base, { reactionTime: x }) => (base < x ? x : base),
+    -999999
+  );
+  analyse.sumCorrect = results.reduce(
+    (base, { correct: ans }) => (ans ? base + 1 : base),
+    0
+  );
+  analyse.accuracy = (analyse.sumCorrect * 100) / results.length;
+  return { analyse, results };
 }
 
 export function testReset() {

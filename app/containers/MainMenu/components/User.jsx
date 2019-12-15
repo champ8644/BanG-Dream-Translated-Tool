@@ -33,6 +33,8 @@ const StroopCards = [
   }
 ];
 
+const mapStroop = [null, 'bg', 'text', 'color'];
+
 class User extends Component {
   render() {
     const { classes: styles, history, data, loading } = this.props;
@@ -75,6 +77,7 @@ class User extends Component {
                         <Card
                           title={x.title}
                           subTitle={x.subTitle}
+                          data={data.Stroop[mapStroop[x.index]]}
                           onClickDemo={() =>
                             history.push(`${routes.Stroop.locate}/D${x.index}`)
                           }
@@ -114,6 +117,7 @@ class User extends Component {
                       <Card
                         title='PVSAT'
                         subTitle='PVSAT'
+                        data={data.PVSAT.test}
                         onClickDemo={() =>
                           history.push(`${routes.PVSAT.locate}/D`)
                         }

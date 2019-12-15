@@ -63,6 +63,7 @@ class ToolbarAreaPane extends PureComponent {
       <ToolbarBody
         styles={styles}
         {...parentProps}
+        handleToggleSetting={() => this._handleToggleSettings(true)}
         handleToolbarAction={this._handleToolbarAction}
         handleToggleSettings={this._handleToolbarAction}
         handleDoubleClickToolBar={this._handleDoubleClickToolBar}

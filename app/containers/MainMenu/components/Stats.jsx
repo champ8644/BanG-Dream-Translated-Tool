@@ -18,8 +18,24 @@ const useStyles = makeStyles({
 
 export default function SimpleCard(props) {
   const styles = useStyles();
+  const {
+    data: { analyse }
+  } = props;
   const bull = <span className={styles.bullet}>•</span>;
-
+  let paragraph;
+  try {
+    paragraph = [
+      <span>
+        {bull} Mean {analyse.avg.toFixed(2)} ms (SD = {analyse.SD.toFixed(2)}{' '}
+        ms)
+      </span>,
+      <span>
+        {bull} {analyse.accuracy.toFixed(2)}%
+      </span>
+    ];
+  } catch {
+    paragraph = ['No Data...', 'No Data...'];
+  }
   return (
     <>
       <Typography
@@ -31,7 +47,7 @@ export default function SimpleCard(props) {
         Reaction Time
       </Typography>
       <Typography variant='body2' gutterBottom color='textSecondary'>
-        {bull} Mean 248 ms(SD = 50 ms)
+        {paragraph[0]}
       </Typography>
       <Typography
         variant='h5'
@@ -42,7 +58,7 @@ export default function SimpleCard(props) {
         Accuracy
       </Typography>
       <Typography variant='body2' gutterBottom color='textSecondary'>
-        {bull} 100%
+        {paragraph[1]}
       </Typography>
     </>
   );

@@ -38,7 +38,9 @@ export default function Toolbar(state = initialState, action) {
   switch (type) {
     case LOCATION_CHANGE: {
       if (payload.pathname === '/home')
-        return { ...state, toolbarList: { settings }, toolbarTitle: '' };
+        return { ...state, toolbarList: {}, toolbarTitle: '' };
+      let toolbarList = { back };
+      if (payload.pathname === '/home/mainmenu') toolbarList = { home };
       const res = /^\/home\/(.*)/.exec(payload.pathname);
       let toolbarTitle = '';
       if (res) {
@@ -81,7 +83,7 @@ export default function Toolbar(state = initialState, action) {
             default:
           }
         }
-        return { ...state, toolbarList: { back }, toolbarTitle };
+        return { ...state, toolbarList, toolbarTitle };
       }
       return initialState;
     }

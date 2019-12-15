@@ -77,9 +77,9 @@ export default function SimpleCard(props) {
     onClickPreTest,
     onClickPostTest,
     title,
-    subTitle
+    subTitle,
+    data
   } = props;
-
   return (
     <Card className={styles.card}>
       <CardContent className={styles.cardContent}>
@@ -103,7 +103,7 @@ export default function SimpleCard(props) {
       </CardActions>
       <Divider />
       <CardContent className={styles.cardContent}>
-        <Stats />
+        <Stats data={data.PreTest} />
       </CardContent>
       <CardActions>
         <Tooltip title='Record test before medication'>
@@ -114,7 +114,7 @@ export default function SimpleCard(props) {
       </CardActions>
       <Divider />
       <CardContent className={styles.cardContent}>
-        <Stats />
+        <Stats data={data.PostTest} />
       </CardContent>
       <CardActions>
         <Tooltip title='Record test after medication.'>

@@ -37,7 +37,6 @@ export default function Home(state = initialState, action) {
     case PVSATActions.TEST_START:
       return {
         ...state,
-        session: state.session + 1,
         showProgress: true,
         show: false,
         showButton: false,
@@ -112,7 +111,7 @@ export default function Home(state = initialState, action) {
         showStatus: false
       };
     case PVSATActions.TEST_RESET:
-      return { ...initialState, session: state.session };
+      return { ...initialState, session: state.session + 1 };
     default:
       return state;
   }
