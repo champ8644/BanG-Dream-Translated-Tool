@@ -1,11 +1,11 @@
 'use strict';
 
-const settings = {
-  enabled: true,
-  label: 'Settings',
-  imgSrc: 'Toolbar/settings.svg',
-  invert: false
-};
+// const settings = {
+//   enabled: true,
+//   label: 'Settings',
+//   imgSrc: 'Toolbar/settings.svg',
+//   invert: false
+// };
 
 const back = {
   enabled: true,
@@ -22,11 +22,7 @@ const home = {
 };
 
 export const initialState = {
-  toolbarList: {
-    settings,
-    back,
-    home
-  },
+  toolbarList: {},
   toolbarTitle: ''
 };
 

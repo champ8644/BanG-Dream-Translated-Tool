@@ -53,7 +53,7 @@ class MainMenu extends Component {
               handleSubmitHN={handleSubmitHN}
             />
           </Grid>
-          {data !== null ? (
+          {HN !== '' ? (
             <Grid item>
               <Demographic data={data} />
             </Grid>

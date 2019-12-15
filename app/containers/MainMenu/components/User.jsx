@@ -37,14 +37,14 @@ const mapStroop = [null, 'bg', 'text', 'color'];
 
 class User extends Component {
   render() {
-    const { classes: styles, history, data, loading } = this.props;
+    const { classes: styles, history, data, loading, HN } = this.props;
     if (loading) return <LoadingIndicator />;
     return (
       <div className={styles.rootBody}>
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
           <title>Main Menu!</title>
         </Helmet>
-        <Grow in={data !== null}>
+        <Grow in={HN !== ''}>
           <Grid
             item
             container
