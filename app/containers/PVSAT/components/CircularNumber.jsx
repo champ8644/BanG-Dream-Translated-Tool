@@ -65,8 +65,8 @@ export default function CircularNumber(props) {
   const {
     total,
     answer,
-    throwSuccess,
-    throwError,
+    answerCorrect,
+    answerWrong,
     show,
     fade,
     disabled
@@ -83,7 +83,9 @@ export default function CircularNumber(props) {
             radius={250}
             disabled={disabled}
             onClick={
-              x === Number(answer) ? () => throwSuccess() : () => throwError(x)
+              x === Number(answer)
+                ? () => answerCorrect(x)
+                : () => answerWrong(x)
             }
           />
         ))}

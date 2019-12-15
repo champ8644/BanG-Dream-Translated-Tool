@@ -118,9 +118,6 @@ function answerTimeOut() {
     if (state.results[state.currentState] === undefined)
       dispatch(
         setAnswer({
-          text: state.text,
-          color: state.color,
-          answer: state.answer,
           reactionTime,
           correct: false,
           type: 'time out',
@@ -138,9 +135,6 @@ export function answerCorrect(response) {
     if (state.results[state.currentState] === undefined)
       dispatch(
         setAnswer({
-          text: state.text,
-          color: state.color,
-          answer: state.answer,
           reactionTime,
           correct: true,
           type: 'correct',
@@ -158,9 +152,6 @@ export function answerWrong(response) {
     if (state.results[state.currentState] === undefined)
       dispatch(
         setAnswer({
-          text: state.text,
-          color: state.color,
-          answer: state.answer,
           reactionTime,
           correct: false,
           type: 'wrong',

@@ -1,18 +1,17 @@
 'use strict';
 
 import prefixer from '../../../utils/reducerPrefixer';
+import { time } from '../constants/constant';
 import { timeOut } from '../../../utils/asyncHelper';
 
 const prefix = '@@PVSAT';
 const actionTypesList = [
   'PROP_TO_STATE',
-  'TOGGLE_SHOW_BUTTON',
-  'TIMER_PLAY',
-  'TIMER_RESET',
-  'SET_ANSWER',
-  'FADE_OUT',
   'TEST_START',
+  'TEST_SHOW_0',
   'TEST_ITERATE',
+  'TEST_SHOW',
+  'SET_ANSWER',
   'TEST_FINISH',
   'TEST_RESET'
 ];
@@ -26,30 +25,46 @@ export function propToState(payload) {
   };
 }
 
-function timerPlay() {
-  return {
-    type: actionTypes.TIMER_PLAY
+async function forStepPermission(time, getState) {
+  const prev = getState().PVSAT;
+  await timeOut(time);
+  const next = getState().PVSAT;
+  if (prev.currentStep !== next.currentStep) return true;
+  if (prev.session !== next.session) return true;
+  return false;
+}
+
+export function testStart() {
+  return dispatch => {
+    dispatch({ type: actionTypes.TEST_START });
+    dispatch(testShow0());
   };
 }
 
-function timerReset() {
-  return {
-    type: actionTypes.TIMER_RESET
+function testShow0() {
+  return async (dispatch, getState) => {
+    dispatch({ type: actionTypes.TEST_SHOW_0 });
+    if (await forStepPermission(time.show, getState)) dispatch(testIterate());
   };
 }
 
-function timerRestart() {
-  return async dispatch => {
-    dispatch(timerReset());
-    await timeOut(1);
-    dispatch(timerPlay());
+function testIterate() {
+  return async (dispatch, getState) => {
+    const { currentStep, length } = getState().PVSAT;
+    const step = currentStep + 1;
+    if (step === length) {
+      dispatch(testFinish());
+      return;
+    }
+    dispatch({ type: actionTypes.TEST_ITERATE });
+    if (await forStepPermission(time.iterate, getState)) dispatch(testShow());
   };
 }
 
-function setAnswer(payload) {
-  return {
-    type: actionTypes.SET_ANSWER,
-    payload
+function testShow() {
+  return async (dispatch, getState) => {
+    dispatch({ type: actionTypes.TEST_SHOW });
+    if (await forStepPermission(time.show, getState)) dispatch(answerTimeOut());
   };
 }
 
@@ -58,110 +73,66 @@ function answerTimeOut() {
     const state = getState().PVSAT;
     const reactionTime = state.interval;
     if (state.results[state.currentState] === undefined)
-      dispatch(setAnswer({ reactionTime, correct: false, type: 'time out' }));
+      dispatch(
+        setAnswer({
+          reactionTime,
+          correct: false,
+          type: 'time out',
+          progress: (100 * reactionTime) / state.interval
+        })
+      );
   };
 }
 
-export function answerCorrect() {
+function setAnswer(payload) {
   return async (dispatch, getState) => {
-    const state = getState().PVSAT;
-    const reactionTime = new Date().getTime() - state.beginTs;
-    if (state.results[state.currentState] === undefined)
-      dispatch(setAnswer({ reactionTime, correct: true, type: 'correct' }));
-  };
-}
-
-export function answerWrong() {
-  return async (dispatch, getState) => {
-    const state = getState().PVSAT;
-    const reactionTime = new Date().getTime() - state.beginTs;
-    if (state.results[state.currentState] === undefined)
-      dispatch(setAnswer({ reactionTime, correct: false, type: 'wrong' }));
-  };
-}
-
-function fadeOut() {
-  return {
-    type: actionTypes.FADE_OUT
-  };
-}
-
-function animate(id, session) {
-  return async (dispatch, getState) => {
-    dispatch(timerRestart());
-    const { iTime, eTime } = getState().PVSAT;
-    await timeOut(iTime);
-    const { currentStep: _id, session: _session } = getState().PVSAT;
-    if (_id !== id || _session !== session) return false;
-    dispatch(fadeOut());
-    await timeOut(eTime);
-    const { currentStep: __id, session: __session } = getState().PVSAT;
-    if (__id !== id || __session !== session) return false;
-    return true;
-  };
-}
-
-function _testStart(payload) {
-  return {
-    type: actionTypes.TEST_START,
-    payload
-  };
-}
-
-export function toggleShowButton() {
-  return {
-    type: actionTypes.TOGGLE_SHOW_BUTTON
-  };
-}
-
-export function testStart() {
-  return async (dispatch, getState) => {
-    const state = getState().PVSAT;
-    const { text, answer } = state.testData[0];
-    dispatch(_testStart({ text, answer }));
-    const notTerminated = await dispatch(animate(0, state.session + 1));
-    if (notTerminated) {
-      dispatch(toggleShowButton());
-      dispatch(testIterate());
-    }
-  };
-}
-
-function _testIterate(payload) {
-  return {
-    type: actionTypes.TEST_ITERATE,
-    payload
-  };
-}
-
-function testIterate() {
-  return async (dispatch, getState) => {
-    const { currentStep, length, testData, session } = getState().PVSAT;
-    if (currentStep + 1 === length) {
-      dispatch(testFinish());
-      return;
-    }
-    const { text, answer } = testData[currentStep + 1];
-    dispatch(_testIterate({ text, answer }));
-    const notTerminated = await dispatch(animate(currentStep + 1, session));
-    if (notTerminated) {
-      dispatch(answerTimeOut());
-      dispatch(testIterate());
-    }
-  };
-}
-
-function _testFinish() {
-  return {
-    type: actionTypes.TEST_FINISH
+    dispatch({
+      type: actionTypes.SET_ANSWER,
+      payload
+    });
+    if (await forStepPermission(time.popup, getState)) dispatch(testIterate());
   };
 }
 
 function testFinish() {
   return (dispatch, getState) => {
     const state = getState().PVSAT;
-    dispatch(_testFinish());
+    dispatch({ type: actionTypes.TEST_FINISH });
     state.callBack(state.results);
+  };
+}
+
+export function answerCorrect(response) {
+  return async (dispatch, getState) => {
+    const state = getState().PVSAT;
+    const reactionTime = new Date().getTime() - state.beginTs;
+    if (state.results[state.currentState] === undefined)
+      dispatch(
+        setAnswer({
+          reactionTime,
+          correct: true,
+          type: 'correct',
+          response,
+          progress: (100 * reactionTime) / state.interval
+        })
+      );
+  };
+}
+
+export function answerWrong(response) {
+  return async (dispatch, getState) => {
+    const state = getState().PVSAT;
+    const reactionTime = new Date().getTime() - state.beginTs;
+    if (state.results[state.currentState] === undefined)
+      dispatch(
+        setAnswer({
+          reactionTime,
+          correct: false,
+          type: 'wrong',
+          response,
+          progress: (100 * reactionTime) / state.interval
+        })
+      );
   };
 }
 

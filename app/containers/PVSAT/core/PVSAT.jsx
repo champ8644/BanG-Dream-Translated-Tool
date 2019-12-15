@@ -9,6 +9,7 @@ import React, { Component } from 'react';
 import BorderLinearProgress from '../../../components/BorderLinearProgress';
 import CircularNumber from '../components/CircularNumber';
 import GrowingText from '../components/GrowingText';
+import PopoverStatus from '../../../components/PopoverStatus';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { maxNum } from '../constants/constant';
@@ -22,6 +23,11 @@ const mapStateToProps = state => {
 };
 
 class PVSAT extends Component {
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+  }
+
   componentDidMount() {
     const {
       propToState,
@@ -59,24 +65,6 @@ class PVSAT extends Component {
     this.props.testReset();
   }
 
-  throwSuccess() {
-    this.props.onSendAlertsBtn({
-      variant: 'success',
-      message: `${this.props.answer} is the correct answer.`
-    });
-    this.props.answerCorrect();
-  }
-
-  throwError(clickedIndex) {
-    this.props.onSendAlertsBtn({
-      variant: 'warning',
-      message: `${clickedIndex} is wrong. The correct answer is ${
-        this.props.answer
-      }`
-    });
-    this.props.answerWrong();
-  }
-
   render() {
     const {
       classes: styles,
@@ -88,10 +76,14 @@ class PVSAT extends Component {
       answer,
       frame,
       showButton,
-      disabledButton
+      answerCorrect,
+      answerWrong,
+      disabledButton,
+      showStatus,
+      feedback
     } = this.props;
     return (
-      <div className={styles.root}>
+      <div className={styles.root} ref={this.myRef}>
         <BorderLinearProgress
           key={frame}
           variant='determinate'
@@ -106,8 +98,13 @@ class PVSAT extends Component {
           fade={fade}
           answer={answer}
           disabled={disabledButton}
-          throwSuccess={this.throwSuccess.bind(this)}
-          throwError={this.throwError.bind(this)}
+          answerCorrect={answerCorrect}
+          answerWrong={answerWrong}
+        />
+        <PopoverStatus
+          show={showStatus}
+          type={feedback}
+          myRef={this.myRef.current}
         />
       </div>
     );

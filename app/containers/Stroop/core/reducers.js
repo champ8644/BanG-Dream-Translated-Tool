@@ -60,7 +60,12 @@ export default function Home(state = initialState, action) {
         feedback: payload.type,
         results: {
           ...state.results,
-          [state.currentStep]: payload
+          [state.currentStep]: {
+            ...payload,
+            text: state.text,
+            background: state.backgroundColor,
+            color: state.color
+          }
         },
         progress: payload.progress
       };

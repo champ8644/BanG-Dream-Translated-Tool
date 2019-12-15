@@ -16,9 +16,20 @@ export const initialState = {
   beginTs: NaN,
   currentStep: NaN,
   results: {},
-  isPause: true
+  isPause: true,
+  showStatus: false,
+  feedback: ''
 };
-
+/*
+PROP_TO_STATE,
+  TEST_START,
+  TEST_SHOW_0,
+  TEST_ITERATE,
+  TEST_SHOW,
+  SET_ANSWER,
+  TEST_FINISH,
+  TEST_RESET;
+*/
 export default function Home(state = initialState, action) {
   // eslint-disable-next-line prefer-const, no-unused-vars
   let { type, payload } = action;
@@ -38,6 +49,8 @@ export default function Home(state = initialState, action) {
     case PVSATActions.SET_ANSWER:
       return {
         ...state,
+        showStatus: true,
+        feedback: payload.type,
         results: {
           ...state.results,
           [state.currentStep]: payload
@@ -49,6 +62,7 @@ export default function Home(state = initialState, action) {
     case PVSATActions.TEST_START:
       return {
         ...state,
+        showStatus: false,
         currentStep: 0,
         isPause: false,
         show: true,
