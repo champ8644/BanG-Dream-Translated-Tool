@@ -1,8 +1,8 @@
 {
-  "name": "cognitive-fatigue-evaluator",
-  "productName": "Cognitive Fatigue Evaluator",
-  "version": "1.0.1",
-  "description": "Cognitive Fatigue Evaluator for P Pete Thesis",
+  "name": "bang-dream-translated-tool",
+  "productName": "BanG Dream Translated Tool",
+  "version": "1.0.0",
+  "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
     "build-dll": "cross-env NODE_ENV=development node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.dev.dll.babel.js --colors",
@@ -53,7 +53,7 @@
   "browserslist": "electron 4.0",
   "main": "./app/main.prod.js",
   "build": {
-    "productName": "Cognitive Fatigue Evaluator for P Pete Thesis",
+    "productName": "BanG Dream Translated Tool",
     "appId": "temp",
     "forceCodeSigning": false,
     "copyright": "© Varis Ratanasirisawad",
@@ -62,7 +62,7 @@
       {
         "provider": "github",
         "owner": "champ8644",
-        "repo": "Cognitive-Fatigue-Evaluater",
+        "repo": "BanG-Dream-Tranlated-Tool",
         "private": true
       }
     ],
@@ -97,7 +97,7 @@
       "entitlements": "build/entitlements.mas.plist",
       "icon": "build/icon.icns",
       "binaries": [
-        "dist/mas/Cognitive Fatigue Evaluator.app/Contents/Resources/bin/some-binary"
+        "dist/mas/BanG Dream Translated Tool.app/Contents/Resources/bin/some-binary"
       ]
     },
     "dmg": {
@@ -129,16 +129,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/champ8644/Cognitive-Fatigue-Evaluater.git"
+    "url": "git+https://github.com/champ8644/BanG-Dream-Tranlated-Tool.git"
   },
   "author": {
     "name": "Varis Ratanasirisawad",
     "email": "varis_champ@hotmail.com",
-    "url": "https://github.com/champ8644/Cognitive-Fatigue-Evaluater/"
+    "url": "https://github.com/champ8644/BanG-Dream-Tranlated-Tool/"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/champ8644/Cognitive-Fatigue-Evaluater/issues/"
+    "url": "https://github.com/champ8644/BanG-Dream-Tranlated-Tool/issues/"
   },
   "keywords": [
     "electron",
@@ -149,7 +149,7 @@
     "dynamic reducers",
     "code splitting"
   ],
-  "homepage": "https://github.com/champ8644/Cognitive-Fatigue-Evaluater/",
+  "homepage": "https://github.com/champ8644/BanG-Dream-Tranlated-Tool/",
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.2.3",
