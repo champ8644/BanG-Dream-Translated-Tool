@@ -7,6 +7,10 @@ export const styles = theme => {
     root: { overflow: 'auto' },
     grid: {
       width: `100%`
+    },
+    body: {
+      height: 'calc(100vh - 70px)',
+      overflowY: 'auto'
     }
   };
 };

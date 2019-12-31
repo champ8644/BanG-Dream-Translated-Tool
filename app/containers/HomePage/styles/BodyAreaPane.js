@@ -15,12 +15,12 @@ export const styles = theme => {
       textAlign: 'center'
     },
     title: {
-      fontSize: '7em',
+      fontSize: '6em',
       marginTop: '.5em',
       textAlign: 'center'
     },
-    title2: {
-      fontSize: '4em',
+    heading1: {
+      fontSize: '3.5em',
       textAlign: 'center'
     },
     subTitle: {
