@@ -243,6 +243,7 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.22.2",
     "mousetrap": "^1.6.3",
+    "opencv4nodejs": "^5.5.0",
     "prop-types": "^15.6.2",
     "query-string": "^6.9.0",
     "react": "^16.4.1",

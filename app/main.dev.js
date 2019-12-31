@@ -45,6 +45,15 @@ async function bootTheDevice() {
   }
 }
 
+// if (
+//   process.platform === 'win32' &&
+//   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
+// ) {
+//   process.env.path += `;${
+//     require('../renderer/node_modules/opencv-build').opencvBinDir
+//   }`;
+// }
+
 /**
  * Checks whether device is ready to boot or not.
  * Here profile files are created if not found.
