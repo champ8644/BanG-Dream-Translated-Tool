@@ -11,7 +11,7 @@ export default function Home(state = initialState, action) {
   let { type, payload } = action;
   switch (type) {
     case actionTypes.SELECT_NEW_VIDEO:
-      return { ...state, videoFilePath: payload };
+      return { ...state, ...payload };
     default:
       return state;
   }
