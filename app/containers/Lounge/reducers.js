@@ -5,7 +5,16 @@ import { actionTypes } from './actions';
 export const initialState = {
   videoFilePath: '',
   vCap: null,
-  vCapPackage: {}
+  vCapPackage: {},
+  canvasRef: null,
+  isPlaying: false,
+  frame: null,
+  dialog: {
+    open: false,
+    type: null,
+    value: null,
+    maxValue: null
+  }
 };
 
 export default function Home(state = initialState, action) {
@@ -13,13 +22,28 @@ export default function Home(state = initialState, action) {
   let { type, payload } = action;
   switch (type) {
     case actionTypes.SELECT_NEW_VIDEO:
-      return { ...state, ...payload };
+      return { ...state, ...payload, isPlaying: false };
     case actionTypes.SEND_CANVAS:
-      return {
-        ...state,
-        canvasRef: payload,
-        ctx: () => payload.current.getContext('2d')
-      };
+      return { ...state, canvasRef: payload };
+    case actionTypes.START_VIDEO:
+      return { ...state, isPlaying: true };
+    case actionTypes.UPDATE_FRAME:
+      return { ...state, ...payload };
+    case actionTypes.HANDLE_OPEN_DIALOG:
+      return { ...state, dialog: payload };
+    case actionTypes.HANDLE_CANCEL_DIALOG:
+    case actionTypes.HANDLE_CONFIRM_DIALOG:
+      return { ...state, dialog: initialState.dialog };
+    case actionTypes.HANDLE_CHANGE_DIALOG:
+      if (payload < 0) return state;
+      if (payload > state.dialog.maxValue)
+        return {
+          ...state,
+          dialog: { ...state.dialog, value: state.dialog.maxValue }
+        };
+      return { ...state, dialog: { ...state.dialog, value: payload } };
+    case actionTypes.STOP_VIDEO:
+      return { ...state, isPlaying: false };
     default:
       return state;
   }

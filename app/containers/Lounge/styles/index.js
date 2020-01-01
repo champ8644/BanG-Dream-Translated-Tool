@@ -8,6 +8,9 @@ export const styles = theme => {
       height: '100vh',
       background: variables().styles.backgroundColor.main
     },
+    chip: {
+      margin: theme.spacing(0.5)
+    },
     marginDivider: { margin: '1em' },
     paperTop: {
       height: '100px',
@@ -15,7 +18,10 @@ export const styles = theme => {
       justifyContent: 'center',
       padding: '2em'
     },
-    paper: { display: 'flex', justifyContent: 'center', padding: '1em' },
+    paper: {
+      display: 'inline-block',
+      margin: theme.spacing(0, 1.5, 0, 3)
+    },
     paper1: {
       display: 'flex',
       justifyContent: 'center',
@@ -74,9 +80,6 @@ export const styles = theme => {
     rootBody: {
       marginTop: theme.spacing(3),
       display: 'contents'
-    },
-    chip: {
-      marginRight: theme.spacing(1)
     },
     section1: {
       margin: theme.spacing(1)

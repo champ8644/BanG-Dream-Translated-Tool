@@ -32,7 +32,23 @@ export const makeVideoCapture = createSelector(
       : { vCap: initialState.vCap }
 );
 
-export const makeCtx = createSelector(
+export const makeFrameData = createSelector(
   make,
-  state => (state ? state.ctx : initialState.ctx)
+  state =>
+    state
+      ? {
+          frame: state.frame,
+          ms: state.ms,
+          percent: state.percent
+        }
+      : {
+          frame: initialState.frame,
+          ms: initialState.ms,
+          percent: initialState.percent
+        }
+);
+
+export const makeDialogData = createSelector(
+  make,
+  state => (state ? state.dialog : initialState.dialog)
 );
