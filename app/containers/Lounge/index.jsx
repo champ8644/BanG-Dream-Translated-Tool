@@ -41,7 +41,17 @@ class Lounge extends Component {
   }
 
   render() {
-    const { videoFileName, dWidth, dHeight } = this.props;
+    const {
+      videoFileName,
+      dWidth,
+      dHeight,
+      playVideo,
+      stopVideo,
+      previousFrame,
+      nextFrame,
+      rewindFrame,
+      skipFrame
+    } = this.props;
     return (
       <>
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
@@ -52,22 +62,22 @@ class Lounge extends Component {
         <Button className={styles.btn} onClick={this.openFile.bind(this)}>
           Open CV Tests
         </Button>
-        <IconButton onClick={() => alert('Stop')}>
+        <IconButton onClick={stopVideo}>
           <StopIcon />
         </IconButton>
-        <IconButton onClick={this.playVideo.bind(this)}>
+        <IconButton onClick={playVideo}>
           <PlayArrowIcon />
         </IconButton>
-        <IconButton onClick={() => alert('SkipPrev')}>
+        <IconButton onClick={previousFrame}>
           <SkipPreviousIcon />
         </IconButton>
-        <IconButton onClick={() => alert('SkipNext')}>
+        <IconButton onClick={nextFrame}>
           <SkipNextIcon />
         </IconButton>
-        <IconButton onClick={() => alert('Rewind')}>
+        <IconButton onClick={rewindFrame}>
           <FastRewindIcon />
         </IconButton>
-        <IconButton onClick={() => alert('Forword')}>
+        <IconButton onClick={skipFrame}>
           <FastForwardIcon />
         </IconButton>
         <Typography variant='body1'>{videoFileName}</Typography>

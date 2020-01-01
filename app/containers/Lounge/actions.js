@@ -42,10 +42,12 @@ export function openFile() {
 
 function selectNewVideo(path) {
   return (dispatch, getState) => {
+    const { ctx } = getState().Lounge;
     const vCap = new cv.VideoCapture(path);
     const width = vCap.get(cv.CAP_PROP_FRAME_WIDTH);
     const height = vCap.get(cv.CAP_PROP_FRAME_HEIGHT);
     const ratio = Math.max(width / maxWidth, height / maxHeight);
+    const putFrame = frame => putImage(ctx, frame, ratio);
     dispatch({
       type: actionTypes.SELECT_NEW_VIDEO,
       payload: {
@@ -61,11 +63,11 @@ function selectNewVideo(path) {
           length: vCap.get(cv.CAP_PROP_FRAME_COUNT),
           vFrame: () => vCap.get(cv.CAP_PROP_POS_FRAMES),
           vPercent: () => vCap.get(cv.CAP_PROP_POS_AVI_RATIO * 100),
-          vMs: () => vCap.get(cv.CAP_PROP_POS_MSEC)
+          vMs: () => vCap.get(cv.CAP_PROP_POS_MSEC),
+          putFrame
         }
       }
     });
-    const { ctx } = getState().Lounge;
     const frame = vCap.read();
     putImage(ctx, frame, ratio);
   };
@@ -87,7 +89,7 @@ function putImage(ctx, _frame, ratio) {
 
 export function playVideo() {
   return (dispatch, getState) => {
-    const { vCap, ctx, ratio } = getState().Lounge;
+    const { vCap, putFrame } = getState().Lounge;
     const delay = 10;
     let done = false;
     while (!done) {
@@ -96,10 +98,40 @@ export function playVideo() {
         vCap.reset();
         frame = vCap.read();
       }
-      putImage(ctx, frame, ratio);
+      putFrame(frame);
       const key = cv.waitKey(delay);
       done = key !== 255;
     }
+  };
+}
+
+export function stopVideo() {
+  return (dispatch, getState) => {
+    // const { vCap, putFrame } = getState().Lounge;
+  };
+}
+
+export function previousFrame() {
+  return (dispatch, getState) => {
+    // const { vCap, putFrame } = getState().Lounge;
+  };
+}
+
+export function nextFrame() {
+  return (dispatch, getState) => {
+    // const { vCap, putFrame } = getState().Lounge;
+  };
+}
+
+export function rewindFrame() {
+  return (dispatch, getState) => {
+    // const { vCap, putFrame } = getState().Lounge;
+  };
+}
+
+export function skipFrame() {
+  return (dispatch, getState) => {
+    // const { vCap, putFrame } = getState().Lounge;
   };
 }
 
