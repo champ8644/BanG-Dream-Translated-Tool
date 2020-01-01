@@ -52,3 +52,8 @@ export const makeDialogData = createSelector(
   make,
   state => (state ? state.dialog : initialState.dialog)
 );
+
+export const makeStatusData = createSelector(
+  make,
+  state => (state ? state.status : initialState.status)
+);

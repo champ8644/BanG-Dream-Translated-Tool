@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import {
   makeDialogData,
   makeFrameData,
+  makeStatusData,
   makeVideoCapture,
   makeVideoFilePath
 } from './selectors';
@@ -18,6 +19,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
+import Grid from '@material-ui/core/Grid';
 import { Helmet } from 'react-helmet';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -45,7 +47,8 @@ const mapStateToProps = (state, props) => {
     ...makeVideoFilePath(state),
     ...makeVideoCapture(state),
     ...makeFrameData(state),
-    dialog: makeDialogData(state)
+    dialog: makeDialogData(state),
+    status: makeStatusData(state)
   };
 };
 
@@ -81,18 +84,31 @@ class Lounge extends Component {
       handleConfirmDialog,
       handleKeyDownDialog,
       handleOpenDialog,
+      handleCanvasClick,
       dialog,
       ms,
       percent,
-      FPS
+      FPS,
+      status
     } = this.props;
     return (
-      <>
+      <div className={classes.root}>
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
           <title>OpenCV Tests!</title>
         </Helmet>
 
-        <h1>OpenCV Tests!</h1>
+        <Grid container>
+          <Grid item>
+            <h1>OpenCV Tests!</h1>
+          </Grid>
+          <Grid item style={{ flexGrow: 1 }}>
+            {videoFileName && (
+              <Typography variant='h4' className={classes.TitleFileName}>
+                File name: {videoFileName}
+              </Typography>
+            )}
+          </Grid>
+        </Grid>
         <Button className={classes.btn} onClick={openFile}>
           Open CV Tests
         </Button>
@@ -122,7 +138,9 @@ class Lounge extends Component {
               <Chip
                 className={classes.chip}
                 icon={<TheatersIcon />}
-                label={`Frame: ${formatNumber(frame)}/${formatNumber(length)}`}
+                label={`Frame: ${formatNumber(frame)} / ${formatNumber(
+                  length
+                )}`}
                 color='secondary'
                 variant='outlined'
                 clickable
@@ -133,28 +151,50 @@ class Lounge extends Component {
               <Chip
                 className={classes.chip}
                 icon={<TimerIcon />}
-                label={`Time: ${formatNumber(ms)}/${formatNumber(
+                label={`Time: ${formatNumber(ms)} / ${formatNumber(
                   (length * 1000) / FPS
                 )} ms`}
                 variant='outlined'
+                color='primary'
                 clickable
                 onClick={() => handleOpenDialog('ms')}
               />
             </Tooltip>
-            <Tooltip title='Go To selected time' arrow>
-              <Chip
-                className={classes.chip}
-                icon={<PieChartIcon />}
-                label={`${percent}/100%`}
-                variant='outlined'
-                clickable
-                onClick={() => handleOpenDialog('percent')}
-              />
-            </Tooltip>
-            <Typography variant='body1'>{videoFileName}</Typography>
+            <Chip
+              className={classes.chip}
+              icon={<PieChartIcon />}
+              label={`${formatNumber(percent)} / 100 %`}
+              variant='outlined'
+            />
+            <Grid container>
+              <Grid item>
+                <canvas
+                  className={classes.canvas}
+                  ref={this.canvas}
+                  width={dWidth}
+                  height={dHeight}
+                  onMouseDown={handleCanvasClick}
+                />
+              </Grid>
+              <Grid item>
+                {status.show && (
+                  <Paper className={classes.Papers}>
+                    <Typography variant='h6' className={classes.text1}>
+                      Coord: {`${status.clientX},${status.clientY}`}
+                    </Typography>
+                    <Typography
+                      variant='h6'
+                      className={classes.text1}
+                      style={{ backgroundColor: status.color }}
+                    >
+                      Color: {`${status.color}`}
+                    </Typography>
+                  </Paper>
+                )}
+              </Grid>
+            </Grid>
           </>
         )}
-        <canvas ref={this.canvas} width={dWidth} height={dHeight} />
 
         <Dialog open={dialog.open} onClose={handleCancelDialog}>
           <DialogContent>
@@ -168,7 +208,7 @@ class Lounge extends Component {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
-                    / {dialog.maxValue}
+                    / {formatNumber(dialog.maxValue)} {dialog.type}
                   </InputAdornment>
                 )
               }}
@@ -183,7 +223,7 @@ class Lounge extends Component {
             </Button>
           </DialogActions>
         </Dialog>
-      </>
+      </div>
     );
   }
 }

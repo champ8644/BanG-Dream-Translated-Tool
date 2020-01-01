@@ -21,7 +21,8 @@ const actionTypesList = [
   'HANDLE_CHANGE_DIALOG',
   'HANDLE_CANCEL_DIALOG',
   'HANDLE_CONFIRM_DIALOG',
-  'HANDLE_OPEN_DIALOG'
+  'HANDLE_OPEN_DIALOG',
+  'HANDLE_CANVAS_CLICK'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -58,9 +59,12 @@ function selectNewVideo(path) {
     const width = vCap.get(cv.CAP_PROP_FRAME_WIDTH);
     const height = vCap.get(cv.CAP_PROP_FRAME_HEIGHT);
     const ratio = Math.max(maxWidth / width, maxHeight / height);
+    const length = vCap.get(cv.CAP_PROP_FRAME_COUNT) - 1;
     const current = {
       frame: () => vCap.get(cv.CAP_PROP_POS_FRAMES),
-      percent: () => vCap.get(cv.CAP_PROP_POS_AVI_RATIO) * 100,
+      percent: () => {
+        return (vCap.get(cv.CAP_PROP_POS_FRAMES) / length) * 100;
+      },
       ms: () => vCap.get(cv.CAP_PROP_POS_MSEC)
     };
     const putFrame = dispatch => {
@@ -81,7 +85,7 @@ function selectNewVideo(path) {
           dWidth: width * ratio,
           dHeight: height * ratio,
           FPS: vCap.get(cv.CAP_PROP_FPS),
-          length: vCap.get(cv.CAP_PROP_FRAME_COUNT) - 1,
+          length,
           current,
           putFrame
         }
@@ -144,6 +148,13 @@ export function handleInputFrame(e) {
     type: actionTypes.HANDLE_INPUT_FRAME,
     payload: value
   };
+}
+
+function rewindOneFrame(vCap) {
+  let currentFrame = vCap.get(cv.CAP_PROP_POS_FRAMES);
+  if (currentFrame - 1 >= 0) currentFrame -= 2;
+  else currentFrame = 0;
+  setFrameByType(vCap, currentFrame, 'frame');
 }
 
 export function previousFrame() {
@@ -277,7 +288,11 @@ export function handleConfirmDialog() {
       vCapPackage: { putFrame }
     } = getState().Lounge;
     dispatch({ type: actionTypes.HANDLE_CONFIRM_DIALOG });
-    setFrameByType(vCap, dialog.value, dialog.type);
+    setFrameByType(
+      vCap,
+      dialog.type === 'percent' ? dialog.value / 100 : dialog.value,
+      dialog.type
+    );
     putFrame(dispatch);
   };
 }
@@ -288,4 +303,42 @@ export function handleKeyDownDialog(e) {
       dispatch(handleConfirmDialog());
     }
   };
+}
+
+export function handleCanvasClick(event) {
+  return (dispatch, getState) => {
+    const {
+      canvasRef,
+      vCap,
+      vCapPackage: { ratio }
+    } = getState().Lounge;
+    let { clientX, clientY } = event;
+    const { offsetLeft, offsetTop } = canvasRef.current;
+    clientX -= offsetLeft;
+    clientY -= offsetTop;
+    clientX /= ratio;
+    clientY /= ratio;
+    const frame = vCap.read();
+    const [b, g, r] = frame.atRaw(clientY, clientX);
+    rewindOneFrame(vCap);
+    dispatch({
+      type: actionTypes.HANDLE_CANVAS_CLICK,
+      payload: { clientX, clientY, show: true, color: fullColorHex(r, g, b) }
+    });
+  };
+}
+
+function rgbToHex(rgb) {
+  let hex = Number(rgb).toString(16);
+  if (hex.length < 2) {
+    hex = `0${hex}`;
+  }
+  return hex;
+}
+
+function fullColorHex(r, g, b) {
+  const red = rgbToHex(r);
+  const green = rgbToHex(g);
+  const blue = rgbToHex(b);
+  return `#${red}${green}${blue}`;
 }

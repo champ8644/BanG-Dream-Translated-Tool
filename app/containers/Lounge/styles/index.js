@@ -5,7 +5,8 @@ import { mixins, variables } from '../../../styles/js';
 export const styles = theme => {
   return {
     root: {
-      height: '100vh',
+      height: 'calc(100vh - 78px)',
+      padding: theme.spacing(3, 5),
       background: variables().styles.backgroundColor.main
     },
     chip: {
@@ -21,6 +22,20 @@ export const styles = theme => {
     paper: {
       display: 'inline-block',
       margin: theme.spacing(0, 1.5, 0, 3)
+    },
+    paperTitle: {
+      padding: theme.spacing(1),
+      margin: theme.spacing(2)
+    },
+    TitleFileName: {
+      margin: theme.spacing(2.5, 4)
+    },
+    canvas: {
+      marginTop: theme.spacing(3)
+    },
+    Papers: {
+      padding: theme.spacing(2),
+      margin: theme.spacing(2)
     },
     paper1: {
       display: 'flex',

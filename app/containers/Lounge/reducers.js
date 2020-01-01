@@ -12,9 +12,10 @@ export const initialState = {
   dialog: {
     open: false,
     type: null,
-    value: null,
+    value: 0,
     maxValue: null
-  }
+  },
+  status: {}
 };
 
 export default function Home(state = initialState, action) {
@@ -44,6 +45,8 @@ export default function Home(state = initialState, action) {
       return { ...state, dialog: { ...state.dialog, value: payload } };
     case actionTypes.STOP_VIDEO:
       return { ...state, isPlaying: false };
+    case actionTypes.HANDLE_CANVAS_CLICK:
+      return { ...state, status: payload };
     default:
       return state;
   }
