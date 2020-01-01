@@ -9,21 +9,30 @@ const make = (state, props) => (state ? state.Lounge : {});
 export const makeVideoFilePath = createSelector(
   make,
   state => {
-    if (!state) return initialState;
-    if (!state.videoFilePath) return '';
+    if (state) {
+      if (state.videoFilePath) {
+        return {
+          videoFilePath: state.videoFilePath,
+          videoFileName: path.basename(state.videoFilePath)
+        };
+      }
+    }
     return {
-      videoFilePath: state.videoFilePath,
-      videoFileName: path.basename(state.videoFilePath)
+      videoFilePath: initialState.videoFilePath,
+      videoFileName: ''
     };
   }
 );
 
 export const makeVideoCapture = createSelector(
   make,
-  state => {
-    if (!state) return '';
-    if (!state.videoCapture) return '';
-    const { vCap, width, height, FPS, length, ratio, dWidth, dHeight } = state;
-    return { vCap, width, height, FPS, length, ratio, dWidth, dHeight };
-  }
+  state =>
+    state
+      ? { vCap: state.vCap, ...state.vCapPackage }
+      : { vCap: initialState.vCap }
+);
+
+export const makeCtx = createSelector(
+  make,
+  state => (state ? state.ctx : initialState.ctx)
 );

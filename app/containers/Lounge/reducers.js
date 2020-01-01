@@ -3,7 +3,9 @@
 import { actionTypes } from './actions';
 
 export const initialState = {
-  videoFilePath: ''
+  videoFilePath: '',
+  vCap: null,
+  vCapPackage: {}
 };
 
 export default function Home(state = initialState, action) {
@@ -12,6 +14,12 @@ export default function Home(state = initialState, action) {
   switch (type) {
     case actionTypes.SELECT_NEW_VIDEO:
       return { ...state, ...payload };
+    case actionTypes.SEND_CANVAS:
+      return {
+        ...state,
+        canvasRef: payload,
+        ctx: () => payload.current.getContext('2d')
+      };
     default:
       return state;
   }
