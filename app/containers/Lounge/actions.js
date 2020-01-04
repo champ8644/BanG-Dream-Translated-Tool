@@ -3,12 +3,11 @@
 import { maxHeight, maxWidth } from './constants';
 
 import Queue from '../../classes/Queue';
+import XLSX from 'xlsx';
 import cv from 'opencv4nodejs';
 import path from 'path';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
-
-// import xlsx from 'xlsx';
 
 const { dialog } = remote;
 const { app } = remote;
@@ -550,12 +549,15 @@ export function exporting() {
       const pt2 = { x: rect.x + width, y: rect.y + height };
       const center = { x: (pt1.x + pt2.x) / 2, y: (pt1.y + pt2.y) / 2 };
       return {
-        rect,
-        center,
-        pt1,
-        pt2,
+        centerX: center.x,
+        centerY: center.y,
+        left: pt1.x,
+        top: pt1.y,
+        right: pt2.x,
+        bottom: pt2.y,
         width,
         height,
+        area: width * height,
         ms,
         frame
       };
@@ -593,5 +595,25 @@ export function exporting() {
       trueOutput.push(makeObjOutput(i, pickKey));
       prevPt = rectToCenterPt(arr[pickKey]);
     }
+    const header = [
+      'frame',
+      'ms',
+      'left',
+      'top',
+      'right',
+      'bottom',
+      'centerX',
+      'centerY',
+      'width',
+      'height',
+      'area'
+    ];
+    const userChosenPath = dialog.showSaveDialog({
+      filters: [{ name: 'Excel files', extensions: ['xlsx'] }]
+    });
+    const worksheet = XLSX.utils.json_to_sheet(trueOutput, { header });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'BanG Dream');
+    XLSX.writeFile(workbook, userChosenPath);
   };
 }
