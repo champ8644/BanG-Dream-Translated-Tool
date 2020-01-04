@@ -517,7 +517,7 @@ export function exporting() {
       vCap,
       vCapPackage: { ratio, putFrame }
     } = getState().Lounge;
-    const [beginTime, endTime] = [200, 400];
+    const [beginTime, endTime] = [1980, 2220];
     let maxArea = 0;
     let maxItemIndex;
     let maxArrayIndex;
@@ -600,7 +600,7 @@ export function exporting() {
         let minDist = 999999999;
         let pickKey;
         for (let j = 0; j < arr.length; j++) {
-          const dist = findDist(orgPt, rectToCenterPt(arr[j]));
+          const dist = findDist(prevPt, rectToCenterPt(arr[j]));
           if (minDist > dist) {
             minDist = dist;
             pickKey = j;
