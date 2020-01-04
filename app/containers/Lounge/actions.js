@@ -8,6 +8,8 @@ import path from 'path';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
 
+// import xlsx from 'xlsx';
+
 const { dialog } = remote;
 const { app } = remote;
 
@@ -160,7 +162,7 @@ export function handleInputFrame(e) {
 
 function rewindOneFrame(vCap) {
   let currentFrame = vCap.get(cv.CAP_PROP_POS_FRAMES);
-  if (currentFrame - 1 >= 0) currentFrame -= 1;
+  if (currentFrame - 1 >= 0) currentFrame--;
   else currentFrame = 0;
   setFrameByType(vCap, currentFrame, 'frame');
 }
@@ -377,6 +379,7 @@ function findTextBubble(frame) {
     .gaussianBlur(new cv.Size(3, 3), 0)
     .threshold(240, 255, cv.THRESH_BINARY)
     .findContours(cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+  const outObj = [];
   contours.forEach(item => {
     // if (item.area > 5000) {
     const peri = item.arcLength(true);
@@ -385,6 +388,7 @@ function findTextBubble(frame) {
       const approxContour = new cv.Contour(approx);
       if (isFinalContour(approxContour)) {
         const finalRect = approxContour.boundingRect();
+        outObj.push(finalRect);
         frame.drawContours([approx], -1, blue, 1);
         frame.drawContours([item.getPoints()], -1, green, 1);
         frame.drawRectangle(item.boundingRect(), green, 1);
@@ -403,6 +407,7 @@ function findTextBubble(frame) {
       // }
     }
   });
+  return outObj;
 }
 
 export function handleCanvasClick(_event) {
@@ -492,3 +497,101 @@ export function handleInputChange(e) {
 //     };
 //   };
 // }
+
+function rectToCenterPt(rect) {
+  return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+}
+
+function findDist(pt1, pt2) {
+  return (pt1.x - pt2.x) * (pt1.x - pt2.x) + (pt1.y - pt2.y) * (pt1.y - pt2.y);
+}
+
+export function exporting() {
+  return async (dispatch, getState) => {
+    const {
+      canvasRef,
+      vCap,
+      vCapPackage: { ratio, current }
+      // valueSlider
+    } = getState().Lounge;
+    const [beginTime, endTime] = [200, 400];
+    let maxArea = 0;
+    let maxItemIndex;
+    let maxArrayIndex;
+    setFrameByType(vCap, beginTime, 'frame');
+    const outArr = [];
+    for (let i = beginTime; i < endTime; i++) {
+      const { isPlaying } = getState().Lounge;
+      if (!isPlaying) return;
+      dispatch(updateFrame(current));
+      const obj = { ms: current.ms(), frame: current.frame() };
+      const frame = vCap.read();
+      if (frame.empty) return false;
+      obj.arr = findTextBubble(frame);
+      outArr.push(obj);
+      for (let j = 0; j < obj.arr.length; j++) {
+        const item = obj.arr[j];
+        const area = item.width * item.height;
+        if (maxArea < area) {
+          maxArea = area;
+          maxItemIndex = j;
+          maxArrayIndex = outArr.length - 1;
+        }
+      }
+      putImage(canvasRef, frame, ratio);
+      frame.release();
+    }
+    const trueOutput = [];
+    const makeObjOutput = (keyFrame, keyRect) => {
+      const { arr, ms, frame } = outArr[keyFrame];
+      const rect = arr[keyRect];
+      const { width, height } = rect;
+      const pt1 = { x: rect.x, y: rect.y };
+      const pt2 = { x: rect.x + width, y: rect.y + height };
+      const center = { x: (pt1.x + pt2.x) / 2, y: (pt1.y + pt2.y) / 2 };
+      return {
+        rect,
+        center,
+        pt1,
+        pt2,
+        width,
+        height,
+        ms,
+        frame
+      };
+    };
+    trueOutput.push(makeObjOutput(maxArrayIndex, maxItemIndex));
+    const orgPt = trueOutput[0].center;
+    let prevPt = orgPt;
+    // console.log('trueOutput: ', { trueOutput, maxArrayIndex, maxItemIndex });
+    for (let i = maxArrayIndex - 1; i > 0; i--) {
+      const { arr } = outArr[i];
+      let minDist = 999999999;
+      let pickKey;
+      for (let j = 0; j < arr.length; j++) {
+        const dist = findDist(prevPt, rectToCenterPt(arr[j]));
+        if (minDist > dist) {
+          minDist = dist;
+          pickKey = j;
+        }
+      }
+      trueOutput.unshift(makeObjOutput(i, pickKey));
+      prevPt = rectToCenterPt(arr[pickKey]);
+    }
+    prevPt = orgPt;
+    for (let i = maxArrayIndex + 1; i < outArr.length; i++) {
+      const { arr } = outArr[i];
+      let minDist = 999999999;
+      let pickKey;
+      for (let j = 0; j < arr.length; j++) {
+        const dist = findDist(orgPt, rectToCenterPt(arr[j]));
+        if (minDist > dist) {
+          minDist = dist;
+          pickKey = j;
+        }
+      }
+      trueOutput.push(makeObjOutput(i, pickKey));
+      prevPt = rectToCenterPt(arr[pickKey]);
+    }
+  };
+}

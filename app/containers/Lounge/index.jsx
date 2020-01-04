@@ -97,7 +97,8 @@ class Lounge extends Component {
       valueSlider,
       handleChangeSlider,
       handleInputChange,
-      handleInputBlur
+      handleInputBlur,
+      exporting
     } = this.props;
     return (
       <div className={classes.root}>
@@ -204,6 +205,9 @@ class Lounge extends Component {
                 </Grid>
               </Grid>
             </Paper>
+            <Button className={classes.btn} onClick={exporting}>
+              Export
+            </Button>
             <Grid container>
               <Grid item>
                 <canvas
