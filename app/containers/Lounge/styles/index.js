@@ -37,6 +37,11 @@ export const styles = theme => {
       padding: theme.spacing(2),
       margin: theme.spacing(2)
     },
+    PaperSlider: {
+      width: '500px',
+      padding: theme.spacing(2),
+      margin: theme.spacing(2)
+    },
     paper1: {
       display: 'flex',
       justifyContent: 'center',

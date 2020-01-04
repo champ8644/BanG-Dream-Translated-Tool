@@ -15,7 +15,8 @@ export const initialState = {
     value: 0,
     maxValue: null
   },
-  status: {}
+  status: {},
+  valueSlider: 0
 };
 
 export default function Home(state = initialState, action) {
@@ -47,6 +48,8 @@ export default function Home(state = initialState, action) {
       return { ...state, isPlaying: false };
     case actionTypes.HANDLE_CANVAS_CLICK:
       return { ...state, status: payload };
+    case actionTypes.HANDLE_CHANGE_SLIDER:
+      return { ...state, valueSlider: payload };
     default:
       return state;
   }

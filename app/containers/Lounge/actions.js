@@ -2,6 +2,7 @@
 
 import { maxHeight, maxWidth } from './constants';
 
+import Queue from '../../classes/Queue';
 import cv from 'opencv4nodejs';
 import path from 'path';
 import prefixer from '../../utils/reducerPrefixer';
@@ -22,7 +23,8 @@ const actionTypesList = [
   'HANDLE_CANCEL_DIALOG',
   'HANDLE_CONFIRM_DIALOG',
   'HANDLE_OPEN_DIALOG',
-  'HANDLE_CANVAS_CLICK'
+  'HANDLE_CANVAS_CLICK',
+  'HANDLE_CHANGE_SLIDER'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -67,11 +69,15 @@ function selectNewVideo(path) {
       },
       ms: () => vCap.get(cv.CAP_PROP_POS_MSEC)
     };
-    const putFrame = dispatch => {
+    const putFrame = (dispatch, _frame) => {
       dispatch(updateFrame(current));
-      const frame = vCap.read();
+      let frame;
+      if (_frame) frame = _frame;
+      else frame = vCap.read();
       if (frame.empty) return false;
+      findTextBubble(frame);
       putImage(canvasRef, frame, ratio);
+      frame.release();
     };
     await dispatch({
       type: actionTypes.SELECT_NEW_VIDEO,
@@ -106,6 +112,8 @@ function putImage(canvasRef, _frame, ratio) {
     frame.cols,
     frame.rows
   );
+  frame.release();
+
   canvasRef.current.getContext('2d').putImageData(imgData, 0, 0);
 }
 
@@ -152,7 +160,7 @@ export function handleInputFrame(e) {
 
 function rewindOneFrame(vCap) {
   let currentFrame = vCap.get(cv.CAP_PROP_POS_FRAMES);
-  if (currentFrame - 1 >= 0) currentFrame -= 2;
+  if (currentFrame - 1 >= 0) currentFrame -= 1;
   else currentFrame = 0;
   setFrameByType(vCap, currentFrame, 'frame');
 }
@@ -305,22 +313,130 @@ export function handleKeyDownDialog(e) {
   };
 }
 
-export function handleCanvasClick(event) {
+// eslint-disable-next-line no-unused-vars
+async function findBorder(frame, initX, initY, putFrame) {
+  const queue = new Queue();
+  const visitX = {};
+  const visitY = {};
+  const addVisit = (x, y) => {
+    if (!visitX[x]) visitX[x] = {};
+    if (!visitY[y]) visitY[y] = {};
+    visitX[x][y] = true;
+    visitY[y][x] = true;
+  };
+  const dir = [
+    { x: -1, y: 0 },
+    { x: 0, y: -1 },
+    { x: 1, y: 0 },
+    { x: 0, y: 1 }
+  ];
+  const isColorBright = (x, y) => {
+    const [b, g, r] = frame.atRaw(y, x);
+    const threshold = 235;
+    return threshold < b && threshold < g && threshold < r;
+  };
+  const isValid = (x, y) => {
+    if (x < 0 || y < 0) return false;
+    if (frame.cols <= x || frame.rows <= y) return false;
+    if (visitX[x]) {
+      if (visitX[x][y]) return false;
+    }
+    return isColorBright(x, y);
+  };
+  queue.enqueue({ x: initX, y: initY });
+
+  while (queue.getLength()) {
+    const { x, y } = queue.dequeue();
+    addVisit(x, y);
+    frame.set(y, x, [255, 0, 0]);
+    putFrame(frame);
+    dir.forEach(({ x: addX, y: addY }) => {
+      const _x = x + addX;
+      const _y = y + addY;
+      if (isValid(_x, _y)) queue.enqueue({ x: _x, y: _y });
+    });
+  }
+}
+
+function isFinalContour(contour) {
+  if (contour.width < 130) return false;
+  if (contour.height < 130) return false;
+  const rect = contour.boundingRect();
+  if (rect.width <= rect.height) return false;
+  const percent = (contour.area / rect.width / rect.height) * 100;
+  if (percent < 80) return false;
+  return true;
+}
+
+function findTextBubble(frame) {
+  const red = new cv.Vec(0, 0, 255);
+  const green = new cv.Vec(0, 255, 0);
+  const blue = new cv.Vec(255, 0, 0);
+  const contours = frame
+    .cvtColor(cv.COLOR_RGB2GRAY)
+    .gaussianBlur(new cv.Size(3, 3), 0)
+    .threshold(240, 255, cv.THRESH_BINARY)
+    .findContours(cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+  contours.forEach(item => {
+    // if (item.area > 5000) {
+    const peri = item.arcLength(true);
+    const approx = item.approxPolyDP(0.04 * peri, true);
+    if (approx.length === 4) {
+      const approxContour = new cv.Contour(approx);
+      if (isFinalContour(approxContour)) {
+        const finalRect = approxContour.boundingRect();
+        frame.drawContours([approx], -1, blue, 1);
+        frame.drawContours([item.getPoints()], -1, green, 1);
+        frame.drawRectangle(item.boundingRect(), green, 1);
+        frame.drawRectangle(finalRect, red, 3);
+        frame.drawCircle(
+          new cv.Point(
+            finalRect.x + finalRect.width / 2,
+            finalRect.y + finalRect.height / 2
+          ),
+          5,
+          red,
+          10,
+          cv.FILLED
+        );
+      }
+      // }
+    }
+  });
+}
+
+export function handleCanvasClick(_event) {
   return (dispatch, getState) => {
     const {
       canvasRef,
       vCap,
-      vCapPackage: { ratio }
+      vCapPackage: { ratio, putFrame }
+      // valueSlider
     } = getState().Lounge;
+    let event = {};
+    const {
+      left: offsetLeft,
+      top: offsetTop
+    } = canvasRef.current.getBoundingClientRect();
+    if (_event) event = _event;
+    else
+      event = {
+        clientX: offsetLeft,
+        clientY: offsetTop
+      };
     let { clientX, clientY } = event;
-    const { offsetLeft, offsetTop } = canvasRef.current;
     clientX -= offsetLeft;
     clientY -= offsetTop;
     clientX /= ratio;
     clientY /= ratio;
+    rewindOneFrame(vCap);
     const frame = vCap.read();
     const [b, g, r] = frame.atRaw(clientY, clientX);
-    rewindOneFrame(vCap);
+    findTextBubble(frame);
+    const green = new cv.Vec(0, 255, 0);
+    frame.drawCircle(new cv.Point(clientX, clientY), 5, green, 10, cv.FILLED);
+    putFrame(dispatch, frame);
+    frame.release();
     dispatch({
       type: actionTypes.HANDLE_CANVAS_CLICK,
       payload: { clientX, clientY, show: true, color: fullColorHex(r, g, b) }
@@ -342,3 +458,37 @@ function fullColorHex(r, g, b) {
   const blue = rgbToHex(b);
   return `#${red}${green}${blue}`;
 }
+
+function changeSlider(value) {
+  return dispatch => {
+    dispatch({
+      type: actionTypes.HANDLE_CHANGE_SLIDER,
+      payload: value
+    });
+    dispatch(handleCanvasClick());
+  };
+}
+
+export function handleChangeSlider(e, value) {
+  return changeSlider(value);
+}
+
+export function handleInputChange(e) {
+  return dispatch => {
+    if (e.target.value === '') return changeSlider(0);
+    let num = parseFloat(e.target.value);
+    if (isNaN(num)) return;
+    if (num < 0) num = 0;
+    else if (num > 100) num = 100;
+    return changeSlider(num);
+  };
+}
+
+// export function handleInputBlur(e, value) {
+//   return (dispatch, getState) => {
+//     return {
+//       type: actionTypes.HANDLE_INPUT_BLUR,
+//       payload: value
+//     };
+//   };
+// }

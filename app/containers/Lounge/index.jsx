@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import {
   makeDialogData,
   makeFrameData,
+  makeSlider,
   makeStatusData,
   makeVideoCapture,
   makeVideoFilePath
@@ -22,12 +23,14 @@ import FastRewindIcon from '@material-ui/icons/FastRewind';
 import Grid from '@material-ui/core/Grid';
 import { Helmet } from 'react-helmet';
 import IconButton from '@material-ui/core/IconButton';
+import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Paper from '@material-ui/core/Paper';
 import PieChartIcon from '@material-ui/icons/PieChart';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
+import Slider from '@material-ui/core/Slider';
 import StopIcon from '@material-ui/icons/Stop';
 import TextField from '@material-ui/core/TextField';
 import TheatersIcon from '@material-ui/icons/Theaters';
@@ -48,7 +51,8 @@ const mapStateToProps = (state, props) => {
     ...makeVideoCapture(state),
     ...makeFrameData(state),
     dialog: makeDialogData(state),
-    status: makeStatusData(state)
+    status: makeStatusData(state),
+    valueSlider: makeSlider(state)
   };
 };
 
@@ -89,7 +93,11 @@ class Lounge extends Component {
       ms,
       percent,
       FPS,
-      status
+      status,
+      valueSlider,
+      handleChangeSlider,
+      handleInputChange,
+      handleInputBlur
     } = this.props;
     return (
       <div className={classes.root}>
@@ -166,6 +174,36 @@ class Lounge extends Component {
               label={`${formatNumber(percent)} / 100 %`}
               variant='outlined'
             />
+            <Paper className={classes.PaperSlider}>
+              <Grid container spacing={2} alignItems='center'>
+                <Grid item>
+                  <Typography id='discrete-slider' gutterBottom>
+                    Slider-1
+                  </Typography>
+                </Grid>
+                <Grid item xs>
+                  <Slider
+                    value={typeof valueSlider === 'number' ? valueSlider : 0}
+                    onChange={handleChangeSlider}
+                  />
+                </Grid>
+                <Grid item>
+                  <Input
+                    id='slider-1'
+                    value={valueSlider}
+                    margin='dense'
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
+                    inputProps={{
+                      step: 10,
+                      min: 0,
+                      max: 100,
+                      type: 'number'
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
             <Grid container>
               <Grid item>
                 <canvas
@@ -176,22 +214,24 @@ class Lounge extends Component {
                   onMouseDown={handleCanvasClick}
                 />
               </Grid>
-              <Grid item>
-                {status.show && (
-                  <Paper className={classes.Papers}>
-                    <Typography variant='h6' className={classes.text1}>
-                      Coord: {`${status.clientX},${status.clientY}`}
-                    </Typography>
-                    <Typography
-                      variant='h6'
-                      className={classes.text1}
-                      style={{ backgroundColor: status.color }}
-                    >
-                      Color: {`${status.color}`}
-                    </Typography>
-                  </Paper>
-                )}
-              </Grid>
+              {status.show && (
+                <>
+                  <Grid item>
+                    <Paper className={classes.Papers}>
+                      <Typography variant='h6' className={classes.text1}>
+                        Coord: {`${status.clientX},${status.clientY}`}
+                      </Typography>
+                      <Typography
+                        variant='h6'
+                        className={classes.text1}
+                        style={{ backgroundColor: status.color }}
+                      >
+                        Color: {`${status.color}`}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                </>
+              )}
             </Grid>
           </>
         )}

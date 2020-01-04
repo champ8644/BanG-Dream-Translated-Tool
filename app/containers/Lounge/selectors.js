@@ -57,3 +57,8 @@ export const makeStatusData = createSelector(
   make,
   state => (state ? state.status : initialState.status)
 );
+
+export const makeSlider = createSelector(
+  make,
+  state => (state ? state.valueSlider : initialState.valueSlider)
+);
