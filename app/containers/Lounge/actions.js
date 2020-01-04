@@ -73,7 +73,7 @@ function selectNewVideo(path) {
       },
       ms: () => vCap.get(cv.CAP_PROP_POS_MSEC)
     };
-    const putFrame = (dispatch, _frame) => {
+    const putFrame = _frame => dispatch => {
       dispatch(updateFrame(current));
       let frame;
       if (_frame) frame = _frame;
@@ -81,8 +81,10 @@ function selectNewVideo(path) {
       if (frame.empty) return false;
       findTextBubble(frame);
       putImage(canvasRef, frame, ratio);
+      if (_frame) return true;
       frame.release();
     };
+
     await dispatch({
       type: actionTypes.SELECT_NEW_VIDEO,
       payload: {
@@ -101,7 +103,7 @@ function selectNewVideo(path) {
         }
       }
     });
-    putFrame(dispatch);
+    dispatch(putFrame());
   };
 }
 
@@ -131,7 +133,7 @@ export function startVideo() {
     const playVideo = async () => {
       const { isPlaying } = getState().Lounge;
       if (!isPlaying) return;
-      putFrame(dispatch);
+      dispatch(putFrame());
       const delay = 1000 / FPS - (Date.now() - begin);
       setTimeout(playVideo, delay);
     };
@@ -179,7 +181,7 @@ export function previousFrame() {
     if (currentFrame - 1 >= 0) currentFrame -= 2;
     else currentFrame = 0;
     setFrameByType(vCap, currentFrame, 'frame');
-    putFrame(dispatch);
+    dispatch(putFrame());
   };
 }
 
@@ -188,7 +190,7 @@ export function nextFrame() {
     const {
       vCapPackage: { putFrame }
     } = getState().Lounge;
-    putFrame(dispatch);
+    dispatch(putFrame());
   };
 }
 
@@ -202,7 +204,7 @@ export function rewindFrame() {
     if (currentFrame - FPS - 1 >= 0) currentFrame -= FPS + 1;
     else currentFrame = 0;
     setFrameByType(vCap, currentFrame, 'frame');
-    putFrame(dispatch);
+    dispatch(putFrame());
   };
 }
 
@@ -216,7 +218,7 @@ export function skipFrame() {
     if (currentFrame + FPS <= length) currentFrame += FPS - 1;
     else currentFrame = length;
     setFrameByType(vCap, currentFrame, 'frame');
-    putFrame(dispatch);
+    dispatch(putFrame());
   };
 }
 
@@ -305,7 +307,7 @@ export function handleConfirmDialog() {
       dialog.type === 'percent' ? dialog.value / 100 : dialog.value,
       dialog.type
     );
-    putFrame(dispatch);
+    dispatch(putFrame());
   };
 }
 
@@ -442,7 +444,7 @@ export function handleCanvasClick(_event) {
     findTextBubble(frame);
     const green = new cv.Vec(0, 255, 0);
     frame.drawCircle(new cv.Point(clientX, clientY), 5, green, 10, cv.FILLED);
-    putFrame(dispatch, frame);
+    dispatch(putFrame(frame));
     frame.release();
     dispatch({
       type: actionTypes.HANDLE_CANVAS_CLICK,
@@ -513,21 +515,25 @@ export function exporting() {
     const {
       canvasRef,
       vCap,
-      vCapPackage: { ratio, current }
-      // valueSlider
+      vCapPackage: { ratio, putFrame }
     } = getState().Lounge;
     const [beginTime, endTime] = [200, 400];
     let maxArea = 0;
     let maxItemIndex;
     let maxArrayIndex;
+    dispatch(startProgress(endTime - beginTime + 1));
     setFrameByType(vCap, beginTime, 'frame');
     const outArr = [];
     for (let i = beginTime; i < endTime; i++) {
-      const { isPlaying } = getState().Lounge;
-      if (!isPlaying) return;
-      dispatch(updateFrame(current));
-      const obj = { ms: current.ms(), frame: current.frame() };
+      const {
+        progressFull,
+        vCapPackage: { current }
+      } = getState().Lounge;
+      if (!progressFull) return;
       const frame = vCap.read();
+
+      dispatch(putFrame(frame));
+      const obj = { ms: current.ms(), frame: current.frame() };
       if (frame.empty) return false;
       obj.arr = findTextBubble(frame);
       outArr.push(obj);
@@ -542,6 +548,7 @@ export function exporting() {
       }
       putImage(canvasRef, frame, ratio);
       frame.release();
+      dispatch(addProgress(1));
     }
     const trueOutput = [];
     const makeObjOutput = (keyFrame, keyRect) => {
@@ -554,10 +561,10 @@ export function exporting() {
       return {
         centerX: center.x,
         centerY: center.y,
-        left: pt1.x,
-        top: pt1.y,
-        right: pt2.x,
-        bottom: pt2.y,
+        left: center.x - (width / 2) * 0.9,
+        top: center.y - (height / 2) * 0.9,
+        right: center.x + (width / 2) * 0.9,
+        bottom: center.y + (height / 2) * 0.9,
         width,
         height,
         area: width * height,
@@ -566,37 +573,42 @@ export function exporting() {
       };
     };
     trueOutput.push(makeObjOutput(maxArrayIndex, maxItemIndex));
-    const orgPt = trueOutput[0].center;
+    const orgPt = { x: trueOutput[0].centerX, y: trueOutput[0].centerY };
+
     let prevPt = orgPt;
     // console.log('trueOutput: ', { trueOutput, maxArrayIndex, maxItemIndex });
     for (let i = maxArrayIndex - 1; i > 0; i--) {
       const { arr } = outArr[i];
-      let minDist = 999999999;
-      let pickKey;
-      for (let j = 0; j < arr.length; j++) {
-        const dist = findDist(prevPt, rectToCenterPt(arr[j]));
-        if (minDist > dist) {
-          minDist = dist;
-          pickKey = j;
+      if (arr.length > 0) {
+        let minDist = 999999999;
+        let pickKey;
+        for (let j = 0; j < arr.length; j++) {
+          const dist = findDist(prevPt, rectToCenterPt(arr[j]));
+          if (minDist > dist) {
+            minDist = dist;
+            pickKey = j;
+          }
         }
+        trueOutput.unshift(makeObjOutput(i, pickKey));
+        prevPt = rectToCenterPt(arr[pickKey]);
       }
-      trueOutput.unshift(makeObjOutput(i, pickKey));
-      prevPt = rectToCenterPt(arr[pickKey]);
     }
     prevPt = orgPt;
     for (let i = maxArrayIndex + 1; i < outArr.length; i++) {
       const { arr } = outArr[i];
-      let minDist = 999999999;
-      let pickKey;
-      for (let j = 0; j < arr.length; j++) {
-        const dist = findDist(orgPt, rectToCenterPt(arr[j]));
-        if (minDist > dist) {
-          minDist = dist;
-          pickKey = j;
+      if (arr.length > 0) {
+        let minDist = 999999999;
+        let pickKey;
+        for (let j = 0; j < arr.length; j++) {
+          const dist = findDist(orgPt, rectToCenterPt(arr[j]));
+          if (minDist > dist) {
+            minDist = dist;
+            pickKey = j;
+          }
         }
+        trueOutput.push(makeObjOutput(i, pickKey));
+        prevPt = rectToCenterPt(arr[pickKey]);
       }
-      trueOutput.push(makeObjOutput(i, pickKey));
-      prevPt = rectToCenterPt(arr[pickKey]);
     }
     const header = [
       'frame',
@@ -616,25 +628,26 @@ export function exporting() {
     });
     const worksheet = XLSX.utils.json_to_sheet(trueOutput, { header });
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'BanG Dream');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'BanG_Dream');
     XLSX.writeFile(workbook, userChosenPath);
+    dispatch(stopProgress());
   };
 }
 
-export function stopProgress() {
+function stopProgress() {
   return {
     type: actionTypes.STOP_PROGRESS
   };
 }
 
-export function startProgress(maxVal) {
+function startProgress(maxVal) {
   return {
     type: actionTypes.START_PROGRESS,
     payload: maxVal
   };
 }
 
-export function addProgress(val) {
+function addProgress(val) {
   return {
     type: actionTypes.ADD_PROGRESS,
     payload: val

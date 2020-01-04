@@ -6,6 +6,8 @@ import React, { Component } from 'react';
 import {
   makeDialogData,
   makeFrameData,
+  makeProgress,
+  makeProgressBar,
   makeSlider,
   makeStatusData,
   makeVideoCapture,
@@ -51,6 +53,8 @@ const mapStateToProps = (state, props) => {
     ...makeVideoFilePath(state),
     ...makeVideoCapture(state),
     ...makeFrameData(state),
+    progress: makeProgress(state),
+    progressFull: makeProgressBar(state),
     dialog: makeDialogData(state),
     status: makeStatusData(state),
     valueSlider: makeSlider(state)
@@ -214,7 +218,7 @@ class Lounge extends Component {
             {progressFull > 0 && (
               <LinearProgress
                 variant='determinate'
-                value={progress / progressFull}
+                value={(progress / progressFull) * 100}
               />
             )}
             <Grid container>

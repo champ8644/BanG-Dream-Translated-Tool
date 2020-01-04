@@ -63,13 +63,12 @@ export const makeSlider = createSelector(
   state => (state ? state.valueSlider : initialState.valueSlider)
 );
 
+export const makeProgress = createSelector(
+  make,
+  state => (state ? state.progress : initialState.progress)
+);
+
 export const makeProgressBar = createSelector(
   make,
-  state =>
-    state
-      ? { progress: state.progress, progressFull: state.progressFull }
-      : {
-          progress: initialState.progress,
-          progressFull: initialState.progressFull
-        }
+  state => (state ? state.progressFull : initialState.progressFull)
 );
