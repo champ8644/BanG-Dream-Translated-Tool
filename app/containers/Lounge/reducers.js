@@ -16,7 +16,9 @@ export const initialState = {
     maxValue: null
   },
   status: {},
-  valueSlider: 0
+  valueSlider: 0,
+  progress: null,
+  progressFull: null
 };
 
 export default function Home(state = initialState, action) {
@@ -50,6 +52,12 @@ export default function Home(state = initialState, action) {
       return { ...state, status: payload };
     case actionTypes.HANDLE_CHANGE_SLIDER:
       return { ...state, valueSlider: payload };
+    case actionTypes.STOP_PROGRES:
+      return { ...state, progressFull: null, progress: null };
+    case actionTypes.START_PROGRESS:
+      return { ...state, progressFull: payload, progress: 0 };
+    case actionTypes.ADD_PROGRESS:
+      return { ...state, progress: state.progress + payload };
     default:
       return state;
   }

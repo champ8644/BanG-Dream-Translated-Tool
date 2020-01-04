@@ -25,7 +25,10 @@ const actionTypesList = [
   'HANDLE_CONFIRM_DIALOG',
   'HANDLE_OPEN_DIALOG',
   'HANDLE_CANVAS_CLICK',
-  'HANDLE_CHANGE_SLIDER'
+  'HANDLE_CHANGE_SLIDER',
+  'STOP_PROGRESS',
+  'START_PROGRESS',
+  'ADD_PROGRESS'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -615,5 +618,25 @@ export function exporting() {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'BanG Dream');
     XLSX.writeFile(workbook, userChosenPath);
+  };
+}
+
+export function stopProgress() {
+  return {
+    type: actionTypes.STOP_PROGRESS
+  };
+}
+
+export function startProgress(maxVal) {
+  return {
+    type: actionTypes.START_PROGRESS,
+    payload: maxVal
+  };
+}
+
+export function addProgress(val) {
+  return {
+    type: actionTypes.ADD_PROGRESS,
+    payload: val
   };
 }

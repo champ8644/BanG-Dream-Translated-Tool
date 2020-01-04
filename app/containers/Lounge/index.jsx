@@ -25,6 +25,7 @@ import { Helmet } from 'react-helmet';
 import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 import PieChartIcon from '@material-ui/icons/PieChart';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
@@ -98,7 +99,9 @@ class Lounge extends Component {
       handleChangeSlider,
       handleInputChange,
       handleInputBlur,
-      exporting
+      exporting,
+      progress,
+      progressFull
     } = this.props;
     return (
       <div className={classes.root}>
@@ -208,6 +211,12 @@ class Lounge extends Component {
             <Button className={classes.btn} onClick={exporting}>
               Export
             </Button>
+            {progressFull > 0 && (
+              <LinearProgress
+                variant='determinate'
+                value={progress / progressFull}
+              />
+            )}
             <Grid container>
               <Grid item>
                 <canvas
