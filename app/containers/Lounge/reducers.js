@@ -18,7 +18,8 @@ export const initialState = {
   status: {},
   valueSlider: 0,
   progress: null,
-  progressFull: null
+  progressFull: null,
+  importedFile: null
 };
 
 export default function Home(state = initialState, action) {
@@ -58,6 +59,8 @@ export default function Home(state = initialState, action) {
       return { ...state, progressFull: payload, progress: 0 };
     case actionTypes.ADD_PROGRESS:
       return { ...state, progress: state.progress + payload };
+    case actionTypes.IMPORTING:
+      return { ...state, importedFile: payload };
     default:
       return state;
   }

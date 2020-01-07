@@ -1,9 +1,12 @@
 'use strict';
 
+/* eslint-disable no-console */
+
 import { maxHeight, maxWidth } from './constants';
 
 import Queue from '../../classes/Queue';
 import XLSX from 'xlsx';
+import _ from 'lodash';
 import cv from 'opencv4nodejs';
 import path from 'path';
 import prefixer from '../../utils/reducerPrefixer';
@@ -28,7 +31,8 @@ const actionTypesList = [
   'HANDLE_CHANGE_SLIDER',
   'STOP_PROGRESS',
   'START_PROGRESS',
-  'ADD_PROGRESS'
+  'ADD_PROGRESS',
+  'IMPORTING'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -474,7 +478,7 @@ function changeSlider(value) {
       type: actionTypes.HANDLE_CHANGE_SLIDER,
       payload: value
     });
-    dispatch(handleCanvasClick());
+    dispatch(importing());
   };
 }
 
@@ -559,6 +563,9 @@ export function exporting() {
       const pt2 = { x: rect.x + width, y: rect.y + height };
       const center = { x: (pt1.x + pt2.x) / 2, y: (pt1.y + pt2.y) / 2 };
       return {
+        pt1,
+        pt2,
+        center,
         centerX: center.x,
         centerY: center.y,
         left: center.x - (width / 2) * 0.9,
@@ -610,6 +617,21 @@ export function exporting() {
         prevPt = rectToCenterPt(arr[pickKey]);
       }
     }
+    /*
+    let ii = 200;
+    const contourY = trueOutput.map(item => {
+      return new cv.Point2(ii++, item.centerY);
+    });
+
+    rewindOneFrame(vCap);
+    const frame = vCap.read();
+    const blue = new cv.Vec(255, 0, 0);
+    frame.drawContours([contourY], -1, blue, 3);
+    dispatch(putFrame(frame));
+    frame.release();
+
+    console.log('trueOutput: ', trueOutput);
+*/
     const header = [
       'frame',
       'ms',
@@ -626,11 +648,208 @@ export function exporting() {
     const userChosenPath = dialog.showSaveDialog({
       filters: [{ name: 'Excel files', extensions: ['xlsx'] }]
     });
+    if (!userChosenPath) return;
     const worksheet = XLSX.utils.json_to_sheet(trueOutput, { header });
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'BanG_Dream');
     XLSX.writeFile(workbook, userChosenPath);
     dispatch(stopProgress());
+  };
+}
+
+export function importing() {
+  return async (dispatch, getState) => {
+    const {
+      vCap,
+      vCapPackage: { putFrame, FPS },
+      importedFile
+    } = getState().Lounge;
+    let data = importedFile;
+    if (!data) {
+      const o = await dialog.showOpenDialog({
+        properties: ['openFile'],
+        filters: [{ name: 'Excel Files', extensions: ['xls', 'xlsx', 'csv'] }]
+      });
+      const workbook = XLSX.readFile(o[0]);
+      const firstWorksheet = workbook.Sheets[workbook.SheetNames[0]];
+      data = XLSX.utils.sheet_to_json(firstWorksheet);
+      dispatch({
+        type: actionTypes.IMPORTING,
+        payload: data
+      });
+    }
+
+    const approxContour = _item => {
+      const item = new cv.Contour(_item);
+      const peri = item.arcLength(true);
+      const approx = item.approxPolyDP(0.02 * peri, true);
+      return approx;
+    };
+    const subtract = 1000;
+    const contourY = approxContour(
+      data.map(item => {
+        const out = new cv.Point2(item.frame - subtract, item.centerY);
+        return out;
+      })
+    );
+    const contourX = approxContour(
+      data.map(item => {
+        const out = new cv.Point2(item.frame - subtract, item.centerX);
+        return out;
+      })
+    );
+    const contourW = approxContour(
+      data.map(item => {
+        const out = new cv.Point2(item.frame - subtract, item.width);
+        return out;
+      })
+    );
+    const contourH = approxContour(
+      data.map(item => {
+        const out = new cv.Point2(item.frame - subtract, item.height);
+        return out;
+      })
+    );
+    rewindOneFrame(vCap);
+    const frame = vCap.read();
+    const blue = new cv.Vec(255, 0, 0);
+    const red = new cv.Vec(0, 0, 255);
+    const yellow = new cv.Vec(0, 255, 255);
+    const green = new cv.Vec(0, 255, 0);
+    const sumContour = {};
+    frame.drawPolylines([contourY], false, blue, 3);
+    console.log('contourY: ', contourY.length);
+    contourY.forEach(pt => {
+      frame.drawCircle(pt, 5, blue, 10, cv.FILLED);
+      const frameCount = pt.x + subtract;
+      if (!sumContour[frameCount]) sumContour[frameCount] = {};
+      sumContour[frameCount].centerY = pt.y;
+    });
+    for (let i = 1; i < contourY.length; i++) {
+      console.log(
+        (contourY[i].y - contourY[i - 1].x) /
+          (contourY[i].x - contourY[i - 1].x)
+      );
+    }
+    frame.drawPolylines([contourX], false, red, 3);
+    console.log('contourX: ', contourX.length);
+    for (let i = 1; i < contourX.length; i++) {
+      console.log(
+        (contourX[i].y - contourX[i - 1].x) /
+          (contourX[i].x - contourX[i - 1].x)
+      );
+    }
+    contourX.forEach(pt => {
+      frame.drawCircle(pt, 5, red, 10, cv.FILLED);
+      const frameCount = pt.x + subtract;
+      if (!sumContour[frameCount]) sumContour[frameCount] = {};
+      sumContour[frameCount].centerX = pt.y;
+    });
+    frame.drawPolylines([contourW], false, yellow, 3);
+    console.log('contourW: ', contourW.length);
+    for (let i = 1; i < contourW.length; i++) {
+      console.log(
+        (contourW[i].y - contourW[i - 1].x) /
+          (contourW[i].x - contourW[i - 1].x)
+      );
+    }
+    contourW.forEach(pt => {
+      frame.drawCircle(pt, 5, yellow, 10, cv.FILLED);
+      const frameCount = pt.x + subtract;
+      if (!sumContour[frameCount]) sumContour[frameCount] = {};
+      sumContour[frameCount].width = pt.y;
+    });
+    frame.drawPolylines([contourH], false, green, 3);
+    console.log('contourH: ', contourH.length);
+    for (let i = 1; i < contourH.length; i++) {
+      console.log(
+        (contourH[i].y - contourH[i - 1].x) /
+          (contourH[i].x - contourH[i - 1].x)
+      );
+    }
+    contourH.forEach(pt => {
+      frame.drawCircle(pt, 5, green, 10, cv.FILLED);
+      const frameCount = pt.x + subtract;
+      if (!sumContour[frameCount]) sumContour[frameCount] = {};
+      sumContour[frameCount].height = pt.y;
+    });
+
+    console.log(_.cloneDeep(sumContour));
+    let key = Object.keys(sumContour);
+    for (let i = 1; i < key.length; i++) {
+      sumContour[key[i]] = { ...sumContour[key[i - 1]], ...sumContour[key[i]] };
+    }
+    console.log(sumContour);
+
+    const findX0 = (x1, y1, x2, y2) =>
+      Math.ceil(x2 - ((x2 - x1) * y2) / (y2 - y1));
+    const findXN = (x1, y1, x2, y2) =>
+      Math.floor(x1 - ((x2 - x1) * y1) / (y2 - y1));
+    const interpolate = (x1, x2, dir) => {
+      if (dir < 0) {
+        const x0 = findX0(x1, sumContour[x1].height, x2, sumContour[x2].height);
+        const delta = (x2 - x0) / (x2 - x1);
+        const val = {};
+        Object.keys(sumContour[x1]).forEach(key => {
+          const y1 = sumContour[x1][key];
+          const y2 = sumContour[x2][key];
+          val[key] = y2 - (y2 - y1) * delta;
+        });
+        return [x0, val];
+      }
+      if (dir > 0) {
+        const xN = findXN(x1, sumContour[x1].height, x2, sumContour[x2].height);
+        const delta = (xN - x1) / (x2 - x1);
+        const val = {};
+        Object.keys(sumContour[x1]).forEach(key => {
+          const y1 = sumContour[x1][key];
+          const y2 = sumContour[x2][key];
+          val[key] = y1 + (y2 - y1) * delta;
+        });
+        return [xN, val];
+      }
+    };
+    const [key2, val] = interpolate(key[0], key[1], -1);
+    sumContour[key2] = val;
+    const [key3, val2] = interpolate(
+      key[key.length - 2],
+      key[key.length - 1],
+      1
+    );
+    sumContour[key3] = val2;
+    delete sumContour[key[0]];
+    delete sumContour[key[key.length - 1]];
+    console.log(sumContour, key);
+    key = Object.keys(sumContour);
+    const embrace = arr => {
+      return `{${arr.join()}}`;
+    };
+    let maxHeight = 0;
+    key.forEach(key => {
+      Object.keys(sumContour[key]).forEach(key2 => {
+        if (key2 === 'height' && maxHeight < sumContour[key][key2])
+          maxHeight = sumContour[key][key2];
+      });
+    });
+    const round3Dig = num => Math.round(num * 1000) / 1000;
+    const arr = [];
+    for (let i = 0; i < key.length; i++) {
+      const join = [
+        `t=${round3Dig((key[i] * 1000) / FPS)}`,
+        `x=${round3Dig(sumContour[key[i]].centerX)}`,
+        `y=${round3Dig(sumContour[key[i]].centerY)}`,
+        `w=${round3Dig(sumContour[key[i]].width)}`,
+        `h=${round3Dig(sumContour[key[i]].height)}`,
+        `p=${round3Dig((sumContour[key[i]].height * 100) / maxHeight)}`
+      ];
+      arr.push(embrace(join));
+    }
+    const output = embrace(arr);
+    console.log('output: ', output);
+    // delete sumContour[key[0]];
+
+    dispatch(putFrame(frame));
+    frame.release();
   };
 }
 

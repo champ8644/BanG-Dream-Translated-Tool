@@ -105,7 +105,8 @@ class Lounge extends Component {
       handleInputBlur,
       exporting,
       progress,
-      progressFull
+      progressFull,
+      importing
     } = this.props;
     return (
       <div className={classes.root}>
@@ -214,6 +215,9 @@ class Lounge extends Component {
             </Paper>
             <Button className={classes.btn} onClick={exporting}>
               Export
+            </Button>
+            <Button className={classes.btn} onClick={importing}>
+              Import
             </Button>
             {progressFull > 0 && (
               <LinearProgress
