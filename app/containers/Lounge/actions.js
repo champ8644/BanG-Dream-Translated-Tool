@@ -521,7 +521,7 @@ export function exporting() {
       vCap,
       vCapPackage: { ratio, putFrame }
     } = getState().Lounge;
-    const [beginTime, endTime] = [1980, 2220];
+    const [beginTime, endTime] = [200, 400];
     let maxArea = 0;
     let maxItemIndex;
     let maxArrayIndex;
@@ -534,10 +534,11 @@ export function exporting() {
         vCapPackage: { current }
       } = getState().Lounge;
       if (!progressFull) return;
+      const obj = { ms: current.ms(), frame: current.frame() };
       const frame = vCap.read();
 
       dispatch(putFrame(frame));
-      const obj = { ms: current.ms(), frame: current.frame() };
+
       if (frame.empty) return false;
       obj.arr = findTextBubble(frame);
       outArr.push(obj);
@@ -663,6 +664,7 @@ export function importing() {
       vCap,
       vCapPackage: { putFrame, FPS },
       importedFile
+      // valueSlider
     } = getState().Lounge;
     let data = importedFile;
     if (!data) {
@@ -682,7 +684,7 @@ export function importing() {
     const approxContour = _item => {
       const item = new cv.Contour(_item);
       const peri = item.arcLength(true);
-      const approx = item.approxPolyDP(0.02 * peri, true);
+      const approx = item.approxPolyDP(0.05 * peri, true);
       return approx;
     };
     const subtract = 1000;
@@ -775,78 +777,117 @@ export function importing() {
     });
 
     console.log(_.cloneDeep(sumContour));
-    let key = Object.keys(sumContour);
-    for (let i = 1; i < key.length; i++) {
-      sumContour[key[i]] = { ...sumContour[key[i - 1]], ...sumContour[key[i]] };
-    }
-    console.log(sumContour);
+    let iterFrames = Object.keys(sumContour);
+    const keyProps = Object.keys(sumContour[iterFrames[0]]);
+    const prevKeyframe = {};
+    keyProps.forEach(key => {
+      prevKeyframe[key] = 0;
+    });
+    console.log('prevKeyframe: ', { prevKeyframe, keyProps, iterFrames });
 
     const findX0 = (x1, y1, x2, y2) =>
       Math.ceil(x2 - ((x2 - x1) * y2) / (y2 - y1));
     const findXN = (x1, y1, x2, y2) =>
       Math.floor(x1 - ((x2 - x1) * y1) / (y2 - y1));
-    const interpolate = (x1, x2, dir) => {
-      if (dir < 0) {
-        const x0 = findX0(x1, sumContour[x1].height, x2, sumContour[x2].height);
-        const delta = (x2 - x0) / (x2 - x1);
-        const val = {};
-        Object.keys(sumContour[x1]).forEach(key => {
-          const y1 = sumContour[x1][key];
-          const y2 = sumContour[x2][key];
-          val[key] = y2 - (y2 - y1) * delta;
-        });
-        return [x0, val];
-      }
-      if (dir > 0) {
-        const xN = findXN(x1, sumContour[x1].height, x2, sumContour[x2].height);
-        const delta = (xN - x1) / (x2 - x1);
-        const val = {};
-        Object.keys(sumContour[x1]).forEach(key => {
-          const y1 = sumContour[x1][key];
-          const y2 = sumContour[x2][key];
-          val[key] = y1 + (y2 - y1) * delta;
-        });
-        return [xN, val];
+    const interpolate = (_x1, y1, _x2, y2, _xN) => {
+      const x1 = parseFloat(_x1);
+      const x2 = parseFloat(_x2);
+      const xN = parseFloat(_xN);
+      console.log('interpolate: ', {
+        x1,
+        y1,
+        x2,
+        y2,
+        xN,
+        yN: y1 + ((y2 - y1) * (xN - x1)) / (x2 - x1)
+      });
+      return y1 + ((y2 - y1) * (xN - x1)) / (x2 - x1);
+    };
+    const interpolBetween = (i, j, key) => {
+      console.log('interpolBetween: ', { i, j, key });
+
+      for (let p = i + 1; p < j; p++) {
+        sumContour[iterFrames[p]][key] = interpolate(
+          iterFrames[i],
+          sumContour[iterFrames[i]][key],
+          iterFrames[j],
+          sumContour[iterFrames[j]][key],
+          iterFrames[p]
+        );
       }
     };
-    const [key2, val] = interpolate(key[0], key[1], -1);
+    for (let i = 1; i < iterFrames.length; i++) {
+      for (let j = 0; j < keyProps.length; j++) {
+        const key = keyProps[j];
+        if (sumContour[iterFrames[i]][key] !== undefined) {
+          console.log('sumContour[iterFrames[i]][key]: ', {
+            i,
+            j,
+            key,
+            frame: iterFrames[i],
+            keyprop: keyProps[j],
+            sum: sumContour[iterFrames[i]][key],
+            sumContour
+          });
+          interpolBetween(prevKeyframe[key], i, key);
+          prevKeyframe[key] = i;
+          console.log('prevKeyframe: ', _.cloneDeep(prevKeyframe));
+        }
+      }
+    }
+    console.log(sumContour);
+    const interpolateWidth = (x1, x2, dir) => {
+      let xN;
+      if (dir < 0)
+        xN = findX0(x1, sumContour[x1].height, x2, sumContour[x2].height);
+      else xN = findXN(x1, sumContour[x1].height, x2, sumContour[x2].height);
+      const val = {};
+      Object.keys(sumContour[x1]).forEach(key => {
+        const y1 = sumContour[x1][key];
+        const y2 = sumContour[x2][key];
+        val[key] = interpolate(x1, y1, x2, y2, xN);
+      });
+      return [xN, val];
+    };
+    const [key2, val] = interpolateWidth(iterFrames[0], iterFrames[1], -1);
     sumContour[key2] = val;
-    const [key3, val2] = interpolate(
-      key[key.length - 2],
-      key[key.length - 1],
+    const [key3, val2] = interpolateWidth(
+      iterFrames[iterFrames.length - 2],
+      iterFrames[iterFrames.length - 1],
       1
     );
     sumContour[key3] = val2;
-    delete sumContour[key[0]];
-    delete sumContour[key[key.length - 1]];
-    console.log(sumContour, key);
-    key = Object.keys(sumContour);
+    delete sumContour[iterFrames[0]];
+    delete sumContour[iterFrames[iterFrames.length - 1]];
+    console.log(sumContour, iterFrames);
+    iterFrames = Object.keys(sumContour);
     const embrace = arr => {
       return `{${arr.join()}}`;
     };
     let maxHeight = 0;
-    key.forEach(key => {
+    iterFrames.forEach(key => {
       Object.keys(sumContour[key]).forEach(key2 => {
         if (key2 === 'height' && maxHeight < sumContour[key][key2])
           maxHeight = sumContour[key][key2];
       });
     });
+
     const round3Dig = num => Math.round(num * 1000) / 1000;
     const arr = [];
-    for (let i = 0; i < key.length; i++) {
+    for (let i = 0; i < iterFrames.length; i++) {
       const join = [
-        `t=${round3Dig((key[i] * 1000) / FPS)}`,
-        `x=${round3Dig(sumContour[key[i]].centerX)}`,
-        `y=${round3Dig(sumContour[key[i]].centerY)}`,
-        `w=${round3Dig(sumContour[key[i]].width)}`,
-        `h=${round3Dig(sumContour[key[i]].height)}`,
-        `p=${round3Dig((sumContour[key[i]].height * 100) / maxHeight)}`
+        `t=${round3Dig((iterFrames[i] * 1000) / FPS)}`,
+        `x=${round3Dig(sumContour[iterFrames[i]].centerX)}`,
+        `y=${round3Dig(sumContour[iterFrames[i]].centerY)}`,
+        `w=${round3Dig(sumContour[iterFrames[i]].width)}`,
+        `h=${round3Dig(sumContour[iterFrames[i]].height)}`,
+        `p=${round3Dig((sumContour[iterFrames[i]].height * 100) / maxHeight)}`
       ];
       arr.push(embrace(join));
     }
     const output = embrace(arr);
     console.log('output: ', output);
-    // delete sumContour[key[0]];
+    // delete sumContour[iterFrames[0]];
 
     dispatch(putFrame(frame));
     frame.release();
