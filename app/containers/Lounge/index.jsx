@@ -204,7 +204,7 @@ class Lounge extends Component {
                     onChange={handleInputChange}
                     onBlur={handleInputBlur}
                     inputProps={{
-                      step: 10,
+                      step: 1,
                       min: 0,
                       max: 100,
                       type: 'number'

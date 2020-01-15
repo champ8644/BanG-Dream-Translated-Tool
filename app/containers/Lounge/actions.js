@@ -2,7 +2,7 @@
 
 /* eslint-disable no-console */
 
-import { maxHeight, maxWidth } from './constants';
+import { maxHeight, maxMinDist, maxWidth } from './constants';
 
 import Queue from '../../classes/Queue';
 import XLSX from 'xlsx';
@@ -493,7 +493,7 @@ export function handleInputChange(e) {
     if (isNaN(num)) return;
     if (num < 0) num = 0;
     else if (num > 100) num = 100;
-    return changeSlider(num);
+    return dispatch(changeSlider(num));
   };
 }
 
@@ -585,6 +585,7 @@ export function exporting() {
 
     let prevPt = orgPt;
     // console.log('trueOutput: ', { trueOutput, maxArrayIndex, maxItemIndex });
+    const colDist = [];
     for (let i = maxArrayIndex - 1; i > 0; i--) {
       const { arr } = outArr[i];
       if (arr.length > 0) {
@@ -597,6 +598,8 @@ export function exporting() {
             pickKey = j;
           }
         }
+        if (minDist > maxMinDist) break;
+        colDist.push({ frame: i, minDist });
         trueOutput.unshift(makeObjOutput(i, pickKey));
         prevPt = rectToCenterPt(arr[pickKey]);
       }
@@ -614,6 +617,8 @@ export function exporting() {
             pickKey = j;
           }
         }
+        if (minDist > maxMinDist) break;
+        colDist.push({ frame: i, minDist });
         trueOutput.push(makeObjOutput(i, pickKey));
         prevPt = rectToCenterPt(arr[pickKey]);
       }
@@ -663,8 +668,8 @@ export function importing() {
     const {
       vCap,
       vCapPackage: { putFrame, FPS },
-      importedFile
-      // valueSlider
+      importedFile,
+      valueSlider
     } = getState().Lounge;
     let data = importedFile;
     if (!data) {
@@ -684,34 +689,72 @@ export function importing() {
     const approxContour = _item => {
       const item = new cv.Contour(_item);
       const peri = item.arcLength(true);
-      const approx = item.approxPolyDP(0.05 * peri, true);
+      const approx = item.approxPolyDP(0.0001 * valueSlider * peri, true);
       return approx;
     };
-    const subtract = 1000;
+    const subtract = 0;
+    const multiply = 1;
+    const div = 1;
+    console.log('data: ', data);
+
+    let prev = data[0];
+    console.log(
+      'delta',
+      data.map(item => {
+        console.log('item: ', item);
+        let { centerX, centerY, height, width } = item;
+        centerX -= prev.centerX;
+        centerY -= prev.centerY;
+        height -= prev.height;
+        width -= prev.width;
+        prev = item;
+        return { centerX, centerY, height, width };
+      })
+    );
     const contourY = approxContour(
       data.map(item => {
-        const out = new cv.Point2(item.frame - subtract, item.centerY);
+        const out = new cv.Point2(
+          (item.frame - subtract) * multiply,
+          item.centerY
+        );
         return out;
-      })
+      }),
+      false
     );
     const contourX = approxContour(
       data.map(item => {
-        const out = new cv.Point2(item.frame - subtract, item.centerX);
+        const out = new cv.Point2(
+          (item.frame - subtract) * multiply,
+          item.centerX / div
+        );
         return out;
-      })
+      }),
+      false
     );
     const contourW = approxContour(
       data.map(item => {
-        const out = new cv.Point2(item.frame - subtract, item.width);
+        const out = new cv.Point2(
+          (item.frame - subtract) * multiply,
+          item.width
+        );
         return out;
-      })
+      }),
+      false
     );
     const contourH = approxContour(
       data.map(item => {
-        const out = new cv.Point2(item.frame - subtract, item.height);
+        const out = new cv.Point2(
+          (item.frame - subtract) * multiply,
+          item.height
+        );
         return out;
-      })
+      }),
+      false
     );
+    // contourX.sort((a, b) => a.x - b.x);
+    // contourY.sort((a, b) => a.x - b.x);
+    // contourW.sort((a, b) => a.x - b.x);
+    // contourH.sort((a, b) => a.x - b.x);
     rewindOneFrame(vCap);
     const frame = vCap.read();
     const blue = new cv.Vec(255, 0, 0);
@@ -748,6 +791,7 @@ export function importing() {
       sumContour[frameCount].centerX = pt.y;
     });
     frame.drawPolylines([contourW], false, yellow, 3);
+    console.log('contourW: ', contourW);
     console.log('contourW: ', contourW.length);
     for (let i = 1; i < contourW.length; i++) {
       console.log(
@@ -794,6 +838,9 @@ export function importing() {
       const x2 = parseFloat(_x2);
       const xN = parseFloat(_xN);
       console.log('interpolate: ', {
+        _x1,
+        _x2,
+        _xN,
         x1,
         y1,
         x2,
@@ -814,6 +861,17 @@ export function importing() {
           sumContour[iterFrames[j]][key],
           iterFrames[p]
         );
+        console.log('iterFrames', {
+          i,
+          j,
+          p,
+          key,
+          ii: iterFrames[i],
+          ij: iterFrames[j],
+          ip: iterFrames[p],
+          si: sumContour[iterFrames[i]],
+          sj: sumContour[iterFrames[j]]
+        });
       }
     };
     for (let i = 1; i < iterFrames.length; i++) {
@@ -835,12 +893,28 @@ export function importing() {
         }
       }
     }
-    console.log(sumContour);
+    console.log(_.cloneDeep(sumContour));
     const interpolateWidth = (x1, x2, dir) => {
       let xN;
-      if (dir < 0)
+      if (dir < 0) {
         xN = findX0(x1, sumContour[x1].height, x2, sumContour[x2].height);
-      else xN = findXN(x1, sumContour[x1].height, x2, sumContour[x2].height);
+        console.log('dir<0', {
+          x1,
+          sx1: sumContour[x1].height,
+          x2,
+          sx2: sumContour[x2].height
+        });
+      } else {
+        xN = findXN(x1, sumContour[x1].height, x2, sumContour[x2].height);
+
+        console.log('dir>0', {
+          x1,
+          sx1: sumContour[x1].height,
+          x2,
+          sx2: sumContour[x2].height,
+          xN
+        });
+      }
       const val = {};
       Object.keys(sumContour[x1]).forEach(key => {
         const y1 = sumContour[x1][key];
@@ -857,6 +931,7 @@ export function importing() {
       1
     );
     sumContour[key3] = val2;
+    console.log(_.cloneDeep(sumContour));
     delete sumContour[iterFrames[0]];
     delete sumContour[iterFrames[iterFrames.length - 1]];
     console.log(sumContour, iterFrames);
@@ -885,7 +960,7 @@ export function importing() {
       ];
       arr.push(embrace(join));
     }
-    const output = embrace(arr);
+    const output = `_G.table.insert(db,${embrace(arr)})`;
     console.log('output: ', output);
     // delete sumContour[iterFrames[0]];
 
