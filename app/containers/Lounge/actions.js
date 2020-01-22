@@ -74,17 +74,16 @@ export function updateFrame() {
 
 export function startVideo() {
   return async (dispatch, getState) => {
-    const {
-      vCapPackage: { putFrame, FPS }
-    } = getState().Lounge;
+    // const { vCap } = getState().Lounge;
     await dispatch({ type: actionTypes.START_VIDEO });
-    const begin = Date.now();
+    // const begin = Date.now();
     const playVideo = async () => {
       const { isPlaying } = getState().Lounge;
       if (!isPlaying) return;
-      dispatch(putFrame());
-      const delay = 1000 / FPS - (Date.now() - begin);
-      setTimeout(playVideo, delay);
+      // vCap.step(1);
+      dispatch(updateFrame());
+      // const delay = 1000 / vCap.FPS - (Date.now() - begin);
+      setTimeout(playVideo, 1);
     };
     setTimeout(playVideo, 0);
   };
