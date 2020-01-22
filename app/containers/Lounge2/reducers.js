@@ -5,6 +5,7 @@ import { actionTypes } from './actions';
 export const initialState = {
   videoFilePath: '',
   vCap: null,
+  vCapPackage: {},
   canvasRef: null,
   isPlaying: false,
   frame: null,
@@ -27,11 +28,6 @@ export default function Home(state = initialState, action) {
   switch (type) {
     case actionTypes.SELECT_NEW_VIDEO:
       return { ...state, ...payload, isPlaying: false };
-    case actionTypes.SET_FRAME:
-      return {
-        ...state,
-        frame: payload
-      };
     case actionTypes.SEND_CANVAS:
       return { ...state, canvasRef: payload };
     case actionTypes.START_VIDEO:

@@ -2,21 +2,22 @@
 
 /* eslint-disable no-console */
 
+import { maxHeight, maxMinDist, maxWidth } from './constants';
+
 import Queue from '../../classes/Queue';
-import VideoCapture from './VideoCapture';
 import XLSX from 'xlsx';
 import _ from 'lodash';
 import cv from 'opencv4nodejs';
-import { maxMinDist } from './constants';
+import path from 'path';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
 
 const { dialog } = remote;
+const { app } = remote;
 
 const prefix = '@@Lounge';
 const actionTypesList = [
   'SELECT_NEW_VIDEO',
-  'SET_FRAME',
   'SEND_CANVAS',
   'START_VIDEO',
   'STOP_VIDEO',
@@ -45,7 +46,9 @@ export function sendCanvas(canvasRef) {
 
 export function openFile() {
   return dispatch => {
+    const toLocalPath = path.resolve(app.getPath('desktop'));
     const userChosenPath = dialog.showOpenDialog({
+      defaultPath: toLocalPath,
       properties: ['openFile'],
       filters: [
         {
@@ -55,22 +58,73 @@ export function openFile() {
       ]
     });
     if (!userChosenPath) return;
-    dispatch({
-      type: actionTypes.SELECT_NEW_VIDEO,
-      payload: {
-        videoFilePath: userChosenPath[0],
-        vCap: new VideoCapture(userChosenPath[0])
-      }
-    });
-    dispatch(setFrame(0));
+    dispatch(selectNewVideo(userChosenPath[0]));
   };
 }
 
-export function setFrame(frame) {
-  return {
-    type: actionTypes.SET_FRAME,
-    payload: frame
+function selectNewVideo(path) {
+  return async (dispatch, getState) => {
+    const { canvasRef } = getState().Lounge;
+    const vCap = new cv.VideoCapture(path);
+    const width = vCap.get(cv.CAP_PROP_FRAME_WIDTH);
+    const height = vCap.get(cv.CAP_PROP_FRAME_HEIGHT);
+    const ratio = Math.max(maxWidth / width, maxHeight / height);
+    const length = vCap.get(cv.CAP_PROP_FRAME_COUNT) - 1;
+    const current = {
+      frame: () => vCap.get(cv.CAP_PROP_POS_FRAMES),
+      percent: () => {
+        return (vCap.get(cv.CAP_PROP_POS_FRAMES) / length) * 100;
+      },
+      ms: () => vCap.get(cv.CAP_PROP_POS_MSEC)
+    };
+    const putFrame = _frame => dispatch => {
+      dispatch(updateFrame(current));
+      let frame;
+      if (_frame) frame = _frame;
+      else frame = vCap.read();
+      if (frame.empty) return false;
+      findTextBubble(frame);
+      putImage(canvasRef, frame, ratio);
+      if (_frame) return true;
+      frame.release();
+    };
+
+    await dispatch({
+      type: actionTypes.SELECT_NEW_VIDEO,
+      payload: {
+        videoFilePath: path,
+        vCap,
+        vCapPackage: {
+          width,
+          height,
+          ratio,
+          dWidth: width * ratio,
+          dHeight: height * ratio,
+          FPS: vCap.get(cv.CAP_PROP_FPS),
+          length,
+          current,
+          putFrame
+        }
+      }
+    });
+    dispatch(putFrame());
   };
+}
+
+function putImage(canvasRef, _frame, ratio) {
+  const frame = ratio ? _frame.rescale(ratio) : _frame;
+  const matRGBA =
+    frame.channels === 1
+      ? frame.cvtColor(cv.COLOR_GRAY2RGBA)
+      : frame.cvtColor(cv.COLOR_BGR2RGBA);
+  const imgData = new ImageData(
+    new Uint8ClampedArray(matRGBA.getData()),
+    frame.cols,
+    frame.rows
+  );
+  frame.release();
+
+  canvasRef.current.getContext('2d').putImageData(imgData, 0, 0);
 }
 
 export function startVideo() {
@@ -88,6 +142,17 @@ export function startVideo() {
       setTimeout(playVideo, delay);
     };
     setTimeout(playVideo, 0);
+  };
+}
+
+function updateFrame(current) {
+  return {
+    type: actionTypes.UPDATE_FRAME,
+    payload: {
+      frame: current.frame(),
+      ms: current.ms(),
+      percent: current.percent()
+    }
   };
 }
 
@@ -452,9 +517,9 @@ function findDist(pt1, pt2) {
 export function exporting() {
   return async (dispatch, getState) => {
     const {
-      // canvasRef,
+      canvasRef,
       vCap,
-      vCapPackage: { putFrame }
+      vCapPackage: { ratio, putFrame }
     } = getState().Lounge;
     const [beginTime, endTime] = [200, 400];
     let maxArea = 0;
@@ -486,7 +551,7 @@ export function exporting() {
           maxArrayIndex = outArr.length - 1;
         }
       }
-      // putImage(canvasRef, frame, ratio);
+      putImage(canvasRef, frame, ratio);
       frame.release();
       dispatch(addProgress(1));
     }

@@ -4,8 +4,8 @@ import * as actions from './actions';
 
 import React, { Component } from 'react';
 import {
-  makeCurrentFrame,
   makeDialogData,
+  makeFrameData,
   makeProgress,
   makeProgressBar,
   makeSlider,
@@ -51,8 +51,8 @@ import { withStyles } from '@material-ui/core/styles';
 const mapStateToProps = (state, props) => {
   return {
     ...makeVideoFilePath(state),
-    vCap: makeVideoCapture(state),
-    ...makeCurrentFrame(state),
+    ...makeVideoCapture(state),
+    ...makeFrameData(state),
     progress: makeProgress(state),
     progressFull: makeProgressBar(state),
     dialog: makeDialogData(state),
@@ -72,21 +72,12 @@ class Lounge extends Component {
     sendCanvas(this.canvas);
   }
 
-  // shouldComponentUpdate(nextProps) {
-  //   const { frame } = this.props;
-  //   return frame !== nextProps.frame;
-  // }
-
-  componentDidUpdate() {
-    const { vCap, frame } = this.props;
-    const imgData = vCap.getImage(frame);
-    this.canvas.current.getContext('2d').putImageData(imgData, 0, 0);
-  }
-
   render() {
     const {
       classes,
       videoFileName,
+      dWidth,
+      dHeight,
       startVideo,
       stopVideo,
       previousFrame,
@@ -94,7 +85,9 @@ class Lounge extends Component {
       rewindFrame,
       skipFrame,
       openFile,
+      frame,
       vCap,
+      length,
       handleChangeDialog,
       handleCancelDialog,
       handleConfirmDialog,
@@ -102,6 +95,9 @@ class Lounge extends Component {
       handleOpenDialog,
       handleCanvasClick,
       dialog,
+      ms,
+      percent,
+      FPS,
       status,
       valueSlider,
       handleChangeSlider,
@@ -110,10 +106,7 @@ class Lounge extends Component {
       exporting,
       progress,
       progressFull,
-      importing,
-      frame,
-      ms,
-      percent
+      importing
     } = this.props;
     return (
       <div className={classes.root}>
@@ -163,7 +156,7 @@ class Lounge extends Component {
                 className={classes.chip}
                 icon={<TheatersIcon />}
                 label={`Frame: ${formatNumber(frame)} / ${formatNumber(
-                  vCap.length
+                  length
                 )}`}
                 color='secondary'
                 variant='outlined'
@@ -176,7 +169,7 @@ class Lounge extends Component {
                 className={classes.chip}
                 icon={<TimerIcon />}
                 label={`Time: ${formatNumber(ms)} / ${formatNumber(
-                  (vCap.length * 1000) / vCap.FPS
+                  (length * 1000) / FPS
                 )} ms`}
                 variant='outlined'
                 color='primary'
@@ -237,8 +230,8 @@ class Lounge extends Component {
                 <canvas
                   className={classes.canvas}
                   ref={this.canvas}
-                  width={vCap.dWidth}
-                  height={vCap.dHeight}
+                  width={dWidth}
+                  height={dHeight}
                   onMouseDown={handleCanvasClick}
                 />
               </Grid>
