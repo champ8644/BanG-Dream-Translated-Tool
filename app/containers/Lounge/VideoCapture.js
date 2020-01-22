@@ -26,7 +26,7 @@ export default class VideoCapture {
     return this.vCap.get(cv.CAP_PROP_POS_MSEC);
   }
 
-  getPos(mode = 'frame') {
+  getFrame(mode = 'frame') {
     switch (mode) {
       case 'frame':
         return this.frame();
@@ -41,7 +41,7 @@ export default class VideoCapture {
   }
 
   setFrame(frame, mode = 'frame') {
-    if (this.getPos(mode) === frame) return;
+    if (this.getFrame(mode) === frame) return;
     switch (mode) {
       case 'frame':
         this.vCap.set(cv.CAP_PROP_POS_FRAMES, frame);
@@ -56,15 +56,15 @@ export default class VideoCapture {
     }
   }
 
-  getFrame(frame, mode = 'frame') {
+  getMat(frame, mode = 'frame') {
     if (frame === undefined) return this.vCap.read();
-    const currentFrame = this.getPos(mode);
+    const currentFrame = this.getFrame(mode);
     if (frame !== currentFrame) this.setFrame(frame, mode);
     return this.vCap.read();
   }
 
   read(frame, mode = 'frame') {
-    const mat = this.getFrame(frame, mode).rescale(this.ratio);
+    const mat = this.getMat(frame, mode).rescale(this.ratio);
     const matRGBA =
       mat.channels === 1
         ? mat.cvtColor(cv.COLOR_GRAY2RGBA)
@@ -78,10 +78,15 @@ export default class VideoCapture {
   }
 
   getImage(frame, mode = 'frame') {
-    const pos = this.getPos();
+    const prevFrame = this.getFrame();
     const imgData = this.read(frame, mode);
-    this.setFrame(pos);
+    this.setFrame(prevFrame);
     return imgData;
+  }
+
+  step(value, mode = 'frame') {
+    const prevFrame = this.getFrame(mode);
+    this.setFrame(prevFrame + value, mode);
   }
 }
 

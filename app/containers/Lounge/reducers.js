@@ -21,23 +21,21 @@ export const initialState = {
   importedFile: null
 };
 
-export default function Home(state = initialState, action) {
+export default function Lounge(state = initialState, action) {
   // eslint-disable-next-line prefer-const, no-unused-vars
   let { type, payload } = action;
   switch (type) {
     case actionTypes.SELECT_NEW_VIDEO:
       return { ...state, ...payload, isPlaying: false };
-    case actionTypes.SET_FRAME:
+    case actionTypes.UPDATE_FRAME:
       return {
         ...state,
-        frame: payload
+        frame: state.vCap.getFrame()
       };
     case actionTypes.SEND_CANVAS:
       return { ...state, canvasRef: payload };
     case actionTypes.START_VIDEO:
       return { ...state, isPlaying: true };
-    case actionTypes.UPDATE_FRAME:
-      return { ...state, ...payload };
     case actionTypes.HANDLE_OPEN_DIALOG:
       return { ...state, dialog: payload };
     case actionTypes.HANDLE_CANCEL_DIALOG:

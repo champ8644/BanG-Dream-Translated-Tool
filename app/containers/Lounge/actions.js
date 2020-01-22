@@ -16,7 +16,7 @@ const { dialog } = remote;
 const prefix = '@@Lounge';
 const actionTypesList = [
   'SELECT_NEW_VIDEO',
-  'SET_FRAME',
+  'UPDATE_FRAME',
   'SEND_CANVAS',
   'START_VIDEO',
   'STOP_VIDEO',
@@ -62,14 +62,13 @@ export function openFile() {
         vCap: new VideoCapture(userChosenPath[0])
       }
     });
-    dispatch(setFrame(0));
+    dispatch(updateFrame());
   };
 }
 
-export function setFrame(frame) {
+export function updateFrame() {
   return {
-    type: actionTypes.SET_FRAME,
-    payload: frame
+    type: actionTypes.UPDATE_FRAME
   };
 }
 
@@ -103,76 +102,48 @@ export function handleInputFrame(e) {
   };
 }
 
-function rewindOneFrame(vCap) {
-  let currentFrame = vCap.get(cv.CAP_PROP_POS_FRAMES);
-  if (currentFrame - 1 >= 0) currentFrame--;
-  else currentFrame = 0;
-  setFrameByType(vCap, currentFrame, 'frame');
-}
-
 export function previousFrame() {
   return (dispatch, getState) => {
-    const {
-      vCap,
-      vCapPackage: { putFrame, current }
-    } = getState().Lounge;
-    let currentFrame = current.frame();
-    if (currentFrame - 1 >= 0) currentFrame -= 2;
-    else currentFrame = 0;
-    setFrameByType(vCap, currentFrame, 'frame');
-    dispatch(putFrame());
+    const { vCap } = getState().Lounge;
+    vCap.step(-1);
+    dispatch(updateFrame());
   };
 }
 
 export function nextFrame() {
   return (dispatch, getState) => {
-    const {
-      vCapPackage: { putFrame }
-    } = getState().Lounge;
-    dispatch(putFrame());
+    const { vCap } = getState().Lounge;
+    vCap.step(1);
+    dispatch(updateFrame());
   };
 }
 
 export function rewindFrame() {
   return (dispatch, getState) => {
-    const {
-      vCap,
-      vCapPackage: { putFrame, current, FPS }
-    } = getState().Lounge;
-    let currentFrame = current.frame();
-    if (currentFrame - FPS - 1 >= 0) currentFrame -= FPS + 1;
-    else currentFrame = 0;
-    setFrameByType(vCap, currentFrame, 'frame');
-    dispatch(putFrame());
+    const { vCap } = getState().Lounge;
+    vCap.step(-1000, 'ms');
+    dispatch(updateFrame());
   };
 }
 
 export function skipFrame() {
   return (dispatch, getState) => {
-    const {
-      vCap,
-      vCapPackage: { putFrame, current, length, FPS }
-    } = getState().Lounge;
-    let currentFrame = current.frame();
-    if (currentFrame + FPS <= length) currentFrame += FPS - 1;
-    else currentFrame = length;
-    setFrameByType(vCap, currentFrame, 'frame');
-    dispatch(putFrame());
+    const { vCap } = getState().Lounge;
+    vCap.step(1000, 'ms');
+    dispatch(updateFrame());
   };
 }
 
 export function handleOpenDialog(type) {
   return (dispatch, getState) => {
-    const {
-      vCapPackage: { length, FPS }
-    } = getState().Lounge;
+    const { vCap } = getState().Lounge;
     const dialog = { open: true, type, value: 0 };
     switch (type) {
       case 'frame':
-        dialog.maxValue = length;
+        dialog.maxValue = vCap.length;
         break;
       case 'ms':
-        dialog.maxValue = (length * 1000) / FPS;
+        dialog.maxValue = (vCap.length * 1000) / vCap.FPS;
         break;
       case 'percent':
         dialog.maxValue = 100;
@@ -221,32 +192,12 @@ export function handleCancelDialog() {
   };
 }
 
-function setFrameByType(vCap, value, mode) {
-  switch (mode) {
-    case 'frame':
-      return vCap.set(cv.CAP_PROP_POS_FRAMES, value);
-    case 'ms':
-      return vCap.set(cv.CAP_PROP_POS_MSEC, value);
-    case 'percent':
-      return vCap.set(cv.CAP_PROP_POS_AVI_RATIO, value / 100);
-    default:
-  }
-}
-
 export function handleConfirmDialog() {
   return (dispatch, getState) => {
-    const {
-      dialog,
-      vCap,
-      vCapPackage: { putFrame }
-    } = getState().Lounge;
+    const { dialog, vCap } = getState().Lounge;
     dispatch({ type: actionTypes.HANDLE_CONFIRM_DIALOG });
-    setFrameByType(
-      vCap,
-      dialog.type === 'percent' ? dialog.value / 100 : dialog.value,
-      dialog.type
-    );
-    dispatch(putFrame());
+    vCap.setFrame(dialog.value, dialog.type);
+    dispatch(updateFrame());
   };
 }
 
@@ -377,7 +328,7 @@ export function handleCanvasClick(_event) {
     clientY -= offsetTop;
     clientX /= ratio;
     clientY /= ratio;
-    rewindOneFrame(vCap);
+    // rewindOneFrame(vCap);
     const frame = vCap.read();
     const [b, g, r] = frame.atRaw(clientY, clientX);
     findTextBubble(frame);
@@ -461,7 +412,7 @@ export function exporting() {
     let maxItemIndex;
     let maxArrayIndex;
     dispatch(startProgress(endTime - beginTime + 1));
-    setFrameByType(vCap, beginTime, 'frame');
+    // setFrameByType(vCap, beginTime, 'frame');
     const outArr = [];
     for (let i = beginTime; i < endTime; i++) {
       const {
@@ -690,7 +641,7 @@ export function importing() {
     // contourY.sort((a, b) => a.x - b.x);
     // contourW.sort((a, b) => a.x - b.x);
     // contourH.sort((a, b) => a.x - b.x);
-    rewindOneFrame(vCap);
+    // rewindOneFrame(vCap);
     const frame = vCap.read();
     const blue = new cv.Vec(255, 0, 0);
     const red = new cv.Vec(0, 0, 255);

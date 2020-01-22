@@ -78,8 +78,8 @@ class Lounge extends Component {
   // }
 
   componentDidUpdate() {
-    const { vCap, frame } = this.props;
-    const imgData = vCap.getImage(frame);
+    const { vCap } = this.props;
+    const imgData = vCap.getImage();
     this.canvas.current.getContext('2d').putImageData(imgData, 0, 0);
   }
 
