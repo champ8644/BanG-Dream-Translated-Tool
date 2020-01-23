@@ -3,7 +3,7 @@ import { maxHeight, maxWidth } from './constants';
 import cv from 'opencv4nodejs';
 
 export default class VideoCapture {
-  constructor(path) {
+  constructor(path, canvas) {
     this.vCap = new cv.VideoCapture(path);
     this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH);
     this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT);
@@ -12,6 +12,7 @@ export default class VideoCapture {
     this.FPS = this.vCap.get(cv.CAP_PROP_FPS);
     this.dWidth = this.width * this.ratio;
     this.dHeight = this.height * this.ratio;
+    this.canvas = canvas;
   }
 
   frame() {
@@ -37,6 +38,7 @@ export default class VideoCapture {
       case 'all':
         return { frame: this.frame(), ms: this.ms(), percent: this.percent() };
       default:
+        return null;
     }
   }
 
@@ -64,7 +66,9 @@ export default class VideoCapture {
   }
 
   read(frame, mode = 'frame') {
-    const mat = this.getMat(frame, mode).rescale(this.ratio);
+    let mat = this.getMat(frame, mode);
+    if (mat.empty) return;
+    mat = mat.rescale(this.ratio);
     const matRGBA =
       mat.channels === 1
         ? mat.cvtColor(cv.COLOR_GRAY2RGBA)
@@ -74,45 +78,44 @@ export default class VideoCapture {
       mat.cols,
       mat.rows
     );
-    return imgData;
+    this.putImageData(imgData);
   }
 
-  getImage(frame, mode = 'frame') {
-    const prevFrame = this.getFrame();
-    const imgData = this.read(frame, mode);
-    this.setFrame(prevFrame);
-    return imgData;
+  show(frame, mode = 'frame') {
+    let prevFrame;
+    if (frame !== undefined) prevFrame = frame;
+    else prevFrame = this.getFrame(mode);
+    this.read(frame, mode);
+    this.setFrame(prevFrame, mode);
   }
 
   step(value, mode = 'frame') {
     const prevFrame = this.getFrame(mode);
-    this.setFrame(prevFrame + value, mode);
+    this.show(prevFrame + value, mode);
+  }
+
+  putImageData(imgData) {
+    this.canvas.current.getContext('2d').putImageData(imgData, 0, 0);
+  }
+
+  async playing() {
+    if (!this.isPlaying) return;
+    this.read();
+    if (this.empty) {
+      this.vCap.setFrame(0);
+      this.read();
+    }
+    this.updateRedux();
+    setTimeout(this.playing.bind(this), 0);
+  }
+
+  play(callback) {
+    this.isPlaying = true;
+    this.updateRedux = async () => callback();
+    setTimeout(this.playing.bind(this), 0);
+  }
+
+  stop() {
+    this.isPlaying = false;
   }
 }
-
-// function putImage(canvasRef, _frame, ratio) {
-//   const frame = ratio ? _frame.rescale(ratio) : _frame;
-//   const matRGBA =
-//     frame.channels === 1
-//       ? frame.cvtColor(cv.COLOR_GRAY2RGBA)
-//       : frame.cvtColor(cv.COLOR_BGR2RGBA);
-//   const imgData = new ImageData(
-//     new Uint8ClampedArray(matRGBA.getData()),
-//     frame.cols,
-//     frame.rows
-//   );
-//   frame.release();
-
-//   canvasRef.current.getContext('2d').putImageData(imgData, 0, 0);
-
-// const putFrame = _frame => dispatch => {
-//   dispatch(updateFrame(current));
-//   let frame;
-//   if (_frame) frame = _frame;
-//   else frame = vCap.read();
-//   if (frame.empty) return false;
-//   findTextBubble(frame);
-//   putImage(canvasRef, frame, ratio);
-//   if (_frame) return true;
-//   frame.release();
-// };

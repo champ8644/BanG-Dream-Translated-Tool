@@ -44,7 +44,8 @@ export function sendCanvas(canvasRef) {
 }
 
 export function openFile() {
-  return dispatch => {
+  return (dispatch, getState) => {
+    const { canvasRef } = getState().Lounge;
     const userChosenPath = dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [
@@ -59,7 +60,7 @@ export function openFile() {
       type: actionTypes.SELECT_NEW_VIDEO,
       payload: {
         videoFilePath: userChosenPath[0],
-        vCap: new VideoCapture(userChosenPath[0])
+        vCap: new VideoCapture(userChosenPath[0], canvasRef)
       }
     });
     dispatch(updateFrame());
@@ -74,23 +75,16 @@ export function updateFrame() {
 
 export function startVideo() {
   return async (dispatch, getState) => {
-    // const { vCap } = getState().Lounge;
-    await dispatch({ type: actionTypes.START_VIDEO });
-    // const begin = Date.now();
-    const playVideo = async () => {
-      const { isPlaying } = getState().Lounge;
-      if (!isPlaying) return;
-      // vCap.step(1);
-      dispatch(updateFrame());
-      // const delay = 1000 / vCap.FPS - (Date.now() - begin);
-      setTimeout(playVideo, 1);
-    };
-    setTimeout(playVideo, 0);
+    const { vCap } = getState().Lounge;
+    vCap.play(() => dispatch(updateFrame()));
   };
 }
 
 export function stopVideo() {
-  return { type: actionTypes.STOP_VIDEO };
+  return async (dispatch, getState) => {
+    const { vCap } = getState().Lounge;
+    vCap.stop();
+  };
 }
 
 export function handleInputFrame(e) {
@@ -195,7 +189,7 @@ export function handleConfirmDialog() {
   return (dispatch, getState) => {
     const { dialog, vCap } = getState().Lounge;
     dispatch({ type: actionTypes.HANDLE_CONFIRM_DIALOG });
-    vCap.setFrame(dialog.value, dialog.type);
+    vCap.show(dialog.value, dialog.type);
     dispatch(updateFrame());
   };
 }

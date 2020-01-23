@@ -72,16 +72,11 @@ class Lounge extends Component {
     sendCanvas(this.canvas);
   }
 
-  // shouldComponentUpdate(nextProps) {
-  //   const { frame } = this.props;
-  //   return frame !== nextProps.frame;
+  // componentDidUpdate() {
+  //   const { vCap, isPlaying } = this.props;
+  //   const imgData = isPlaying ? vCap.read() : vCap.getImage();
+  //   this.canvas.current.getContext('2d').putImageData(imgData, 0, 0);
   // }
-
-  componentDidUpdate() {
-    const { vCap, isPlaying } = this.props;
-    const imgData = isPlaying ? vCap.read() : vCap.getImage();
-    this.canvas.current.getContext('2d').putImageData(imgData, 0, 0);
-  }
 
   render() {
     const {
@@ -303,5 +298,11 @@ export default withReducer('Lounge', reducers)(
   connect(
     mapStateToProps,
     mapDispatchToProps
+    //   ,null,{
+    //     areStatesEqual = (next, prev) =>{
+    //       console.log('next',next);
+    //       return false;
+    // }
+    // }
   )(withStyles(styles)(Lounge))
 );
