@@ -66,18 +66,6 @@ export function openFile() {
         vCap
       }
     });
-    dispatch(updateFrame());
-    vCap.show();
-    dispatch(updateFrame());
-    dispatch(updateFrame());
-    dispatch(updateFrame());
-    dispatch(updateFrame());
-    dispatch(updateFrame());
-    dispatch(updateFrame());
-    dispatch(updateFrame());
-    dispatch(updateFrame());
-    dispatch(updateFrame());
-    dispatch(updateFrame());
   };
 }
 

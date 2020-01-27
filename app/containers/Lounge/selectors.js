@@ -62,3 +62,9 @@ export const makeProgressBar = createSelector(
   make,
   state => (state ? state.progressFull : initialState.progressFull)
 );
+
+export const makeWillUpdateNextFrame = createSelector(
+  make,
+  state =>
+    state ? state.willUpdateNextFrame : initialState.willUpdateNextFrame
+);

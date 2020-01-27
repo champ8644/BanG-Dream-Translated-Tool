@@ -11,7 +11,8 @@ import {
   makeSlider,
   makeStatusData,
   makeVideoCapture,
-  makeVideoFilePath
+  makeVideoFilePath,
+  makeWillUpdateNextFrame
 } from './selectors';
 
 import { APP_TITLE } from '../../constants/meta';
@@ -57,7 +58,8 @@ const mapStateToProps = (state, props) => {
     progressFull: makeProgressBar(state),
     dialog: makeDialogData(state),
     status: makeStatusData(state),
-    valueSlider: makeSlider(state)
+    valueSlider: makeSlider(state),
+    willUpdateNextFrame: makeWillUpdateNextFrame(state)
   };
 };
 
@@ -72,11 +74,10 @@ class Lounge extends Component {
     sendCanvas(this.canvas);
   }
 
-  // componentDidUpdate() {
-  //   const { vCap, isPlaying } = this.props;
-  //   const imgData = isPlaying ? vCap.read() : vCap.getImage();
-  //   this.canvas.current.getContext('2d').putImageData(imgData, 0, 0);
-  // }
+  componentDidUpdate() {
+    const { vCap, willUpdateNextFrame } = this.props;
+    if (willUpdateNextFrame) vCap.show();
+  }
 
   render() {
     const {
@@ -131,135 +132,133 @@ class Lounge extends Component {
         <Button className={classes.btn} onClick={openFile}>
           Open CV Tests
         </Button>
-        <div styles={vCap ? {} : { visibility: 'hidden' }}>
-          {vCap && (
-            <>
-              <Paper elevation={2} className={classes.paper}>
-                <IconButton onClick={rewindFrame}>
-                  <FastRewindIcon />
-                </IconButton>
-                <IconButton onClick={previousFrame}>
-                  <SkipPreviousIcon />
-                </IconButton>
-                <IconButton onClick={startVideo}>
-                  <PlayArrowIcon />
-                </IconButton>
-                <IconButton onClick={stopVideo}>
-                  <StopIcon />
-                </IconButton>
-                <IconButton onClick={nextFrame}>
-                  <SkipNextIcon />
-                </IconButton>
-                <IconButton onClick={skipFrame}>
-                  <FastForwardIcon />
-                </IconButton>
-              </Paper>
-              <Tooltip title='Go To selected frame' arrow>
-                <Chip
-                  className={classes.chip}
-                  icon={<TheatersIcon />}
-                  label={`Frame: ${formatNumber(frame)} / ${formatNumber(
-                    vCap.length
-                  )}`}
-                  color='secondary'
-                  variant='outlined'
-                  clickable
-                  onClick={() => handleOpenDialog('frame')}
-                />
-              </Tooltip>
-              <Tooltip title='Go To selected time' arrow>
-                <Chip
-                  className={classes.chip}
-                  icon={<TimerIcon />}
-                  label={`Time: ${formatNumber(ms)} / ${formatNumber(
-                    (vCap.length * 1000) / vCap.FPS
-                  )} ms`}
-                  variant='outlined'
-                  color='primary'
-                  clickable
-                  onClick={() => handleOpenDialog('ms')}
-                />
-              </Tooltip>
+        {vCap && (
+          <>
+            <Paper elevation={2} className={classes.paper}>
+              <IconButton onClick={rewindFrame}>
+                <FastRewindIcon />
+              </IconButton>
+              <IconButton onClick={previousFrame}>
+                <SkipPreviousIcon />
+              </IconButton>
+              <IconButton onClick={startVideo}>
+                <PlayArrowIcon />
+              </IconButton>
+              <IconButton onClick={stopVideo}>
+                <StopIcon />
+              </IconButton>
+              <IconButton onClick={nextFrame}>
+                <SkipNextIcon />
+              </IconButton>
+              <IconButton onClick={skipFrame}>
+                <FastForwardIcon />
+              </IconButton>
+            </Paper>
+            <Tooltip title='Go To selected frame' arrow>
               <Chip
                 className={classes.chip}
-                icon={<PieChartIcon />}
-                label={`${formatNumber(percent)} / 100 %`}
+                icon={<TheatersIcon />}
+                label={`Frame: ${formatNumber(frame)} / ${formatNumber(
+                  vCap.length
+                )}`}
+                color='secondary'
                 variant='outlined'
+                clickable
+                onClick={() => handleOpenDialog('frame')}
               />
-              <Paper className={classes.PaperSlider}>
-                <Grid container spacing={2} alignItems='center'>
-                  <Grid item>
-                    <Typography id='discrete-slider' gutterBottom>
-                      Slider-1
-                    </Typography>
-                  </Grid>
-                  <Grid item xs>
-                    <Slider
-                      value={typeof valueSlider === 'number' ? valueSlider : 0}
-                      onChange={handleChangeSlider}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Input
-                      id='slider-1'
-                      value={valueSlider}
-                      margin='dense'
-                      onChange={handleInputChange}
-                      onBlur={handleInputBlur}
-                      inputProps={{
-                        step: 1,
-                        min: 0,
-                        max: 100,
-                        type: 'number'
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </Paper>
-              <Button className={classes.btn} onClick={exporting}>
-                Export
-              </Button>
-              <Button className={classes.btn} onClick={importing}>
-                Import
-              </Button>
-              {progressFull > 0 && (
-                <LinearProgress
-                  variant='determinate'
-                  value={(progress / progressFull) * 100}
-                />
-              )}
-            </>
-          )}
-          <Grid container>
-            <Grid item>
-              <canvas
-                className={classes.canvas}
-                ref={this.canvas}
-                width={vCap ? vCap.dWidth : 100}
-                height={vCap ? vCap.dHeight : 100}
-                onMouseDown={handleCanvasClick}
+            </Tooltip>
+            <Tooltip title='Go To selected time' arrow>
+              <Chip
+                className={classes.chip}
+                icon={<TimerIcon />}
+                label={`Time: ${formatNumber(ms)} / ${formatNumber(
+                  (vCap.length * 1000) / vCap.FPS
+                )} ms`}
+                variant='outlined'
+                color='primary'
+                clickable
+                onClick={() => handleOpenDialog('ms')}
               />
-            </Grid>
-            {status.show && (
-              <>
+            </Tooltip>
+            <Chip
+              className={classes.chip}
+              icon={<PieChartIcon />}
+              label={`${formatNumber(percent)} / 100 %`}
+              variant='outlined'
+            />
+            <Paper className={classes.PaperSlider}>
+              <Grid container spacing={2} alignItems='center'>
                 <Grid item>
-                  <Paper className={classes.Papers}>
-                    <Typography variant='h6' className={classes.text1}>
-                      Coord: {`${status.clientX},${status.clientY}`}
-                    </Typography>
-                    <Typography
-                      variant='h6'
-                      className={classes.text1}
-                      style={{ backgroundColor: status.color }}
-                    >
-                      Color: {`${status.color}`}
-                    </Typography>
-                  </Paper>
+                  <Typography id='discrete-slider' gutterBottom>
+                    Slider-1
+                  </Typography>
                 </Grid>
-              </>
+                <Grid item xs>
+                  <Slider
+                    value={typeof valueSlider === 'number' ? valueSlider : 0}
+                    onChange={handleChangeSlider}
+                  />
+                </Grid>
+                <Grid item>
+                  <Input
+                    id='slider-1'
+                    value={valueSlider}
+                    margin='dense'
+                    onChange={handleInputChange}
+                    onBlur={handleInputBlur}
+                    inputProps={{
+                      step: 1,
+                      min: 0,
+                      max: 100,
+                      type: 'number'
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
+            <Button className={classes.btn} onClick={exporting}>
+              Export
+            </Button>
+            <Button className={classes.btn} onClick={importing}>
+              Import
+            </Button>
+            {progressFull > 0 && (
+              <LinearProgress
+                variant='determinate'
+                value={(progress / progressFull) * 100}
+              />
             )}
-          </Grid>
-        </div>
+            <Grid container>
+              <Grid item>
+                <canvas
+                  className={classes.canvas}
+                  ref={this.canvas}
+                  width={vCap.dWidth}
+                  height={vCap.dHeight}
+                  onMouseDown={handleCanvasClick}
+                />
+              </Grid>
+              {status.show && (
+                <>
+                  <Grid item>
+                    <Paper className={classes.Papers}>
+                      <Typography variant='h6' className={classes.text1}>
+                        Coord: {`${status.clientX},${status.clientY}`}
+                      </Typography>
+                      <Typography
+                        variant='h6'
+                        className={classes.text1}
+                        style={{ backgroundColor: status.color }}
+                      >
+                        Color: {`${status.color}`}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                </>
+              )}
+            </Grid>
+          </>
+        )}
 
         <Dialog open={dialog.open} onClose={handleCancelDialog}>
           <DialogContent>

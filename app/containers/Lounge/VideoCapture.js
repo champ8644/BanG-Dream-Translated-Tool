@@ -89,7 +89,6 @@ export default class VideoCapture {
     else prevFrame = this.getFrame(mode);
     this.read(frame, mode);
     this.setFrame(prevFrame, mode);
-    this.updateFrame();
   }
 
   step(value, mode = 'frame') {

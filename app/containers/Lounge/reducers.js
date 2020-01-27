@@ -18,7 +18,8 @@ export const initialState = {
   valueSlider: 0,
   progress: null,
   progressFull: null,
-  importedFile: null
+  importedFile: null,
+  willUpdateNextFrame: false
 };
 
 export default function Lounge(state = initialState, action) {
@@ -26,14 +27,19 @@ export default function Lounge(state = initialState, action) {
   let { type, payload } = action;
   switch (type) {
     case actionTypes.SELECT_NEW_VIDEO:
-      return { ...state, ...payload, isPlaying: false };
-    case actionTypes.UPDATE_FRAME: {
-      const frame = state.vCap.getFrame();
       return {
         ...state,
-        frame
+        ...payload,
+        isPlaying: false,
+        frame: payload.vCap.getFrame(),
+        willUpdateNextFrame: true
       };
-    }
+    case actionTypes.UPDATE_FRAME:
+      return {
+        ...state,
+        frame: state.vCap.getFrame(),
+        willUpdateNextFrame: false
+      };
     case actionTypes.SEND_CANVAS:
       return { ...state, canvasRef: payload };
     case actionTypes.START_VIDEO:

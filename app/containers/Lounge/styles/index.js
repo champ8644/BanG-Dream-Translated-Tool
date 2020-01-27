@@ -6,8 +6,7 @@ export const styles = theme => {
   return {
     root: {
       height: 'calc(100vh - 78px)',
-      padding: theme.spacing(3, 5),
-      background: variables().styles.backgroundColor.main
+      padding: theme.spacing(3, 5)
     },
     chip: {
       margin: theme.spacing(0.5)
