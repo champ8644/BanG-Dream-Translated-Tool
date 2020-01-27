@@ -56,13 +56,27 @@ export function openFile() {
       ]
     });
     if (!userChosenPath) return;
+    const vCap = new VideoCapture(userChosenPath[0], canvasRef, async () =>
+      dispatch(updateFrame())
+    );
     dispatch({
       type: actionTypes.SELECT_NEW_VIDEO,
       payload: {
         videoFilePath: userChosenPath[0],
-        vCap: new VideoCapture(userChosenPath[0], canvasRef)
+        vCap
       }
     });
+    dispatch(updateFrame());
+    vCap.show();
+    dispatch(updateFrame());
+    dispatch(updateFrame());
+    dispatch(updateFrame());
+    dispatch(updateFrame());
+    dispatch(updateFrame());
+    dispatch(updateFrame());
+    dispatch(updateFrame());
+    dispatch(updateFrame());
+    dispatch(updateFrame());
     dispatch(updateFrame());
   };
 }
@@ -76,7 +90,7 @@ export function updateFrame() {
 export function startVideo() {
   return async (dispatch, getState) => {
     const { vCap } = getState().Lounge;
-    vCap.play(() => dispatch(updateFrame()));
+    vCap.play();
   };
 }
 

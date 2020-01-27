@@ -3,7 +3,7 @@ import { maxHeight, maxWidth } from './constants';
 import cv from 'opencv4nodejs';
 
 export default class VideoCapture {
-  constructor(path, canvas) {
+  constructor(path, canvas, updateFrame) {
     this.vCap = new cv.VideoCapture(path);
     this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH);
     this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT);
@@ -13,6 +13,7 @@ export default class VideoCapture {
     this.dWidth = this.width * this.ratio;
     this.dHeight = this.height * this.ratio;
     this.canvas = canvas;
+    this.updateFrame = updateFrame;
   }
 
   frame() {
@@ -79,6 +80,7 @@ export default class VideoCapture {
       mat.rows
     );
     this.putImageData(imgData);
+    this.updateFrame();
   }
 
   show(frame, mode = 'frame') {
@@ -87,6 +89,7 @@ export default class VideoCapture {
     else prevFrame = this.getFrame(mode);
     this.read(frame, mode);
     this.setFrame(prevFrame, mode);
+    this.updateFrame();
   }
 
   step(value, mode = 'frame') {
@@ -105,13 +108,11 @@ export default class VideoCapture {
       this.vCap.setFrame(0);
       this.read();
     }
-    this.updateRedux();
     setTimeout(this.playing.bind(this), 0);
   }
 
-  play(callback) {
+  play() {
     this.isPlaying = true;
-    this.updateRedux = async () => callback();
     setTimeout(this.playing.bind(this), 0);
   }
 

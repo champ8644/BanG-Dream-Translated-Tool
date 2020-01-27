@@ -27,11 +27,13 @@ export default function Lounge(state = initialState, action) {
   switch (type) {
     case actionTypes.SELECT_NEW_VIDEO:
       return { ...state, ...payload, isPlaying: false };
-    case actionTypes.UPDATE_FRAME:
+    case actionTypes.UPDATE_FRAME: {
+      const frame = state.vCap.getFrame();
       return {
         ...state,
-        frame: state.vCap.getFrame()
+        frame
       };
+    }
     case actionTypes.SEND_CANVAS:
       return { ...state, canvasRef: payload };
     case actionTypes.START_VIDEO:
