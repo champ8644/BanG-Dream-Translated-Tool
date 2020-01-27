@@ -48,6 +48,7 @@ import reducers from './reducers';
 import { styles } from './styles';
 import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 const mapStateToProps = (state, props) => {
   return {
@@ -219,7 +220,10 @@ class Lounge extends Component {
             <Button className={classes.btn} onClick={exporting}>
               Export
             </Button>
-            <Button className={classes.btn} onClick={importing}>
+            <Button
+              className={clsx(classes.btn, classes.marginLeft)}
+              onClick={importing}
+            >
               Import
             </Button>
             {progressFull > 0 && (

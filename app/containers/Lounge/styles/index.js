@@ -11,6 +11,7 @@ export const styles = theme => {
     chip: {
       margin: theme.spacing(0.5)
     },
+    marginLeft: { marginLeft: '1em' },
     marginDivider: { margin: '1em' },
     paperTop: {
       height: '100px',
