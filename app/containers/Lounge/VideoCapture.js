@@ -6,7 +6,7 @@ import subtitleFinder from './matFunctions/subtitleFinder';
 import titleFinder from './matFunctions/titleFinder';
 
 export default class VideoCapture {
-  constructor(path, canvas, updateFrame) {
+  constructor(path, canvas, updateFrame, modePostProcessor) {
     this.vCap = new cv.VideoCapture(path);
     this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH);
     this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT);
@@ -17,6 +17,7 @@ export default class VideoCapture {
     this.dHeight = this.height * this.ratio;
     this.canvas = canvas;
     this.updateFrame = updateFrame;
+    this.setPostProcessor(modePostProcessor);
   }
 
   frame() {
