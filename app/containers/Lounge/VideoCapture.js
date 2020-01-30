@@ -1,6 +1,9 @@
 import { maxHeight, maxWidth } from './constants';
 
 import cv from 'opencv4nodejs';
+import placeFinder from './matFunctions/placeFinder';
+import subtitleFinder from './matFunctions/subtitleFinder';
+import titleFinder from './matFunctions/titleFinder';
 
 export default class VideoCapture {
   constructor(path, canvas, updateFrame) {
@@ -69,6 +72,7 @@ export default class VideoCapture {
   read(frame, mode = 'frame') {
     let mat = this.getMat(frame, mode);
     if (mat.empty) return;
+    if (this.postProcessor) mat = this.postProcessor(mat);
     mat = mat.rescale(this.ratio);
     const matRGBA =
       mat.channels === 1
@@ -117,5 +121,21 @@ export default class VideoCapture {
 
   stop() {
     this.isPlaying = false;
+  }
+
+  setPostProcessor(mode) {
+    switch (mode) {
+      case 'subtitle':
+        this.postProcessor = subtitleFinder;
+        break;
+      case 'place':
+        this.postProcessor = placeFinder;
+        break;
+      case 'title':
+        this.postProcessor = titleFinder;
+        break;
+      default:
+        this.postProcessor = null;
+    }
   }
 }

@@ -61,6 +61,7 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.STOP_VIDEO:
       return { ...state, isPlaying: false };
     case actionTypes.HANDLE_RADIO_SELECT:
+      state.vCap.setPostProcessor(payload);
       return { ...state, overlayMode: payload };
     case actionTypes.HANDLE_CANVAS_CLICK:
       return { ...state, status: payload };
