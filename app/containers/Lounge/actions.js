@@ -31,7 +31,8 @@ const actionTypesList = [
   'STOP_PROGRESS',
   'START_PROGRESS',
   'ADD_PROGRESS',
-  'IMPORTING'
+  'IMPORTING',
+  'HANDLE_RADIO_SELECT'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -201,6 +202,13 @@ export function handleKeyDownDialog(e) {
     if (e.key === 'Enter') {
       dispatch(handleConfirmDialog());
     }
+  };
+}
+
+export function handleRadioSelect(e) {
+  return {
+    type: actionTypes.HANDLE_RADIO_SELECT,
+    payload: e.target.value
   };
 }
 

@@ -68,3 +68,8 @@ export const makeWillUpdateNextFrame = createSelector(
   state =>
     state ? state.willUpdateNextFrame : initialState.willUpdateNextFrame
 );
+
+export const makeOverlayMode = createSelector(
+  make,
+  state => (state ? state.overlayMode : initialState.overlayMode)
+);

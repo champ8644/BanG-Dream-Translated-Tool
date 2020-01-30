@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import {
   makeCurrentFrame,
   makeDialogData,
+  makeOverlayMode,
   makeProgress,
   makeProgressBar,
   makeSlider,
@@ -23,6 +24,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import { Helmet } from 'react-helmet';
 import IconButton from '@material-ui/core/IconButton';
@@ -32,6 +36,8 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 import PieChartIcon from '@material-ui/icons/PieChart';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import Slider from '@material-ui/core/Slider';
@@ -42,13 +48,13 @@ import TimerIcon from '@material-ui/icons/Timer';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { bindActionCreators } from 'redux';
+import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { formatNumber } from './constants/function';
 import reducers from './reducers';
 import { styles } from './styles';
 import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
 
 const mapStateToProps = (state, props) => {
   return {
@@ -60,7 +66,8 @@ const mapStateToProps = (state, props) => {
     dialog: makeDialogData(state),
     status: makeStatusData(state),
     valueSlider: makeSlider(state),
-    willUpdateNextFrame: makeWillUpdateNextFrame(state)
+    willUpdateNextFrame: makeWillUpdateNextFrame(state),
+    overlayMode: makeOverlayMode(state)
   };
 };
 
@@ -110,7 +117,9 @@ class Lounge extends Component {
       importing,
       frame,
       ms,
-      percent
+      percent,
+      overlayMode,
+      handleRadioSelect
     } = this.props;
     return (
       <div className={classes.root}>
@@ -187,45 +196,82 @@ class Lounge extends Component {
               label={`${formatNumber(percent)} / 100 %`}
               variant='outlined'
             />
-            <Paper className={classes.PaperSlider}>
-              <Grid container spacing={2} alignItems='center'>
-                <Grid item>
-                  <Typography id='discrete-slider' gutterBottom>
-                    Slider-1
-                  </Typography>
-                </Grid>
-                <Grid item xs>
-                  <Slider
-                    value={typeof valueSlider === 'number' ? valueSlider : 0}
-                    onChange={handleChangeSlider}
-                  />
-                </Grid>
-                <Grid item>
-                  <Input
-                    id='slider-1'
-                    value={valueSlider}
-                    margin='dense'
-                    onChange={handleInputChange}
-                    onBlur={handleInputBlur}
-                    inputProps={{
-                      step: 1,
-                      min: 0,
-                      max: 100,
-                      type: 'number'
-                    }}
-                  />
-                </Grid>
+            <Grid container>
+              <Grid item>
+                <Paper className={classes.paperRadio}>
+                  <FormControl
+                    component='fieldset'
+                    className={classes.formControl}
+                  >
+                    <FormLabel component='legend'>Overlay mode</FormLabel>
+                    <RadioGroup
+                      name='overlayRadio'
+                      value={overlayMode}
+                      onChange={handleRadioSelect}
+                    >
+                      <FormControlLabel
+                        value='none'
+                        control={<Radio color='primary' />}
+                        label='none'
+                      />
+                      <FormControlLabel
+                        value='subtitle'
+                        control={<Radio color='primary' />}
+                        label='Subtitle'
+                      />
+                      <FormControlLabel
+                        value='other'
+                        control={<Radio color='primary' />}
+                        label='Other'
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Paper>
               </Grid>
-            </Paper>
-            <Button className={classes.btn} onClick={exporting}>
-              Export
-            </Button>
-            <Button
-              className={clsx(classes.btn, classes.marginLeft)}
-              onClick={importing}
-            >
-              Import
-            </Button>
+              <Grid item>
+                <Paper className={classes.PaperSlider}>
+                  <Grid container spacing={2} alignItems='center'>
+                    <Grid item>
+                      <Typography id='discrete-slider' gutterBottom>
+                        Slider-1
+                      </Typography>
+                    </Grid>
+                    <Grid item xs>
+                      <Slider
+                        value={
+                          typeof valueSlider === 'number' ? valueSlider : 0
+                        }
+                        onChange={handleChangeSlider}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Input
+                        id='slider-1'
+                        value={valueSlider}
+                        margin='dense'
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        inputProps={{
+                          step: 1,
+                          min: 0,
+                          max: 100,
+                          type: 'number'
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </Paper>
+                <Button className={classes.btn} onClick={exporting}>
+                  Export
+                </Button>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={importing}
+                >
+                  Import
+                </Button>
+              </Grid>
+            </Grid>
             {progressFull > 0 && (
               <LinearProgress
                 variant='determinate'

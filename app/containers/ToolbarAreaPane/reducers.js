@@ -43,7 +43,7 @@ export default function Toolbar(state = initialState, action) {
         const ress = res[1].split('/');
         switch (ress[0]) {
           case 'mainmenu':
-            toolbarTitle += 'Cognitive Fatigue Evaluator';
+            toolbarTitle += 'BanG Dream! Tranlated Tool';
             break;
           case 'pvsat':
             toolbarTitle += 'PVSAT';

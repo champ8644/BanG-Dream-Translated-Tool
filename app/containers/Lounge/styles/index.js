@@ -37,10 +37,16 @@ export const styles = theme => {
       padding: theme.spacing(2),
       margin: theme.spacing(2)
     },
+    paperRadio: {
+      margin: theme.spacing(3, 3, 3, 0)
+    },
+    formControl: {
+      margin: theme.spacing(3)
+    },
     PaperSlider: {
       width: '500px',
       padding: theme.spacing(2),
-      margin: theme.spacing(2)
+      margin: theme.spacing(3, 3, 3, 0)
     },
     paper1: {
       display: 'flex',

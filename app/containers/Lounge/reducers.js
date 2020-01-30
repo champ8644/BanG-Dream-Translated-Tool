@@ -19,7 +19,8 @@ export const initialState = {
   progress: null,
   progressFull: null,
   importedFile: null,
-  willUpdateNextFrame: false
+  willUpdateNextFrame: false,
+  overlayMode: 'none'
 };
 
 export default function Lounge(state = initialState, action) {
@@ -59,6 +60,8 @@ export default function Lounge(state = initialState, action) {
       return { ...state, dialog: { ...state.dialog, value: payload } };
     case actionTypes.STOP_VIDEO:
       return { ...state, isPlaying: false };
+    case actionTypes.HANDLE_RADIO_SELECT:
+      return { ...state, overlayMode: payload };
     case actionTypes.HANDLE_CANVAS_CLICK:
       return { ...state, status: payload };
     case actionTypes.HANDLE_CHANGE_SLIDER:
