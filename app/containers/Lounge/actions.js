@@ -47,7 +47,7 @@ export function sendCanvas(canvasRef) {
 
 export function openFile() {
   return (dispatch, getState) => {
-    const { canvasRef } = getState().Lounge;
+    const { canvasRef, valueSlider, overlayMode } = getState().Lounge;
     const userChosenPath = dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [
@@ -58,9 +58,13 @@ export function openFile() {
       ]
     });
     if (!userChosenPath) return;
-    const vCap = new VideoCapture(userChosenPath[0], canvasRef, async () =>
-      dispatch(updateFrame())
-    );
+    const vCap = new VideoCapture({
+      path: userChosenPath[0],
+      canvas: canvasRef,
+      updateFrame: async () => dispatch(updateFrame()),
+      colorSlider: valueSlider,
+      modePostProcessor: overlayMode
+    });
     dispatch({
       type: actionTypes.SELECT_NEW_VIDEO,
       payload: {
@@ -273,8 +277,12 @@ export function handleChangeSlider(name, value) {
 }
 
 export function handleCommittedSlider() {
-  return {
-    type: actionTypes.HANDLE_COMMITTED_SLIDER
+  return (dispatch, getState) => {
+    const { vCap, valueSlider } = getState().Lounge;
+    vCap.changeColorSlider(valueSlider);
+    return {
+      type: actionTypes.HANDLE_COMMITTED_SLIDER
+    };
   };
 }
 

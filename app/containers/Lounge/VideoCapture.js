@@ -7,7 +7,7 @@ import subtitleFinder from './matFunctions/subtitleFinder';
 import titleFinder from './matFunctions/titleFinder';
 
 export default class VideoCapture {
-  constructor(path, canvas, updateFrame, modePostProcessor) {
+  constructor({ path, canvas, updateFrame, modePostProcessor, colorSlider }) {
     this.vCap = new cv.VideoCapture(path);
     this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH);
     this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT);
@@ -18,6 +18,7 @@ export default class VideoCapture {
     this.dHeight = this.height * this.ratio;
     this.canvas = canvas;
     this.updateFrame = updateFrame;
+    this.colorSlider = colorSlider;
     this.setPostProcessor(modePostProcessor);
   }
 
@@ -90,7 +91,7 @@ export default class VideoCapture {
   read(frame, mode = 'frame') {
     let mat = this.getMat(frame, mode);
     if (mat.empty) return;
-    if (this.postProcessor) mat = this.postProcessor(mat);
+    if (this.postProcessor) mat = this.postProcessor(mat, this);
     this.showMatInCanvas(mat);
   }
 
@@ -168,5 +169,10 @@ export default class VideoCapture {
     this.showMatInCanvas(mat);
     this.setFrame(prevFrame);
     return matAtRaw;
+  }
+
+  changeColorSlider(payload) {
+    this.colorSlider = payload;
+    this.show();
   }
 }
