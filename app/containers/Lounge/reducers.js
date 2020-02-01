@@ -15,7 +15,7 @@ export const initialState = {
     maxValue: null
   },
   status: {},
-  valueSlider: 0,
+  valueSlider: { red: [20, 40], green: [30, 50], blue: [40, 60] },
   progress: null,
   progressFull: null,
   importedFile: null,
@@ -65,7 +65,7 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.HANDLE_CANVAS_CLICK:
       return { ...state, status: payload };
     case actionTypes.HANDLE_CHANGE_SLIDER:
-      return { ...state, valueSlider: payload };
+      return { ...state, valueSlider: { ...state.valueSlider, ...payload } };
     case actionTypes.STOP_PROGRES:
       return { ...state, progressFull: null, progress: null };
     case actionTypes.START_PROGRESS:

@@ -32,7 +32,8 @@ const actionTypesList = [
   'START_PROGRESS',
   'ADD_PROGRESS',
   'IMPORTING',
-  'HANDLE_RADIO_SELECT'
+  'HANDLE_RADIO_SELECT',
+  'HANDLE_COMMITTED_SLIDER'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -264,30 +265,29 @@ function fullColorHex(r, g, b) {
   return `#${red}${green}${blue}`;
 }
 
-function changeSlider(value) {
-  return dispatch => {
-    dispatch({
-      type: actionTypes.HANDLE_CHANGE_SLIDER,
-      payload: value
-    });
-    dispatch(importing());
+export function handleChangeSlider(name, value) {
+  return {
+    type: actionTypes.HANDLE_CHANGE_SLIDER,
+    payload: { [name]: value }
   };
 }
 
-export function handleChangeSlider(e, value) {
-  return changeSlider(value);
-}
-
-export function handleInputChange(e) {
-  return dispatch => {
-    if (e.target.value === '') return changeSlider(0);
-    let num = parseFloat(e.target.value);
-    if (isNaN(num)) return;
-    if (num < 0) num = 0;
-    else if (num > 100) num = 100;
-    return dispatch(changeSlider(num));
+export function handleCommittedSlider() {
+  return {
+    type: actionTypes.HANDLE_COMMITTED_SLIDER
   };
 }
+
+// export function handleInputChange(e) {
+//   return dispatch => {
+//     if (e.target.value === '') return changeSlider(0);
+//     let num = parseFloat(e.target.value);
+//     if (isNaN(num)) return;
+//     if (num < 0) num = 0;
+//     else if (num > 100) num = 100;
+//     return dispatch(changeSlider(num));
+//   };
+// }
 
 // eslint-disable-next-line no-unused-vars
 async function findBorder(frame, initX, initY, putFrame) {

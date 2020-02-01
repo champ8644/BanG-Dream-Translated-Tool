@@ -30,7 +30,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import { Helmet } from 'react-helmet';
 import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
+// import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
@@ -109,8 +109,6 @@ class Lounge extends Component {
       status,
       valueSlider,
       handleChangeSlider,
-      handleInputChange,
-      handleInputBlur,
       exporting,
       progress,
       progressFull,
@@ -119,7 +117,8 @@ class Lounge extends Component {
       ms,
       percent,
       overlayMode,
-      handleRadioSelect
+      handleRadioSelect,
+      handleCommittedSlider
     } = this.props;
     return (
       <div className={classes.root}>
@@ -232,31 +231,79 @@ class Lounge extends Component {
                 <Paper className={classes.PaperSlider}>
                   <Grid container spacing={2} alignItems='center'>
                     <Grid item>
-                      <Typography id='discrete-slider' gutterBottom>
-                        Slider-1
+                      <Typography
+                        id='red-slider'
+                        className={classes.sliderLabel}
+                        gutterBottom
+                      >
+                        Red
                       </Typography>
                     </Grid>
                     <Grid item xs>
                       <Slider
-                        value={
-                          typeof valueSlider === 'number' ? valueSlider : 0
+                        name='red'
+                        value={valueSlider.red}
+                        onChange={(e, value) =>
+                          handleChangeSlider('red', value)
                         }
-                        onChange={handleChangeSlider}
+                        onChangeCommitted={(e, value) => {
+                          handleChangeSlider('red', value);
+                          handleCommittedSlider();
+                        }}
+                        valueLabelDisplay='auto'
+                        max={255}
                       />
                     </Grid>
+                  </Grid>
+                  <Grid container spacing={2} alignItems='center'>
                     <Grid item>
-                      <Input
-                        id='slider-1'
-                        value={valueSlider}
-                        margin='dense'
-                        onChange={handleInputChange}
-                        onBlur={handleInputBlur}
-                        inputProps={{
-                          step: 1,
-                          min: 0,
-                          max: 100,
-                          type: 'number'
+                      <Typography
+                        id='green-slider'
+                        className={classes.sliderLabel}
+                        gutterBottom
+                      >
+                        Green
+                      </Typography>
+                    </Grid>
+                    <Grid item xs>
+                      <Slider
+                        name='green'
+                        value={valueSlider.green}
+                        onChange={(e, value) =>
+                          handleChangeSlider('green', value)
+                        }
+                        onChangeCommitted={(e, value) => {
+                          handleChangeSlider('green', value);
+                          handleCommittedSlider();
                         }}
+                        valueLabelDisplay='auto'
+                        max={255}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid container spacing={2} alignItems='center'>
+                    <Grid item>
+                      <Typography
+                        id='blue-slider'
+                        className={classes.sliderLabel}
+                        gutterBottom
+                      >
+                        Blue
+                      </Typography>
+                    </Grid>
+                    <Grid item xs>
+                      <Slider
+                        name='blue'
+                        value={valueSlider.blue}
+                        onChange={(e, value) =>
+                          handleChangeSlider('blue', value)
+                        }
+                        onChangeCommitted={(e, value) => {
+                          handleChangeSlider('blue', value);
+                          handleCommittedSlider();
+                        }}
+                        valueLabelDisplay='auto'
+                        max={255}
                       />
                     </Grid>
                   </Grid>

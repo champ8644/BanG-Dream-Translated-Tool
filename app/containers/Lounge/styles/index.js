@@ -65,6 +65,9 @@ export const styles = theme => {
       justifyContent: 'center',
       padding: '1em'
     },
+    sliderLabel: {
+      width: '3rem'
+    },
     titlePaper: {
       justifyContent: 'center',
       display: 'flex',
