@@ -5,6 +5,9 @@ import { mixins, variables } from '../../../styles/js';
 export const styles = theme => {
   return {
     root: {
+      height: '100vh'
+    },
+    subroot: {
       padding: 20,
       display: 'grid',
       justifyItems: 'center'
