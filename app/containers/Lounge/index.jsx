@@ -220,9 +220,9 @@ class Lounge extends Component {
                         label='Subtitle'
                       />
                       <FormControlLabel
-                        value='other'
+                        value='contour'
                         control={<Radio color='primary' />}
-                        label='Other'
+                        label='Contour'
                       />
                     </RadioGroup>
                   </FormControl>
@@ -298,9 +298,18 @@ class Lounge extends Component {
                       <Typography
                         variant='h6'
                         className={classes.text1}
-                        style={{ backgroundColor: status.color }}
+                        style={{ backgroundColor: status.color.hex }}
                       >
-                        Color: {`${status.color}`}
+                        {`Color: ${status.color.hex}`}
+                      </Typography>
+                      <Typography
+                        variant='h6'
+                        className={classes.text1}
+                        style={{ backgroundColor: status.color.hex }}
+                      >
+                        {`RGB: (${status.color.r},${status.color.g},${
+                          status.color.b
+                        })`}
                       </Typography>
                     </Paper>
                   </Grid>

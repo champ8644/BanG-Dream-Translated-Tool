@@ -206,9 +206,14 @@ export function handleKeyDownDialog(e) {
 }
 
 export function handleRadioSelect(e) {
-  return {
-    type: actionTypes.HANDLE_RADIO_SELECT,
-    payload: e.target.value
+  return (dispatch, getState) => {
+    const { vCap } = getState().Lounge;
+    vCap.setPostProcessor(e.target.value);
+    vCap.show();
+    dispatch({
+      type: actionTypes.HANDLE_RADIO_SELECT,
+      payload: e.target.value
+    });
   };
 }
 
@@ -234,7 +239,12 @@ export function handleCanvasClick(_event) {
     const [b, g, r] = vCap.locatedClicked(clientX, clientY);
     dispatch({
       type: actionTypes.HANDLE_CANVAS_CLICK,
-      payload: { clientX, clientY, show: true, color: fullColorHex(r, g, b) }
+      payload: {
+        clientX,
+        clientY,
+        show: true,
+        color: { hex: fullColorHex(r, g, b), r, b, g }
+      }
     });
   };
 }
