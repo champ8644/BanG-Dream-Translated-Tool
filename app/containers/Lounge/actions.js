@@ -212,6 +212,73 @@ export function handleRadioSelect(e) {
   };
 }
 
+export function handleCanvasClick(_event) {
+  return (dispatch, getState) => {
+    const { canvasRef, vCap } = getState().Lounge;
+    let event = {};
+    const {
+      left: offsetLeft,
+      top: offsetTop
+    } = canvasRef.current.getBoundingClientRect();
+    if (_event) event = _event;
+    else
+      event = {
+        clientX: offsetLeft,
+        clientY: offsetTop
+      };
+    let { clientX, clientY } = event;
+    clientX -= offsetLeft;
+    clientY -= offsetTop;
+    clientX /= vCap.ratio;
+    clientY /= vCap.ratio;
+    const [b, g, r] = vCap.locatedClicked(clientX, clientY);
+    dispatch({
+      type: actionTypes.HANDLE_CANVAS_CLICK,
+      payload: { clientX, clientY, show: true, color: fullColorHex(r, g, b) }
+    });
+  };
+}
+
+function rgbToHex(rgb) {
+  let hex = Number(rgb).toString(16);
+  if (hex.length < 2) {
+    hex = `0${hex}`;
+  }
+  return hex;
+}
+
+function fullColorHex(r, g, b) {
+  const red = rgbToHex(r);
+  const green = rgbToHex(g);
+  const blue = rgbToHex(b);
+  return `#${red}${green}${blue}`;
+}
+
+function changeSlider(value) {
+  return dispatch => {
+    dispatch({
+      type: actionTypes.HANDLE_CHANGE_SLIDER,
+      payload: value
+    });
+    dispatch(importing());
+  };
+}
+
+export function handleChangeSlider(e, value) {
+  return changeSlider(value);
+}
+
+export function handleInputChange(e) {
+  return dispatch => {
+    if (e.target.value === '') return changeSlider(0);
+    let num = parseFloat(e.target.value);
+    if (isNaN(num)) return;
+    if (num < 0) num = 0;
+    else if (num > 100) num = 100;
+    return dispatch(changeSlider(num));
+  };
+}
+
 // eslint-disable-next-line no-unused-vars
 async function findBorder(frame, initX, initY, putFrame) {
   const queue = new Queue();
@@ -305,85 +372,6 @@ function findTextBubble(frame) {
     }
   });
   return outObj;
-}
-
-export function handleCanvasClick(_event) {
-  return (dispatch, getState) => {
-    const {
-      canvasRef,
-      vCap,
-      vCapPackage: { ratio, putFrame }
-      // valueSlider
-    } = getState().Lounge;
-    let event = {};
-    const {
-      left: offsetLeft,
-      top: offsetTop
-    } = canvasRef.current.getBoundingClientRect();
-    if (_event) event = _event;
-    else
-      event = {
-        clientX: offsetLeft,
-        clientY: offsetTop
-      };
-    let { clientX, clientY } = event;
-    clientX -= offsetLeft;
-    clientY -= offsetTop;
-    clientX /= ratio;
-    clientY /= ratio;
-    // rewindOneFrame(vCap);
-    const frame = vCap.read();
-    const [b, g, r] = frame.atRaw(clientY, clientX);
-    findTextBubble(frame);
-    const green = new cv.Vec(0, 255, 0);
-    frame.drawCircle(new cv.Point(clientX, clientY), 5, green, 10, cv.FILLED);
-    dispatch(putFrame(frame));
-    frame.release();
-    dispatch({
-      type: actionTypes.HANDLE_CANVAS_CLICK,
-      payload: { clientX, clientY, show: true, color: fullColorHex(r, g, b) }
-    });
-  };
-}
-
-function rgbToHex(rgb) {
-  let hex = Number(rgb).toString(16);
-  if (hex.length < 2) {
-    hex = `0${hex}`;
-  }
-  return hex;
-}
-
-function fullColorHex(r, g, b) {
-  const red = rgbToHex(r);
-  const green = rgbToHex(g);
-  const blue = rgbToHex(b);
-  return `#${red}${green}${blue}`;
-}
-
-function changeSlider(value) {
-  return dispatch => {
-    dispatch({
-      type: actionTypes.HANDLE_CHANGE_SLIDER,
-      payload: value
-    });
-    dispatch(importing());
-  };
-}
-
-export function handleChangeSlider(e, value) {
-  return changeSlider(value);
-}
-
-export function handleInputChange(e) {
-  return dispatch => {
-    if (e.target.value === '') return changeSlider(0);
-    let num = parseFloat(e.target.value);
-    if (isNaN(num)) return;
-    if (num < 0) num = 0;
-    else if (num > 100) num = 100;
-    return dispatch(changeSlider(num));
-  };
 }
 
 // export function handleInputBlur(e, value) {

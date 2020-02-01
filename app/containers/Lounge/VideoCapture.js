@@ -1,5 +1,6 @@
-import { maxHeight, maxWidth } from './constants';
+import { green, maxHeight, maxWidth } from './constants';
 
+import contourFinder from './matFunctions/contourFinder';
 import cv from 'opencv4nodejs';
 import placeFinder from './matFunctions/placeFinder';
 import subtitleFinder from './matFunctions/subtitleFinder';
@@ -70,11 +71,9 @@ export default class VideoCapture {
     return this.vCap.read();
   }
 
-  read(frame, mode = 'frame') {
-    let mat = this.getMat(frame, mode);
-    if (mat.empty) return;
-    if (this.postProcessor) mat = this.postProcessor(mat);
-    mat = mat.rescale(this.ratio);
+  showMatInCanvas(_mat) {
+    if (_mat.empty) return;
+    const mat = _mat.rescale(this.ratio);
     const matRGBA =
       mat.channels === 1
         ? mat.cvtColor(cv.COLOR_GRAY2RGBA)
@@ -86,6 +85,22 @@ export default class VideoCapture {
     );
     this.putImageData(imgData);
     this.updateFrame();
+  }
+
+  read(frame, mode = 'frame') {
+    let mat = this.getMat(frame, mode);
+    if (mat.empty) return;
+    if (this.postProcessor) mat = this.postProcessor(mat);
+    this.showMatInCanvas(mat);
+  }
+
+  getRaw(frame, mode = 'frame') {
+    let prevFrame;
+    if (frame !== undefined) prevFrame = frame;
+    else prevFrame = this.getFrame(mode);
+    const mat = this.getMat(frame, mode);
+    this.setFrame(prevFrame, mode);
+    return mat;
   }
 
   show(frame, mode = 'frame') {
@@ -135,8 +150,23 @@ export default class VideoCapture {
       case 'title':
         this.postProcessor = titleFinder;
         break;
+      case 'contour':
+        this.postProcessor = contourFinder;
+        break;
       default:
         this.postProcessor = null;
     }
+  }
+
+  locatedClicked(x, y) {
+    const prevFrame = this.getFrame();
+    let mat = this.getMat();
+    if (mat.empty) return;
+    const matAtRaw = mat.atRaw(y, x);
+    if (this.postProcessor) mat = this.postProcessor(mat);
+    mat.drawCircle(new cv.Point(x, y), 5, green, 10, cv.FILLED);
+    this.showMatInCanvas(mat);
+    this.setFrame(prevFrame);
+    return matAtRaw;
   }
 }
