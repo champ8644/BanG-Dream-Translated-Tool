@@ -56,6 +56,15 @@ import { styles } from './styles';
 import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
+const sliderObj = [
+  { name: 'outerX', max: 1920 },
+  { name: 'outerY', max: 1440 },
+  { name: 'innerX', max: 1920 },
+  { name: 'innerY', max: 1440 }
+];
+
+const radioObj = ['none', 'contour', 'labelCheck'];
+
 const mapStateToProps = (state, props) => {
   return {
     ...makeVideoFilePath(state),
@@ -70,6 +79,57 @@ const mapStateToProps = (state, props) => {
     overlayMode: makeOverlayMode(state)
   };
 };
+
+function SliderTemplate(props) {
+  const {
+    name,
+    handleChangeSlider,
+    valueSlider,
+    handleCommittedSlider,
+    classes,
+    max
+  } = props;
+  return (
+    <Grid container spacing={2} alignItems='center'>
+      <Grid item>
+        <Typography
+          id={`${name}-slider`}
+          className={classes.sliderLabel}
+          gutterBottom
+        >
+          {name.charAt(0).toUpperCase() + name.slice(1)}
+        </Typography>
+      </Grid>
+      <Grid item xs>
+        <Slider
+          name={name}
+          value={valueSlider[name]}
+          onChange={(e, value) => {
+            handleChangeSlider(name, value);
+            handleCommittedSlider();
+          }}
+          onChangeCommitted={(e, value) => {
+            handleChangeSlider(name, value);
+            handleCommittedSlider();
+          }}
+          valueLabelDisplay='auto'
+          max={max}
+        />
+      </Grid>
+    </Grid>
+  );
+}
+
+function RadioTemplate(props) {
+  const { name } = props;
+  return (
+    <FormControlLabel
+      value={name}
+      control={<Radio color='primary' />}
+      label={name}
+    />
+  );
+}
 
 class Lounge extends Component {
   constructor(props) {
@@ -120,6 +180,7 @@ class Lounge extends Component {
       handleRadioSelect,
       handleCommittedSlider
     } = this.props;
+
     return (
       <div className={classes.root}>
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
@@ -208,105 +269,26 @@ class Lounge extends Component {
                       value={overlayMode}
                       onChange={handleRadioSelect}
                     >
-                      <FormControlLabel
-                        value='none'
-                        control={<Radio color='primary' />}
-                        label='none'
-                      />
-                      <FormControlLabel
-                        value='subtitle'
-                        control={<Radio color='primary' />}
-                        label='Subtitle'
-                      />
-                      <FormControlLabel
-                        value='contour'
-                        control={<Radio color='primary' />}
-                        label='Contour'
-                      />
+                      {radioObj.map(name => (
+                        <RadioTemplate name={name} key={name} />
+                      ))}
                     </RadioGroup>
                   </FormControl>
                 </Paper>
               </Grid>
               <Grid item>
                 <Paper className={classes.PaperSlider}>
-                  <Grid container spacing={2} alignItems='center'>
-                    <Grid item>
-                      <Typography
-                        id='red-slider'
-                        className={classes.sliderLabel}
-                        gutterBottom
-                      >
-                        Red
-                      </Typography>
-                    </Grid>
-                    <Grid item xs>
-                      <Slider
-                        name='red'
-                        value={valueSlider.red}
-                        onChange={(e, value) =>
-                          handleChangeSlider('red', value)
-                        }
-                        onChangeCommitted={(e, value) => {
-                          handleChangeSlider('red', value);
-                          handleCommittedSlider();
-                        }}
-                        valueLabelDisplay='auto'
-                        max={255}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={2} alignItems='center'>
-                    <Grid item>
-                      <Typography
-                        id='green-slider'
-                        className={classes.sliderLabel}
-                        gutterBottom
-                      >
-                        Green
-                      </Typography>
-                    </Grid>
-                    <Grid item xs>
-                      <Slider
-                        name='green'
-                        value={valueSlider.green}
-                        onChange={(e, value) =>
-                          handleChangeSlider('green', value)
-                        }
-                        onChangeCommitted={(e, value) => {
-                          handleChangeSlider('green', value);
-                          handleCommittedSlider();
-                        }}
-                        valueLabelDisplay='auto'
-                        max={255}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={2} alignItems='center'>
-                    <Grid item>
-                      <Typography
-                        id='blue-slider'
-                        className={classes.sliderLabel}
-                        gutterBottom
-                      >
-                        Blue
-                      </Typography>
-                    </Grid>
-                    <Grid item xs>
-                      <Slider
-                        name='blue'
-                        value={valueSlider.blue}
-                        onChange={(e, value) =>
-                          handleChangeSlider('blue', value)
-                        }
-                        onChangeCommitted={(e, value) => {
-                          handleChangeSlider('blue', value);
-                          handleCommittedSlider();
-                        }}
-                        valueLabelDisplay='auto'
-                        max={255}
-                      />
-                    </Grid>
-                  </Grid>
+                  {sliderObj.map(({ name, max }) => (
+                    <SliderTemplate
+                      name={name}
+                      handleChangeSlider={handleChangeSlider}
+                      valueSlider={valueSlider}
+                      handleCommittedSlider={handleCommittedSlider}
+                      classes={classes}
+                      max={max}
+                      key={name}
+                    />
+                  ))}
                 </Paper>
                 <Button className={classes.btn} onClick={exporting}>
                   Export

@@ -1,20 +1,31 @@
-import cv from 'opencv4nodejs';
-import { nameLabelThreshold } from '../constants';
-/* eslint-disable no-bitwise */
+import { black, nameLabelCrop, nameLabelThreshold, white } from '../constants';
 
-export default function contourFinder(
-  mat
-  // , vCap
-) {
-  // const contours = mat
-  //   .cvtColor(cv.COLOR_RGB2GRAY)
-  //   .gaussianBlur(new cv.Size(3, 3), 0)
-  //   .threshold(240, 255, cv.THRESH_BINARY);
-  const { red, green, blue } = nameLabelThreshold;
-  const lowerColorBounds = new cv.Vec(blue[0], green[0], red[0]);
-  const upperColorBounds = new cv.Vec(blue[1], green[1], red[1]);
-  const mask = mat.inRange(lowerColorBounds, upperColorBounds);
-  const maskRgb = mask.cvtColor(cv.COLOR_GRAY2BGR);
-  // .findContours(cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-  return maskRgb;
+import cv from 'opencv4nodejs';
+
+export default function contourFinder(mat) {
+  const { innerX, outerX, innerY, outerY } = nameLabelCrop;
+  const { val, sat, hue } = nameLabelThreshold;
+  const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
+  const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
+  const masked = mat
+    .cvtColor(cv.COLOR_BGR2HSV)
+    .inRange(lowerColorBounds, upperColorBounds)
+    .cvtColor(cv.COLOR_GRAY2BGR);
+  const maskRect = new cv.Mat(masked.rows, masked.cols, cv.CV_8UC3);
+  maskRect.drawRectangle(
+    new cv.Point2(outerX[0], outerY[0]),
+    new cv.Point2(outerX[1], outerY[1]),
+    white,
+    -1
+  );
+  maskRect.drawRectangle(
+    new cv.Point2(innerX[0], innerY[0]),
+    new cv.Point2(innerX[1], innerY[1]),
+    black,
+    -1
+  );
+  const outMat = mat.and(maskRect).and(masked);
+  cv.imwrite('CaptureNameLabel.png', outMat);
+  cv.imwrite('CaptureNameLabelBGR.png', outMat.cvtColor(cv.COLOR_BGR2RGB));
+  return outMat;
 }

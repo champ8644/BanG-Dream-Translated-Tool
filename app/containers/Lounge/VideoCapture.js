@@ -2,6 +2,7 @@ import { green, maxHeight, maxWidth } from './constants';
 
 import contourFinder from './matFunctions/contourFinder';
 import cv from 'opencv4nodejs';
+import labelCheck from './matFunctions/labelCheck';
 import placeFinder from './matFunctions/placeFinder';
 import subtitleFinder from './matFunctions/subtitleFinder';
 import titleFinder from './matFunctions/titleFinder';
@@ -153,6 +154,9 @@ export default class VideoCapture {
         break;
       case 'contour':
         this.postProcessor = contourFinder;
+        break;
+      case 'labelCheck':
+        this.postProcessor = labelCheck;
         break;
       default:
         this.postProcessor = null;

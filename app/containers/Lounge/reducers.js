@@ -15,7 +15,18 @@ export const initialState = {
     maxValue: null
   },
   status: {},
-  valueSlider: { red: [20, 40], green: [30, 50], blue: [40, 60] },
+  valueSlider: {
+    red: [0, 255],
+    green: [0, 255],
+    blue: [0, 255],
+    hue: [0, 255],
+    sat: [0, 255],
+    val: [0, 255],
+    outerX: [0, 1920],
+    innerX: [0, 1920],
+    outerY: [0, 1440],
+    innerY: [0, 1440]
+  },
   progress: null,
   progressFull: null,
   importedFile: null,
