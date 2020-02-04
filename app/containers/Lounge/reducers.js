@@ -2,6 +2,38 @@
 
 import { actionTypes } from './actions';
 
+const sliderObjSelector = {
+  BGRFinder: {
+    slider: [
+      { name: 'red', max: 255 },
+      { name: 'green', max: 255 },
+      { name: 'blue', max: 255 }
+    ],
+    commit: false
+  },
+  HSVFinder: {
+    slider: [
+      { name: 'hue', max: 255 },
+      { name: 'sat', max: 255 },
+      { name: 'val', max: 255 }
+    ],
+    commit: false
+  },
+  GRAYFinder: {
+    slider: [{ name: 'gray', max: 255 }],
+    commit: false
+  },
+  scopeFinder: {
+    slider: [
+      { name: 'outerX', max: 1920 },
+      { name: 'outerY', max: 1440 },
+      { name: 'innerX', max: 1920 },
+      { name: 'innerY', max: 1440 }
+    ],
+    commit: true
+  }
+};
+
 export const initialState = {
   videoFilePath: '',
   vCap: null,
@@ -19,6 +51,7 @@ export const initialState = {
     red: [0, 255],
     green: [0, 255],
     blue: [0, 255],
+    gray: [0, 255],
     hue: [0, 255],
     sat: [0, 255],
     val: [0, 255],
@@ -27,6 +60,7 @@ export const initialState = {
     outerY: [0, 1440],
     innerY: [0, 1440]
   },
+  sliderObj: null,
   progress: null,
   progressFull: null,
   importedFile: null,
@@ -72,7 +106,16 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.STOP_VIDEO:
       return { ...state, isPlaying: false };
     case actionTypes.HANDLE_RADIO_SELECT:
-      return { ...state, overlayMode: payload };
+      return {
+        ...state,
+        overlayMode: payload,
+        sliderObj: sliderObjSelector[payload]
+          ? sliderObjSelector[payload].slider
+          : null,
+        commitOnChange: sliderObjSelector[payload]
+          ? sliderObjSelector[payload].commit
+          : null
+      };
     case actionTypes.HANDLE_CANVAS_CLICK:
       return { ...state, status: payload };
     case actionTypes.HANDLE_CHANGE_SLIDER:

@@ -48,6 +48,9 @@ export const styles = theme => {
       padding: theme.spacing(2),
       margin: theme.spacing(3, 3, 3, 0)
     },
+    buttonSliderContainer: {
+      margin: theme.spacing(3, 3, 3, 0)
+    },
     paper1: {
       display: 'flex',
       justifyContent: 'center',

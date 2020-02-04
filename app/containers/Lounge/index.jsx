@@ -10,6 +10,7 @@ import {
   makeProgress,
   makeProgressBar,
   makeSlider,
+  makeSliderObj,
   makeStatusData,
   makeVideoCapture,
   makeVideoFilePath,
@@ -56,14 +57,7 @@ import { styles } from './styles';
 import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
-const sliderObj = [
-  { name: 'outerX', max: 1920 },
-  { name: 'outerY', max: 1440 },
-  { name: 'innerX', max: 1920 },
-  { name: 'innerY', max: 1440 }
-];
-
-const radioObj = ['none', 'contour', 'labelCheck'];
+const radioObj = ['none', 'nameLabelGenerator', 'subtitleFinder', 'GRAYFinder'];
 
 const mapStateToProps = (state, props) => {
   return {
@@ -76,7 +70,8 @@ const mapStateToProps = (state, props) => {
     status: makeStatusData(state),
     valueSlider: makeSlider(state),
     willUpdateNextFrame: makeWillUpdateNextFrame(state),
-    overlayMode: makeOverlayMode(state)
+    overlayMode: makeOverlayMode(state),
+    sliderObj: makeSliderObj(state)
   };
 };
 
@@ -87,7 +82,8 @@ function SliderTemplate(props) {
     valueSlider,
     handleCommittedSlider,
     classes,
-    max
+    max,
+    commitOnChange
   } = props;
   return (
     <Grid container spacing={2} alignItems='center'>
@@ -106,7 +102,7 @@ function SliderTemplate(props) {
           value={valueSlider[name]}
           onChange={(e, value) => {
             handleChangeSlider(name, value);
-            handleCommittedSlider();
+            if (commitOnChange) handleCommittedSlider();
           }}
           onChangeCommitted={(e, value) => {
             handleChangeSlider(name, value);
@@ -178,7 +174,9 @@ class Lounge extends Component {
       percent,
       overlayMode,
       handleRadioSelect,
-      handleCommittedSlider
+      handleCommittedSlider,
+      sliderObj,
+      commitOnChange
     } = this.props;
 
     return (
@@ -277,28 +275,33 @@ class Lounge extends Component {
                 </Paper>
               </Grid>
               <Grid item>
-                <Paper className={classes.PaperSlider}>
-                  {sliderObj.map(({ name, max }) => (
-                    <SliderTemplate
-                      name={name}
-                      handleChangeSlider={handleChangeSlider}
-                      valueSlider={valueSlider}
-                      handleCommittedSlider={handleCommittedSlider}
-                      classes={classes}
-                      max={max}
-                      key={name}
-                    />
-                  ))}
-                </Paper>
-                <Button className={classes.btn} onClick={exporting}>
-                  Export
-                </Button>
-                <Button
-                  className={clsx(classes.btn, classes.marginLeft)}
-                  onClick={importing}
-                >
-                  Import
-                </Button>
+                <div className={classes.buttonSliderContainer}>
+                  <Button className={classes.btn} onClick={exporting}>
+                    Export
+                  </Button>
+                  <Button
+                    className={clsx(classes.btn, classes.marginLeft)}
+                    onClick={importing}
+                  >
+                    Import
+                  </Button>
+                </div>
+                {sliderObj && (
+                  <Paper className={classes.PaperSlider}>
+                    {sliderObj.map(({ name, max }) => (
+                      <SliderTemplate
+                        name={name}
+                        handleChangeSlider={handleChangeSlider}
+                        valueSlider={valueSlider}
+                        handleCommittedSlider={handleCommittedSlider}
+                        classes={classes}
+                        max={max}
+                        key={name}
+                        commitOnChange={commitOnChange}
+                      />
+                    ))}
+                  </Paper>
+                )}
               </Grid>
             </Grid>
             {progressFull > 0 && (

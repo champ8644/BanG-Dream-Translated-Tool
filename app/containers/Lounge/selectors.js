@@ -73,3 +73,8 @@ export const makeOverlayMode = createSelector(
   make,
   state => (state ? state.overlayMode : initialState.overlayMode)
 );
+
+export const makeSliderObj = createSelector(
+  make,
+  state => (state ? state.sliderObj : initialState.sliderObj)
+);

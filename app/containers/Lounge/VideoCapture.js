@@ -1,9 +1,13 @@
 import { green, maxHeight, maxWidth } from './constants';
 
-import contourFinder from './matFunctions/contourFinder';
+import BGRFinder from './matFunctions/BGRFinder';
+import GRAYFinder from './matFunctions/GRAYFinder';
+import HSVFinder from './matFunctions/HSVFinder';
 import cv from 'opencv4nodejs';
 import labelCheck from './matFunctions/labelCheck';
+import nameLabelGenerator from './matFunctions/nameLabelGenerator';
 import placeFinder from './matFunctions/placeFinder';
+import scopeFinder from './matFunctions/scopeFinder';
 import subtitleFinder from './matFunctions/subtitleFinder';
 import titleFinder from './matFunctions/titleFinder';
 
@@ -143,7 +147,7 @@ export default class VideoCapture {
 
   setPostProcessor(mode) {
     switch (mode) {
-      case 'subtitle':
+      case 'subtitleFinder':
         this.postProcessor = subtitleFinder;
         break;
       case 'place':
@@ -152,11 +156,23 @@ export default class VideoCapture {
       case 'title':
         this.postProcessor = titleFinder;
         break;
-      case 'contour':
-        this.postProcessor = contourFinder;
-        break;
       case 'labelCheck':
         this.postProcessor = labelCheck;
+        break;
+      case 'nameLabelGenerator':
+        this.postProcessor = nameLabelGenerator;
+        break;
+      case 'scopeFinder':
+        this.postProcessor = scopeFinder;
+        break;
+      case 'HSVFinder':
+        this.postProcessor = HSVFinder;
+        break;
+      case 'BGRFinder':
+        this.postProcessor = BGRFinder;
+        break;
+      case 'GRAYFinder':
+        this.postProcessor = GRAYFinder;
         break;
       default:
         this.postProcessor = null;

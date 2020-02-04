@@ -21,9 +21,24 @@ export const nameLabelThreshold = {
   val: [224, 255]
 };
 
+export const subtitleThreshold = {
+  blue: [64, 164],
+  green: [64, 164],
+  red: [64, 164]
+};
+
 export const nameLabelCrop = {
   innerX: [115, 547],
   innerY: [1116, 1177],
   outerX: [77, 618],
   outerY: [1102, 1187]
 };
+
+export const subtitleCrop = {
+  rectX: [100, 1800],
+  rectY: [1200, 1400]
+};
+
+export const rows = 1440;
+export const cols = 1920;
+export const threshPercentSame = 2;

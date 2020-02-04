@@ -35,7 +35,7 @@ function testLoop(mat) {
 }
 
 export default function labelCheck(mat) {
-  const outMat = mat.and(mask);
-  console.log(testLoop(mat));
+  const outMat = mat.bitwiseXor(mask);
+
   return outMat;
 }
