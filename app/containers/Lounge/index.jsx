@@ -52,12 +52,11 @@ import { bindActionCreators } from 'redux';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
 import { formatNumber } from './constants/function';
+import { radioObj } from './constants/config';
 import reducers from './reducers';
 import { styles } from './styles';
 import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
-
-const radioObj = ['none', 'nameLabelGenerator', 'subtitleFinder', 'GRAYFinder'];
 
 const mapStateToProps = (state, props) => {
   return {

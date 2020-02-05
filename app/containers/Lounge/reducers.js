@@ -1,38 +1,7 @@
 'use strict';
 
 import { actionTypes } from './actions';
-
-const sliderObjSelector = {
-  BGRFinder: {
-    slider: [
-      { name: 'red', max: 255 },
-      { name: 'green', max: 255 },
-      { name: 'blue', max: 255 }
-    ],
-    commit: false
-  },
-  HSVFinder: {
-    slider: [
-      { name: 'hue', max: 255 },
-      { name: 'sat', max: 255 },
-      { name: 'val', max: 255 }
-    ],
-    commit: false
-  },
-  GRAYFinder: {
-    slider: [{ name: 'gray', max: 255 }],
-    commit: false
-  },
-  scopeFinder: {
-    slider: [
-      { name: 'outerX', max: 1920 },
-      { name: 'outerY', max: 1440 },
-      { name: 'innerX', max: 1920 },
-      { name: 'innerY', max: 1440 }
-    ],
-    commit: true
-  }
-};
+import { sliderObjSelector } from './constants/config';
 
 export const initialState = {
   videoFilePath: '',
@@ -69,8 +38,7 @@ export const initialState = {
 };
 
 export default function Lounge(state = initialState, action) {
-  // eslint-disable-next-line prefer-const, no-unused-vars
-  let { type, payload } = action;
+  const { type, payload } = action;
   switch (type) {
     case actionTypes.SELECT_NEW_VIDEO:
       return {

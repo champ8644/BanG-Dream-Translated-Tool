@@ -4,7 +4,7 @@ import BGRFinder from './matFunctions/BGRFinder';
 import GRAYFinder from './matFunctions/GRAYFinder';
 import HSVFinder from './matFunctions/HSVFinder';
 import cv from 'opencv4nodejs';
-import labelCheck from './matFunctions/labelCheck';
+import meanFinder from './matFunctions/meanFinder';
 import nameLabelGenerator from './matFunctions/nameLabelGenerator';
 import nameLabelTemplater from './matFunctions/nameLabelTemplater';
 import placeFinder from './matFunctions/placeFinder';
@@ -157,9 +157,6 @@ export default class VideoCapture {
       case 'title':
         this.postProcessor = titleFinder;
         break;
-      case 'labelCheck':
-        this.postProcessor = labelCheck;
-        break;
       case 'nameLabelGenerator':
         this.postProcessor = nameLabelGenerator;
         break;
@@ -177,6 +174,9 @@ export default class VideoCapture {
         break;
       case 'nameLabelTemplater':
         this.postProcessor = nameLabelTemplater;
+        break;
+      case 'meanFinder':
+        this.postProcessor = meanFinder;
         break;
       default:
         this.postProcessor = null;

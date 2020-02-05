@@ -7,8 +7,6 @@ import {
 import cv from 'opencv4nodejs';
 import subtitleFinder from './subtitleFinder';
 
-/* eslint-disable */
-
 const CaptureNameLabel = cv
   .imread('CaptureNameLabelCrop.png')
   .cvtColor(cv.COLOR_BGR2GRAY);
@@ -38,7 +36,7 @@ export default function nameLabelGenerator(mat) {
   const masked = threshMat.and(CaptureNameLabel).bitwiseXor(CaptureNameLabel);
   const percentDiff = (masked.countNonZero() / countNameLabel) * 100;
   if (percentDiff < threshPercentDiff) {
-    const nameLabel = threshMat.getRegion(rectNameLabel);
+    const actor = threshMat.getRegion(rectNameLabel);
     const subtitle = subtitleFinder(mat);
     console.log('subtitle: ', subtitle.countNonZero());
     return subtitle;
