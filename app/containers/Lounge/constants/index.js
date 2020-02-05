@@ -30,8 +30,8 @@ export const subtitleThreshold = {
 export const nameLabelCrop = {
   innerX: [115, 547],
   innerY: [1116, 1177],
-  outerX: [77, 618],
-  outerY: [1102, 1187]
+  outerX: [78, 620],
+  outerY: [1104, 1190]
 };
 
 export const subtitleCrop = {
@@ -41,4 +41,4 @@ export const subtitleCrop = {
 
 export const rows = 1440;
 export const cols = 1920;
-export const threshPercentSame = 2;
+export const threshPercentDiff = 2;

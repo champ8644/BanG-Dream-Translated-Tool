@@ -15,23 +15,7 @@ export default function subtitleFinder(mat) {
   const lowerColorBounds = new cv.Vec(blue[0], green[0], red[0]);
   const upperColorBounds = new cv.Vec(blue[1], green[1], red[1]);
   const matSubtitle = mat
-    .inRange(lowerColorBounds, upperColorBounds)
-    .cvtColor(cv.COLOR_GRAY2BGR);
-  // if (
-  //   (masked.cvtColor(cv.COLOR_BGR2GRAY).countNonZero() / countNameLabel) * 100 <
-  //   threshPercentSame
-  // ) {
-  //   // const nameLabel = CaptureNameLabel.getRegion(rectNameLabel);
-  // }
-  // console.log(
-  //   matSubtitle
-  //     .getRegion(subtitleRect)
-  //     .cvtColor(cv.COLOR_BGR2GRAY)
-  //     .countNonZero()
-  // );
-  cv.imwrite(
-    'CaptureSubtitle.png',
-    matSubtitle.getRegion(subtitleRect).cvtColor(cv.COLOR_BGR2RGB)
-  );
+    .getRegion(subtitleRect)
+    .inRange(lowerColorBounds, upperColorBounds);
   return matSubtitle;
 }

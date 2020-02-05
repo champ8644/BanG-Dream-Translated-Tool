@@ -6,6 +6,7 @@ import HSVFinder from './matFunctions/HSVFinder';
 import cv from 'opencv4nodejs';
 import labelCheck from './matFunctions/labelCheck';
 import nameLabelGenerator from './matFunctions/nameLabelGenerator';
+import nameLabelTemplater from './matFunctions/nameLabelTemplater';
 import placeFinder from './matFunctions/placeFinder';
 import scopeFinder from './matFunctions/scopeFinder';
 import subtitleFinder from './matFunctions/subtitleFinder';
@@ -173,6 +174,9 @@ export default class VideoCapture {
         break;
       case 'GRAYFinder':
         this.postProcessor = GRAYFinder;
+        break;
+      case 'nameLabelTemplater':
+        this.postProcessor = nameLabelTemplater;
         break;
       default:
         this.postProcessor = null;
