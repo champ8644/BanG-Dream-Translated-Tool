@@ -1,16 +1,7 @@
 import { green, maxHeight, maxWidth } from './constants';
 
-import BGRFinder from './matFunctions/BGRFinder';
-import GRAYFinder from './matFunctions/GRAYFinder';
-import HSVFinder from './matFunctions/HSVFinder';
 import cv from 'opencv4nodejs';
-import meanFinder from './matFunctions/meanFinder';
-import nameLabelGenerator from './matFunctions/nameLabelGenerator';
-import nameLabelTemplater from './matFunctions/nameLabelTemplater';
-import placeFinder from './matFunctions/placeFinder';
-import scopeFinder from './matFunctions/scopeFinder';
-import subtitleFinder from './matFunctions/subtitleFinder';
-import titleFinder from './matFunctions/titleFinder';
+import matFunctions from './matFunctions';
 
 export default class VideoCapture {
   constructor({ path, canvas, updateFrame, modePostProcessor, colorSlider }) {
@@ -147,40 +138,7 @@ export default class VideoCapture {
   }
 
   setPostProcessor(mode) {
-    switch (mode) {
-      case 'subtitleFinder':
-        this.postProcessor = subtitleFinder;
-        break;
-      case 'place':
-        this.postProcessor = placeFinder;
-        break;
-      case 'title':
-        this.postProcessor = titleFinder;
-        break;
-      case 'nameLabelGenerator':
-        this.postProcessor = nameLabelGenerator;
-        break;
-      case 'scopeFinder':
-        this.postProcessor = scopeFinder;
-        break;
-      case 'HSVFinder':
-        this.postProcessor = HSVFinder;
-        break;
-      case 'BGRFinder':
-        this.postProcessor = BGRFinder;
-        break;
-      case 'GRAYFinder':
-        this.postProcessor = GRAYFinder;
-        break;
-      case 'nameLabelTemplater':
-        this.postProcessor = nameLabelTemplater;
-        break;
-      case 'meanFinder':
-        this.postProcessor = meanFinder;
-        break;
-      default:
-        this.postProcessor = null;
-    }
+    this.postProcessor = matFunctions[mode] ? matFunctions[mode] : null;
   }
 
   locatedClicked(x, y) {

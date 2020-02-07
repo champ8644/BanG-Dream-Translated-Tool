@@ -1,11 +1,9 @@
 export const radioObj = [
   'none',
-  'nameLabelGenerator',
+  'placeLabelGenerator',
   'subtitleFinder',
-  'BGRFinder',
-  'HSVFinder',
-  'GRAYFinder',
-  'meanFinder'
+  'ScopeFinder',
+  'HSVFinder'
 ];
 
 export const sliderObjSelector = {
@@ -29,7 +27,7 @@ export const sliderObjSelector = {
     slider: [{ name: 'gray', max: 255 }],
     commit: false
   },
-  scopeFinder: {
+  ScopeFinder: {
     slider: [
       { name: 'outerX', max: 1920 },
       { name: 'outerY', max: 1440 },

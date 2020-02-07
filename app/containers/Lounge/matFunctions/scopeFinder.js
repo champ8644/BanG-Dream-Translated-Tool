@@ -2,7 +2,7 @@ import { cyan, red } from '../constants';
 
 import cv from 'opencv4nodejs';
 
-export default function scopeFinder(mat, vCap) {
+export default function ScopeFinder(mat, vCap) {
   const {
     colorSlider: { innerX, outerX, innerY, outerY }
   } = vCap;
