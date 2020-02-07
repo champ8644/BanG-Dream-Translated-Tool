@@ -169,6 +169,7 @@ export function handleChangeDialog(e) {
       dialog: { type }
     } = getState().Lounge;
     let { value } = e.target;
+    if (value === '') value = 0;
     switch (type) {
       case 'frame':
         value = parseInt(value, 10);

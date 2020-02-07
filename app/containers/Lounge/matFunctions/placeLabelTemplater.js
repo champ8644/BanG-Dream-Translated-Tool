@@ -1,8 +1,8 @@
-import { black, nameLabelCrop, nameLabelThreshold } from '../constants';
+import { black, placeLabelCrop, placeLabelThreshold } from '../constants';
 
 import cv from 'opencv4nodejs';
 
-const { innerX, outerX, innerY, outerY } = nameLabelCrop;
+const { innerX, outerX, innerY, outerY } = placeLabelCrop;
 const maskRect = new cv.Mat(
   outerY[1] - outerY[0],
   outerX[1] - outerX[0],
@@ -15,23 +15,22 @@ maskRect.drawRectangle(
   black,
   -1
 );
-const rectOuterNameLabel = new cv.Rect(
+const rectOuterPlaceLabel = new cv.Rect(
   outerX[0],
   outerY[0],
   outerX[1] - outerX[0],
   outerY[1] - outerY[0]
 );
 
-export default function nameLabelTemplater(mat) {
-  const { val, sat, hue } = nameLabelThreshold;
-  const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
-  const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
+export default function placeLabelTemplater(mat) {
+  const { blue, green, red } = placeLabelThreshold;
+  const lowerColorBounds = new cv.Vec(blue[0], green[0], red[0]);
+  const upperColorBounds = new cv.Vec(blue[1], green[1], red[1]);
   const masked = mat
-    .getRegion(rectOuterNameLabel)
-    .cvtColor(cv.COLOR_BGR2HSV)
+    .getRegion(rectOuterPlaceLabel)
     .inRange(lowerColorBounds, upperColorBounds)
     .cvtColor(cv.COLOR_GRAY2BGR)
     .and(maskRect);
-  cv.imwrite('CaptureNameLabelCropTemp.png', masked);
+  cv.imwrite('CapturePlaceLabelCropTemp.png', masked);
   return masked;
 }
