@@ -42,6 +42,7 @@ export const subtitleCrop = {
 export const rows = 1440;
 export const cols = 1920;
 export const threshPercentDiff = 2;
+export const threshPlacePercentDiff = 1;
 
 export const gapConst = 10;
 
@@ -57,5 +58,5 @@ export const placeLabelCrop = {
   outerY: [649, 795]
 };
 export const placeCenterThreshold = {
-  gray: 245
+  gray: [0, 144]
 };
