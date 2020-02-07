@@ -188,7 +188,7 @@ export default class VideoCapture {
     let mat = this.getMat();
     if (mat.empty) return;
     const matAtRaw = mat.atRaw(y, x);
-    if (this.postProcessor) mat = this.postProcessor(mat);
+    if (this.postProcessor) mat = this.postProcessor(mat, this);
     mat.drawCircle(new cv.Point(x, y), 5, green, 10, cv.FILLED);
     this.showMatInCanvas(mat);
     this.setFrame(prevFrame);
@@ -196,7 +196,7 @@ export default class VideoCapture {
   }
 
   changeColorSlider(payload) {
-    this.colorSlider = payload;
+    this.colorSlider = { ...this.colorSlider, ...payload };
     this.show();
   }
 }

@@ -2,6 +2,8 @@ export const radioObj = [
   'none',
   'nameLabelGenerator',
   'subtitleFinder',
+  'BGRFinder',
+  'HSVFinder',
   'GRAYFinder',
   'meanFinder'
 ];

@@ -42,3 +42,5 @@ export const subtitleCrop = {
 export const rows = 1440;
 export const cols = 1920;
 export const threshPercentDiff = 2;
+
+export const gapConst = 10;

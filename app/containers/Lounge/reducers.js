@@ -87,6 +87,7 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.HANDLE_CANVAS_CLICK:
       return { ...state, status: payload };
     case actionTypes.HANDLE_CHANGE_SLIDER:
+    case actionTypes.HANDLE_COMMITTED_SLIDER:
       return { ...state, valueSlider: { ...state.valueSlider, ...payload } };
     case actionTypes.STOP_PROGRES:
       return { ...state, progressFull: null, progress: null };

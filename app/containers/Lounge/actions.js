@@ -2,12 +2,13 @@
 
 /* eslint-disable no-console */
 
+import { gapConst, maxMinDist } from './constants';
+
 import Queue from '../../classes/Queue';
 import VideoCapture from './VideoCapture';
 import XLSX from 'xlsx';
 import _ from 'lodash';
 import cv from 'opencv4nodejs';
-import { maxMinDist } from './constants';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
 
@@ -222,9 +223,17 @@ export function handleRadioSelect(e) {
   };
 }
 
+function makeGap(x) {
+  let a = x - gapConst;
+  let b = x + gapConst;
+  if (a < 0) a = 0;
+  if (b > 255) b = 255;
+  return [a, b];
+}
+
 export function handleCanvasClick(_event) {
   return (dispatch, getState) => {
-    const { canvasRef, vCap } = getState().Lounge;
+    const { canvasRef, vCap, overlayMode } = getState().Lounge;
     let event = {};
     const {
       left: offsetLeft,
@@ -242,6 +251,36 @@ export function handleCanvasClick(_event) {
     clientX /= vCap.ratio;
     clientY /= vCap.ratio;
     const [b, g, r] = vCap.locatedClicked(clientX, clientY);
+    let newValueSlider = null;
+    switch (overlayMode) {
+      case 'BGRFinder':
+        if (!newValueSlider) {
+          newValueSlider = {
+            blue: makeGap(b),
+            green: makeGap(g),
+            red: makeGap(r)
+          };
+        }
+      // eslint-disable-next-line no-fallthrough
+      case 'HSVFinder':
+        if (!newValueSlider) {
+          const [h, s, v] = new cv.Mat(1, 1, cv.CV_8UC3, [b, g, r])
+            .cvtColor(cv.COLOR_BGR2HSV)
+            .atRaw(0, 0);
+          newValueSlider = {
+            hue: makeGap(h),
+            sat: makeGap(s),
+            val: makeGap(v)
+          };
+        }
+        vCap.changeColorSlider(newValueSlider);
+        dispatch({
+          type: actionTypes.HANDLE_COMMITTED_SLIDER,
+          payload: newValueSlider
+        });
+        break;
+      default:
+    }
     dispatch({
       type: actionTypes.HANDLE_CANVAS_CLICK,
       payload: {
@@ -281,7 +320,8 @@ export function handleCommittedSlider() {
     const { vCap, valueSlider } = getState().Lounge;
     vCap.changeColorSlider(valueSlider);
     return {
-      type: actionTypes.HANDLE_COMMITTED_SLIDER
+      type: actionTypes.HANDLE_COMMITTED_SLIDER,
+      payload: vCap.colorSlider
     };
   };
 }
