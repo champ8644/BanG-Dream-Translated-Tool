@@ -2,12 +2,12 @@ import { titleLabelCrop, placeLabelThreshold } from '../constants';
 
 import cv from 'opencv4nodejs';
 
-const { rectX, rectY } = titleLabelCrop;
+const { outerX, outerY } = titleLabelCrop;
 const rectTitleLabel = new cv.Rect(
-  rectX[0],
-  rectY[0],
-  rectX[1] - rectX[0],
-  rectY[1] - rectY[0]
+  outerX[0],
+  outerY[0],
+  outerX[1] - outerX[0],
+  outerY[1] - outerY[0]
 );
 
 export default function titleLabelTemplater(mat) {

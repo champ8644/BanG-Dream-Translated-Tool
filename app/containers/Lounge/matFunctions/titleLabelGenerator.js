@@ -1,37 +1,43 @@
 import {
-  placeLabelCrop,
+  titleLabelCrop,
   placeLabelThreshold,
-  threshPlacePercentDiff
+  threshTitlePercentDiff,
+  titleHeader,
+  color
 } from '../constants';
 
 import cv from 'opencv4nodejs';
-import placeNameFinder from './placeNameFinder';
+import titleLineWidthFinder from './titleLineWidthFinder';
 
-const CapturePlaceLabel = cv
-  .imread('CapturePlaceLabelCrop.png')
+const CaptureTitleLabel = cv
+  .imread('CaptureTitleLabelCrop.png')
   .cvtColor(cv.COLOR_BGR2GRAY);
-const countPlaceLabel = CapturePlaceLabel.countNonZero();
-const { outerX, outerY } = placeLabelCrop;
-const rectOuterPlaceLabel = new cv.Rect(
+const countTitleLabel = CaptureTitleLabel.countNonZero();
+const { outerX, outerY } = titleLabelCrop;
+const rectTitleLabel = new cv.Rect(
   outerX[0],
   outerY[0],
   outerX[1] - outerX[0],
   outerY[1] - outerY[0]
 );
-export default function placeLabelGenerator(mat) {
+export default function titleLabelGenerator(mat) {
   const { red, green, blue } = placeLabelThreshold;
   const lowerColorBounds = new cv.Vec(blue[0], green[0], red[0]);
   const upperColorBounds = new cv.Vec(blue[1], green[1], red[1]);
   const threshMat = mat
-    .getRegion(rectOuterPlaceLabel)
+    .getRegion(rectTitleLabel)
     .inRange(lowerColorBounds, upperColorBounds);
-  const masked = threshMat.and(CapturePlaceLabel).bitwiseXor(CapturePlaceLabel);
-  const percentDiff = (masked.countNonZero() / countPlaceLabel) * 100;
-  if (percentDiff < threshPlacePercentDiff) {
-    const placeName = placeNameFinder(mat);
-    // eslint-disable-next-line no-console
-    console.log({ placeName: placeName.countNonZero() });
-    return placeName;
+  const masked = threshMat.and(CaptureTitleLabel).bitwiseXor(CaptureTitleLabel);
+  const percentDiff = (masked.countNonZero() / countTitleLabel) * 100;
+  if (percentDiff < threshTitlePercentDiff) {
+    const titleWidth = titleLineWidthFinder(mat);
+    const drawRect = new cv.Rect(
+      titleHeader.x,
+      titleHeader.y,
+      titleWidth,
+      titleHeader.height
+    );
+    mat.drawRectangle(drawRect, color.blue, 2);
   }
-  return masked;
+  return mat;
 }

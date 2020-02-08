@@ -11,6 +11,16 @@ export const cyan = new cv.Vec(255, 255, 0);
 export const yellow = new cv.Vec(0, 255, 255);
 export const black = new cv.Vec(0, 0, 0);
 export const white = new cv.Vec(255, 255, 255);
+export const color = {
+  green,
+  blue,
+  red,
+  purple,
+  cyan,
+  yellow,
+  black,
+  white
+};
 
 export const nameLabelThreshold = {
   blue: [87, 185],
@@ -43,6 +53,7 @@ export const rows = 1440;
 export const cols = 1920;
 export const threshPercentDiff = 2;
 export const threshPlacePercentDiff = 1;
+export const threshTitlePercentDiff = 2;
 
 export const gapConst = 10;
 
@@ -62,6 +73,17 @@ export const placeCenterThreshold = {
 };
 
 export const titleLabelCrop = {
-  rectX: [20, 90],
-  rectY: [20, 90]
+  outerX: [20, 90],
+  outerY: [20, 90],
+  innerX: [385, 1465],
+  innerY: [690, 750]
+};
+export const titleLineCrop = {
+  rectX: [75, 1920],
+  rectY: [80, 85]
+};
+export const titleHeader = {
+  x: 75,
+  y: 25,
+  height: 60
 };

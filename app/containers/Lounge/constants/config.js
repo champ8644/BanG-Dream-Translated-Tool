@@ -1,6 +1,5 @@
 export const radioObj = [
   'none',
-  'titleLabelTemplater',
   'titleLabelGenerator',
   'scopeFinder',
   'GRAYFinder'
