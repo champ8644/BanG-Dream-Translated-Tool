@@ -60,3 +60,8 @@ export const placeLabelCrop = {
 export const placeCenterThreshold = {
   gray: [0, 144]
 };
+
+export const titleLabelCrop = {
+  rectX: [20, 90],
+  rectY: [20, 90]
+};
