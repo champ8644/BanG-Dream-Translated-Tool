@@ -1,6 +1,7 @@
 import { green, maxHeight, maxWidth } from './constants';
 
 import cv from 'opencv4nodejs';
+import mainEvent from './mainFunctions/mainEvent';
 import matFunctions from './matFunctions';
 
 export default class VideoCapture {
@@ -16,6 +17,7 @@ export default class VideoCapture {
     this.canvas = canvas;
     this.updateFrame = updateFrame;
     this.colorSlider = colorSlider;
+    this.path = path;
     this.setPostProcessor(modePostProcessor);
   }
 
@@ -156,5 +158,9 @@ export default class VideoCapture {
   changeColorSlider(payload) {
     this.colorSlider = { ...this.colorSlider, ...payload };
     this.show();
+  }
+
+  mainEvent() {
+    mainEvent(this);
   }
 }

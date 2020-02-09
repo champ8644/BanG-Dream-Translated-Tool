@@ -9,6 +9,7 @@ import VideoCapture from './VideoCapture';
 import XLSX from 'xlsx';
 import _ from 'lodash';
 import cv from 'opencv4nodejs';
+import mainEvent from './mainFunctions/mainEvent';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
 
@@ -291,6 +292,13 @@ export function handleCanvasClick(_event) {
         color: { hex: fullColorHex(r, g, b), r, b, g }
       }
     });
+  };
+}
+
+export function mainEventBtn() {
+  return async (dispatch, getState) => {
+    const { vCap } = getState().Lounge;
+    mainEvent(vCap);
   };
 }
 

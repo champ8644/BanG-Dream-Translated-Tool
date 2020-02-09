@@ -1,13 +1,12 @@
 import {
-  color,
   placeLabelThreshold,
   threshTitlePercentDiff,
-  titleHeader,
   titleLabelCrop
 } from '../constants';
 
 import cv from 'opencv4nodejs';
 import titleLineWidthFinder from './titleLineWidthFinder';
+import titleNameFinder from './titleNameFinder';
 
 const CaptureTitleLabel = cv
   .imread('CaptureTitleLabelCrop.png')
@@ -20,7 +19,7 @@ const rectTitleLabel = new cv.Rect(
   outerX[1] - outerX[0],
   outerY[1] - outerY[0]
 );
-export default function titleLabelGenerator(mat) {
+export default function titleLabelGenerator(mat, refractory) {
   const { val, sat, hue } = placeLabelThreshold;
   const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
   const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
@@ -30,15 +29,15 @@ export default function titleLabelGenerator(mat) {
     .inRange(lowerColorBounds, upperColorBounds);
   const masked = threshMat.and(CaptureTitleLabel).bitwiseXor(CaptureTitleLabel);
   const percentDiff = (masked.countNonZero() / countTitleLabel) * 100;
-  if (percentDiff < threshTitlePercentDiff) {
-    const titleWidth = titleLineWidthFinder(mat);
-    const drawRect = new cv.Rect(
-      titleHeader.x,
-      titleHeader.y,
-      titleWidth,
-      titleHeader.height
-    );
-    mat.drawRectangle(drawRect, color.blue, 2);
+  let titleWidth;
+  let titleCrop;
+  if (percentDiff < threshTitlePercentDiff && !refractory) {
+    titleWidth = titleLineWidthFinder(mat);
+    titleCrop = titleNameFinder(mat, titleWidth);
   }
-  return mat;
+  return {
+    status: percentDiff < threshTitlePercentDiff,
+    payload: titleCrop,
+    width: titleWidth
+  };
 }

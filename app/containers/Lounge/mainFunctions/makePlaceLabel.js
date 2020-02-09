@@ -18,7 +18,7 @@ const rectOuterPlaceLabel = new cv.Rect(
   outerX[1] - outerX[0],
   outerY[1] - outerY[0]
 );
-export default function placeLabelGenerator(mat, vCap) {
+export default function placeLabelGenerator(mat, refractory) {
   const { val, sat, hue } = placeLabelThreshold;
   const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
   const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
@@ -28,14 +28,8 @@ export default function placeLabelGenerator(mat, vCap) {
     .inRange(lowerColorBounds, upperColorBounds);
   const masked = threshMat.and(CapturePlaceLabel).bitwiseXor(CapturePlaceLabel);
   const percentDiff = (masked.countNonZero() / countPlaceLabel) * 100;
-  if (percentDiff < threshPlacePercentDiff) {
-    const placeName = placeNameFinder(mat);
-    // eslint-disable-next-line no-console
-    console.log({
-      placeName: placeName.countNonZero(),
-      frame: vCap.getFrame()
-    });
-    return placeName;
-  }
-  return masked;
+  let placeName;
+  if (percentDiff < threshPlacePercentDiff && !refractory)
+    placeName = placeNameFinder(mat);
+  return { status: percentDiff < threshPlacePercentDiff, payload: placeName };
 }

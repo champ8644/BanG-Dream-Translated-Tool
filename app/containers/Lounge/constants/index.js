@@ -54,13 +54,18 @@ export const cols = 1920;
 export const threshPercentDiff = 2;
 export const threshPlacePercentDiff = 1;
 export const threshTitlePercentDiff = 2;
+export const blackThreshold = 2;
+export const whiteThreshold = 253;
 
 export const gapConst = 10;
 
 export const placeLabelThreshold = {
   blue: [80, 159],
   green: [40, 111],
-  red: [170, 255]
+  red: [170, 255],
+  hue: [164, 180],
+  sat: [100, 255],
+  val: [100, 255]
 };
 export const placeLabelCrop = {
   innerX: [447, 1464],

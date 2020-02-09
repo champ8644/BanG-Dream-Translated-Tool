@@ -175,7 +175,8 @@ class Lounge extends Component {
       handleRadioSelect,
       handleCommittedSlider,
       sliderObj,
-      commitOnChange
+      commitOnChange,
+      mainEventBtn
     } = this.props;
 
     return (
@@ -283,6 +284,12 @@ class Lounge extends Component {
                     onClick={importing}
                   >
                     Import
+                  </Button>
+                  <Button
+                    className={clsx(classes.btn, classes.marginLeft)}
+                    onClick={mainEventBtn}
+                  >
+                    Main Event
                   </Button>
                 </div>
                 {sliderObj && (

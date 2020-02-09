@@ -23,11 +23,12 @@ const rectOuterPlaceLabel = new cv.Rect(
 );
 
 export default function placeLabelTemplater(mat) {
-  const { blue, green, red } = placeLabelThreshold;
-  const lowerColorBounds = new cv.Vec(blue[0], green[0], red[0]);
-  const upperColorBounds = new cv.Vec(blue[1], green[1], red[1]);
+  const { hue, sat, val } = placeLabelThreshold;
+  const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
+  const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
   const masked = mat
     .getRegion(rectOuterPlaceLabel)
+    .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds)
     .cvtColor(cv.COLOR_GRAY2BGR)
     .and(maskRect);

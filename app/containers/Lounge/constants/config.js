@@ -1,8 +1,9 @@
 export const radioObj = [
   'none',
-  'titleLabelGenerator',
   'scopeFinder',
-  'GRAYFinder'
+  'GRAYFinder',
+  'HSVFinder',
+  'meanFinder'
 ];
 
 export const sliderObjSelector = {
