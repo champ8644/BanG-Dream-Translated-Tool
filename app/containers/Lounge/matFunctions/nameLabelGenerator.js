@@ -1,6 +1,9 @@
 import {
+  blue,
   nameLabelCrop,
   nameLabelThreshold,
+  red,
+  subtitleCrop,
   threshPercentDiff
 } from '../constants';
 
@@ -24,6 +27,13 @@ const rectNameLabel = new cv.Rect(
   innerX[1] - innerX[0],
   innerY[1] - innerY[0]
 );
+const { rectX, rectY } = subtitleCrop;
+const subtitleRect = new cv.Rect(
+  rectX[0],
+  rectY[0],
+  rectX[1] - rectX[0],
+  rectY[1] - rectY[0]
+);
 
 export default function nameLabelGenerator(mat) {
   const { val, sat, hue } = nameLabelThreshold;
@@ -35,12 +45,15 @@ export default function nameLabelGenerator(mat) {
     .inRange(lowerColorBounds, upperColorBounds);
   const masked = threshMat.and(CaptureNameLabel).bitwiseXor(CaptureNameLabel);
   const percentDiff = (masked.countNonZero() / countNameLabel) * 100;
+  // eslint-disable-next-line no-console
+  console.log('percentDiff: ', percentDiff);
   if (percentDiff < threshPercentDiff) {
     const actor = threshMat.getRegion(rectNameLabel);
     const subtitle = subtitleFinder(mat);
     // eslint-disable-next-line no-console
     console.log({ subtitle: subtitle.countNonZero(), actor });
-    return subtitle;
+    mat.drawRectangle(rectOuterNameLabel, blue, 2);
+    mat.drawRectangle(subtitleRect, red, 2);
   }
-  return masked;
+  return mat;
 }

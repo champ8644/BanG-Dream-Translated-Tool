@@ -51,9 +51,9 @@ export const subtitleCrop = {
 
 export const rows = 1440;
 export const cols = 1920;
-export const threshPercentDiff = 2;
-export const threshPlacePercentDiff = 1;
-export const threshTitlePercentDiff = 2;
+export const threshPercentDiff = 3;
+export const threshPlacePercentDiff = 4;
+export const threshTitlePercentDiff = 6;
 export const blackThreshold = 2;
 export const whiteThreshold = 253;
 
@@ -92,3 +92,7 @@ export const titleHeader = {
   y: 25,
   height: 60
 };
+
+export const meanSmooth = 5;
+export const meanLength = 100;
+export const limitVCap = 2000;

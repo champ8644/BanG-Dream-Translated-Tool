@@ -30,6 +30,8 @@ export default function titleLabelGenerator(mat) {
     .inRange(lowerColorBounds, upperColorBounds);
   const masked = threshMat.and(CaptureTitleLabel).bitwiseXor(CaptureTitleLabel);
   const percentDiff = (masked.countNonZero() / countTitleLabel) * 100;
+  // eslint-disable-next-line no-console
+  console.log('percentDiff: ', percentDiff);
   if (percentDiff < threshTitlePercentDiff) {
     const titleWidth = titleLineWidthFinder(mat);
     const drawRect = new cv.Rect(

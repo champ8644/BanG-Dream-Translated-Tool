@@ -42,7 +42,9 @@ export default function nameLabelGenerator(mat) {
     dialog = subtitleFinder(mat);
   }
   return {
+    percentDiff,
     status: percentDiff < threshPercentDiff,
+    payload: {},
     actor,
     dialog
   };

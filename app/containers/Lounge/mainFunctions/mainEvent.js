@@ -1,3 +1,5 @@
+import { limitVCap, meanLength, meanSmooth } from '../constants';
+
 import makeNameLabel from './makeNameLabel';
 import makePlaceLabel from './makePlaceLabel';
 import makeTitleLabel from './makeTitleLabel';
@@ -9,8 +11,8 @@ const dialogThreshold = 10;
 class Meaning {
   constructor() {
     this.data = [];
-    this.div = 5;
-    this.length = 100;
+    this.div = meanSmooth;
+    this.length = meanLength;
   }
 
   avg5(frame) {
@@ -81,10 +83,10 @@ export default function mainEvent(vCap) {
       if (!refractory.name) {
         refractory.name = true;
         if (prevDialog - nameObj.dialog > dialogThreshold)
-          data.name.push({ ms, frame, actor: nameObj.actor });
+          data.name.push({ ms, frame, payload: nameObj.payload });
       } else if (prevDialog - nameObj.dialog > dialogThreshold) {
         data.name.push({ ms, frame, off: true });
-        data.name.push({ ms, frame, actor: nameObj.actor });
+        data.name.push({ ms, frame, payload: nameObj.payload });
       }
       prevDialog = nameObj.dialog;
     } else if (refractory.name) {
@@ -104,10 +106,11 @@ export default function mainEvent(vCap) {
       data.fade.push({ ms, frame, type: 'fadeout', color: 'white' });
     }
 
+    if (!(frame % 50)) console.log('frame: ', frame);
     frame = vCap.getFrame();
     ms = vCap.getFrame('ms');
     mat = vCap.getMat();
-    if (frame > 1) break;
+    if (frame >= limitVCap) break;
   }
   writeAss(data, vCap);
 }

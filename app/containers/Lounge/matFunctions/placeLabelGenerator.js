@@ -1,4 +1,5 @@
 import {
+  blue,
   placeLabelCrop,
   placeLabelThreshold,
   threshPlacePercentDiff
@@ -28,14 +29,16 @@ export default function placeLabelGenerator(mat, vCap) {
     .inRange(lowerColorBounds, upperColorBounds);
   const masked = threshMat.and(CapturePlaceLabel).bitwiseXor(CapturePlaceLabel);
   const percentDiff = (masked.countNonZero() / countPlaceLabel) * 100;
+  // eslint-disable-next-line no-console
+  console.log('percentDiff: ', percentDiff);
   if (percentDiff < threshPlacePercentDiff) {
+    mat.drawRectangle(rectOuterPlaceLabel, blue, 2);
     const placeName = placeNameFinder(mat);
     // eslint-disable-next-line no-console
     console.log({
       placeName: placeName.countNonZero(),
       frame: vCap.getFrame()
     });
-    return placeName;
   }
-  return masked;
+  return mat;
 }

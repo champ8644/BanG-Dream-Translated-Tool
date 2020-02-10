@@ -31,5 +31,10 @@ export default function placeLabelGenerator(mat, refractory) {
   let placeName;
   if (percentDiff < threshPlacePercentDiff && !refractory)
     placeName = placeNameFinder(mat);
-  return { status: percentDiff < threshPlacePercentDiff, payload: placeName };
+  return {
+    percentDiff,
+    status: percentDiff < threshPlacePercentDiff,
+    payload: {},
+    placeName
+  };
 }

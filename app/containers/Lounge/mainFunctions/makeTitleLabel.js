@@ -36,8 +36,9 @@ export default function titleLabelGenerator(mat, refractory) {
     titleCrop = titleNameFinder(mat, titleWidth);
   }
   return {
+    percentDiff,
     status: percentDiff < threshTitlePercentDiff,
-    payload: titleCrop,
-    width: titleWidth
+    payload: { width: titleWidth },
+    titleCrop
   };
 }
