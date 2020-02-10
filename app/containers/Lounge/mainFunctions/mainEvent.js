@@ -1,5 +1,6 @@
-import { limitVCap, meanLength, meanSmooth } from '../constants';
+import { chunkCount, limitVCap, meanLength, meanSmooth } from '../constants';
 
+import findActorID from './findActorID';
 import makeNameLabel from './makeNameLabel';
 import makePlaceLabel from './makePlaceLabel';
 import makeTitleLabel from './makeTitleLabel';
@@ -37,8 +38,6 @@ class Meaning {
   isFadingFromWhite() {}
 }
 
-let frame = 0;
-let ms = 0;
 let prevDialog = 999999999;
 const meanClass = new Meaning();
 const data = {
@@ -53,64 +52,105 @@ const refractory = {
   title: false
 };
 
+let isLoopValid;
+function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
+  let i = 0;
+  isLoopValid = true;
+  const beginTime = new Date().getTime();
+  (function chunk() {
+    const end = Math.min(i + chunksize, count);
+    for (; i < end; ++i) {
+      callback.call(null, i);
+    }
+    // eslint-disable-next-line no-console
+    console.log({
+      frame: i,
+      FPS: (i / (new Date().getTime() - beginTime)) * 1000
+    });
+    if (i < count && isLoopValid) {
+      setTimeout(chunk, 0);
+    } else {
+      finished.call(null);
+    }
+  })();
+}
+
 export default function mainEvent(vCap) {
-  let mat = vCap.getMat(frame);
-  while (!mat.empty) {
-    const placeObj = makePlaceLabel(mat, refractory.place);
-    if (placeObj.status) {
-      if (!refractory.place) {
-        data.place.push({ ms, frame, payload: placeObj.payload });
-        refractory.place = true;
+  const nameActor = [];
+  nonBlockingLoop(
+    limitVCap,
+    chunkCount,
+    i => {
+      const frame = i;
+      const ms = (i * 1000) / vCap.FPS;
+      // const frame = vCap.getFrame();
+      // const ms = vCap.getFrame('ms');
+      const mat = vCap.getMat();
+      if (mat.empty) {
+        isLoopValid = false;
+        return;
       }
-    } else if (refractory.place) {
-      data.place.push({ ms, frame, off: true });
-      refractory.place = false;
-    }
-
-    const titleObj = makeTitleLabel(mat, refractory.title);
-    if (titleObj.status) {
-      if (!refractory.title) {
-        data.title.push({ ms, frame, payload: titleObj.payload });
-        refractory.title = true;
+      const placeObj = makePlaceLabel(mat, refractory.place);
+      if (placeObj.status) {
+        if (!refractory.place) {
+          data.place.push({ ms, frame, payload: placeObj.payload });
+          refractory.place = true;
+        }
+      } else if (refractory.place) {
+        data.place.push({ ms, frame, off: true });
+        refractory.place = false;
       }
-    } else if (refractory.title) {
-      data.title.push({ ms, frame, off: true });
-      refractory.title = false;
-    }
 
-    const nameObj = makeNameLabel(mat);
-    if (nameObj.status) {
-      if (!refractory.name) {
-        refractory.name = true;
-        if (prevDialog - nameObj.dialog > dialogThreshold)
-          data.name.push({ ms, frame, payload: nameObj.payload });
-      } else if (prevDialog - nameObj.dialog > dialogThreshold) {
+      const titleObj = makeTitleLabel(mat, refractory.title);
+      if (titleObj.status) {
+        if (!refractory.title) {
+          data.title.push({ ms, frame, payload: titleObj.payload });
+          refractory.title = true;
+        }
+      } else if (refractory.title) {
+        data.title.push({ ms, frame, off: true });
+        refractory.title = false;
+      }
+
+      const nameObj = makeNameLabel(mat);
+      if (nameObj.status) {
+        if (!refractory.name) {
+          refractory.name = true;
+          if (prevDialog - nameObj.dialog > dialogThreshold)
+            vCap.showMatInCanvas(nameObj.actor);
+          data.name.push({
+            ms,
+            frame,
+            payload: { actor: findActorID(nameObj.actor, ms, nameActor) }
+          });
+        } else if (prevDialog - nameObj.dialog > dialogThreshold) {
+          data.name.push({ ms, frame, off: true });
+          data.name.push({
+            ms,
+            frame,
+            payload: { actor: findActorID(nameObj.actor, ms, nameActor) }
+          });
+        }
+        prevDialog = nameObj.dialog;
+      } else if (refractory.name) {
         data.name.push({ ms, frame, off: true });
-        data.name.push({ ms, frame, payload: nameObj.payload });
+        prevDialog = 999999999;
+        refractory.name = false;
       }
-      prevDialog = nameObj.dialog;
-    } else if (refractory.name) {
-      data.name.push({ ms, frame, off: true });
-      prevDialog = 999999999;
-      refractory.name = false;
-    }
 
-    meanClass.push(frame, meanFinder(mat));
-    if (meanClass.isFadingToBlack()) {
-      data.fade.push({ ms, frame, type: 'fadein', color: 'black' });
-    } else if (meanClass.isFadingFromBlack()) {
-      data.fade.push({ ms, frame, type: 'fadeout', color: 'black' });
-    } else if (meanClass.isFadingToWhite()) {
-      data.fade.push({ ms, frame, type: 'fadein', color: 'white' });
-    } else if (meanClass.isFadingFromWhite()) {
-      data.fade.push({ ms, frame, type: 'fadeout', color: 'white' });
+      meanClass.push(frame, meanFinder(mat));
+      if (meanClass.isFadingToBlack()) {
+        data.fade.push({ ms, frame, type: 'fadein', color: 'black' });
+      } else if (meanClass.isFadingFromBlack()) {
+        data.fade.push({ ms, frame, type: 'fadeout', color: 'black' });
+      } else if (meanClass.isFadingToWhite()) {
+        data.fade.push({ ms, frame, type: 'fadein', color: 'white' });
+      } else if (meanClass.isFadingFromWhite()) {
+        data.fade.push({ ms, frame, type: 'fadeout', color: 'white' });
+      }
+    },
+    () => {
+      writeAss(data, nameActor, vCap);
     }
-
-    if (!(frame % 50)) console.log('frame: ', frame);
-    frame = vCap.getFrame();
-    ms = vCap.getFrame('ms');
-    mat = vCap.getMat();
-    if (frame >= limitVCap) break;
-  }
-  writeAss(data, vCap);
+  );
 }

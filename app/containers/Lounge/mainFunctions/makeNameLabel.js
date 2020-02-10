@@ -44,7 +44,6 @@ export default function nameLabelGenerator(mat) {
   return {
     percentDiff,
     status: percentDiff < threshPercentDiff,
-    payload: {},
     actor,
     dialog
   };

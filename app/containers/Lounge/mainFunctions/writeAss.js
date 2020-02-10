@@ -39,8 +39,15 @@ function writeSubtitle({ begin, end, actor = 'จิซาโตะ', content = 
   `;
 }
 
-export default function writeAss(data, vCap) {
-  console.log('data: ', data);
+function writeNameActor({ ms, uid }) {
+  return `Comment: 0,${timestamp(ms)},${timestamp(
+    ms + 1000
+  )},ข้อความ,,0,0,0,code once,name[${uid}] = ""
+  `;
+}
+
+export default function writeAss(data, nameActor, vCap) {
+  // console.log('data: ', data);
   const stream = fs.createWriteStream(
     `${vCap.path.substr(0, vCap.path.lastIndexOf('.'))}.ass`,
     {
@@ -85,6 +92,7 @@ export default function writeAss(data, vCap) {
 
   stream.once('open', () => {
     stream.write(assTemplate(vCap.path));
+    nameActor.forEach(item => stream.write(writeNameActor(item)));
     stream.write(writeCredit((vCap.length * 1000) / vCap.FPS));
     outData.forEach(item => {
       switch (item.type) {

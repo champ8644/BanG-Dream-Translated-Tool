@@ -56,6 +56,7 @@ export const threshPlacePercentDiff = 4;
 export const threshTitlePercentDiff = 6;
 export const blackThreshold = 2;
 export const whiteThreshold = 253;
+export const actorThreshold = 500;
 
 export const gapConst = 10;
 
@@ -95,4 +96,7 @@ export const titleHeader = {
 
 export const meanSmooth = 5;
 export const meanLength = 100;
-export const limitVCap = 2000;
+export const limitVCap = 3500;
+export const chunkCount = 50;
+
+export const rescaleRatio = 1 / 10;
