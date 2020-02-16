@@ -1,6 +1,6 @@
 import cv from 'opencv4nodejs';
 
-export const qualityRatio = 4;
+export const qualityRatio = 1;
 export const rx = 1 / qualityRatio;
 export const maxWidth = (960 / 2) * 2;
 export const maxHeight = (720 / 2) * 2;
@@ -98,4 +98,4 @@ export const titleHeader = {
 export const meanSmooth = 5;
 export const meanLength = 100;
 export const limitVCap = 3500;
-export const chunkCount = 50;
+export const chunkCount = 10;

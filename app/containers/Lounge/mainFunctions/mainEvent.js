@@ -59,7 +59,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
   const beginTime = new Date().getTime();
   (function chunk() {
     const end = Math.min(i + chunksize, count);
-    for (; i < end; ++i) {
+    for (; i < end; i += 60) {
       callback.call(null, i);
     }
     // eslint-disable-next-line no-console
@@ -79,18 +79,22 @@ export default function mainEvent(vCap) {
   const nameActor = [];
   nonBlockingLoop(
     limitVCap,
-    chunkCount,
+    chunkCount * 60,
     i => {
       const frame = i;
       const ms = (i * 1000) / vCap.FPS;
       // const frame = vCap.getFrame();
       // const ms = vCap.getFrame('ms');
-      const mat = vCap.getMat();
+      const mat = vCap.getMat(frame);
       if (mat.empty) {
         isLoopValid = false;
         return;
       }
       const placeObj = makePlaceLabel(mat, refractory.place);
+      const titleObj = makeTitleLabel(mat, refractory.title);
+      const nameObj = makeNameLabel(mat);
+      meanClass.push(frame, meanFinder(mat));
+
       if (placeObj.status) {
         if (!refractory.place) {
           data.place.push({ ms, frame, payload: placeObj.payload });
@@ -101,7 +105,6 @@ export default function mainEvent(vCap) {
         refractory.place = false;
       }
 
-      const titleObj = makeTitleLabel(mat, refractory.title);
       if (titleObj.status) {
         if (!refractory.title) {
           data.title.push({ ms, frame, payload: titleObj.payload });
@@ -112,7 +115,6 @@ export default function mainEvent(vCap) {
         refractory.title = false;
       }
 
-      const nameObj = makeNameLabel(mat);
       if (nameObj.status) {
         if (!refractory.name) {
           refractory.name = true;
@@ -138,7 +140,6 @@ export default function mainEvent(vCap) {
         refractory.name = false;
       }
 
-      meanClass.push(frame, meanFinder(mat));
       if (meanClass.isFadingToBlack()) {
         data.fade.push({ ms, frame, type: 'fadein', color: 'black' });
       } else if (meanClass.isFadingFromBlack()) {
