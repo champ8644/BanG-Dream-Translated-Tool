@@ -5,8 +5,11 @@ export const radioObj = [
   'HSVFinder',
   'meanFinder',
   'placeLabelGenerator',
+  'placeLabelTemplater',
   'nameLabelGenerator',
-  'titleLabelGenerator'
+  'nameLabelTemplater',
+  'titleLabelGenerator',
+  'titleLabelTemplater'
 ];
 
 export const sliderObjSelector = {

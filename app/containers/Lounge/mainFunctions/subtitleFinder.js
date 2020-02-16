@@ -16,7 +16,6 @@ export default function subtitleFinder(mat) {
   const upperColorBounds = new cv.Vec(blue[1], green[1], red[1]);
   const matSubtitle = mat
     .getRegion(subtitleRect)
-    .rescale(1 / 10)
     .inRange(lowerColorBounds, upperColorBounds);
   return matSubtitle.countNonZero();
 }

@@ -1,4 +1,8 @@
-import { placeLabelThreshold, titleLabelCrop } from '../constants';
+import {
+  placeLabelThreshold,
+  qualityRatio,
+  titleLabelCrop
+} from '../constants';
 
 import cv from 'opencv4nodejs';
 
@@ -19,6 +23,6 @@ export default function titleLabelTemplater(mat) {
     .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds)
     .cvtColor(cv.COLOR_GRAY2BGR);
-  cv.imwrite('CaptureTitleLabelCropTemp.png', masked);
+  cv.imwrite(`CaptureTitleLabelCrop_${qualityRatio}_Temp.png`, masked);
   return masked;
 }

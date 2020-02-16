@@ -1,5 +1,7 @@
 import cv from 'opencv4nodejs';
 
+export const qualityRatio = 4;
+export const rx = 1 / qualityRatio;
 export const maxWidth = (960 / 2) * 2;
 export const maxHeight = (720 / 2) * 2;
 export const maxMinDist = 15000;
@@ -37,23 +39,11 @@ export const subtitleThreshold = {
   red: [64, 164]
 };
 
-export const nameLabelCrop = {
-  innerX: [115, 547],
-  innerY: [1116, 1177],
-  outerX: [78, 620],
-  outerY: [1104, 1190]
-};
-
-export const subtitleCrop = {
-  rectX: [100, 1800],
-  rectY: [1200, 1400]
-};
-
 export const rows = 1440;
 export const cols = 1920;
-export const threshPercentDiff = 3;
-export const threshPlacePercentDiff = 4;
-export const threshTitlePercentDiff = 6;
+export const threshPercentDiff = 5;
+export const threshPlacePercentDiff = 5;
+export const threshTitlePercentDiff = 5;
 export const blackThreshold = 2;
 export const whiteThreshold = 253;
 export const actorThreshold = 500;
@@ -68,35 +58,44 @@ export const placeLabelThreshold = {
   sat: [100, 255],
   val: [100, 255]
 };
-export const placeLabelCrop = {
-  innerX: [447, 1464],
-  innerY: [695, 745],
-  outerX: [323, 1592],
-  outerY: [649, 795]
-};
+
 export const placeCenterThreshold = {
   gray: [0, 144]
 };
 
+export const nameLabelCrop = {
+  innerX: [Math.round(115 * rx), Math.round(547 * rx)],
+  innerY: [Math.round(1116 * rx), Math.round(1177 * rx)],
+  outerX: [Math.round(78 * rx), Math.round(620 * rx)],
+  outerY: [Math.round(1104 * rx), Math.round(1190 * rx)]
+};
+export const subtitleCrop = {
+  rectX: [Math.round(100 * rx), Math.round(1800 * rx)],
+  rectY: [Math.round(1200 * rx), Math.round(1400 * rx)]
+};
+export const placeLabelCrop = {
+  innerX: [Math.round(447 * rx), Math.round(1464 * rx)],
+  innerY: [Math.round(695 * rx), Math.round(745 * rx)],
+  outerX: [Math.round(323 * rx), Math.round(1592 * rx)],
+  outerY: [Math.round(649 * rx), Math.round(795 * rx)]
+};
 export const titleLabelCrop = {
-  outerX: [20, 90],
-  outerY: [20, 90],
-  innerX: [385, 1465],
-  innerY: [690, 750]
+  outerX: [Math.round(20 * rx), Math.round(90 * rx)],
+  outerY: [Math.round(20 * rx), Math.round(90 * rx)],
+  innerX: [Math.round(385 * rx), Math.round(1465 * rx)],
+  innerY: [Math.round(690 * rx), Math.round(750 * rx)]
 };
 export const titleLineCrop = {
-  rectX: [75, 1920],
-  rectY: [80, 85]
+  rectX: [Math.round(75 * rx), Math.round(1920 * rx)],
+  rectY: [Math.round(80 * rx), Math.round(85 * rx)]
 };
 export const titleHeader = {
-  x: 75,
-  y: 25,
-  height: 60
+  x: Math.round(75 * rx),
+  y: Math.round(25 * rx),
+  height: Math.round(60 * rx)
 };
 
 export const meanSmooth = 5;
 export const meanLength = 100;
 export const limitVCap = 3500;
 export const chunkCount = 50;
-
-export const rescaleRatio = 1 / 10;

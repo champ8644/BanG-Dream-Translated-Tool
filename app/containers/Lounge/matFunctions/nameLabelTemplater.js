@@ -1,4 +1,9 @@
-import { black, nameLabelCrop, nameLabelThreshold } from '../constants';
+import {
+  black,
+  nameLabelCrop,
+  nameLabelThreshold,
+  qualityRatio
+} from '../constants';
 
 import cv from 'opencv4nodejs';
 
@@ -32,6 +37,6 @@ export default function nameLabelTemplater(mat) {
     .inRange(lowerColorBounds, upperColorBounds)
     .cvtColor(cv.COLOR_GRAY2BGR)
     .and(maskRect);
-  cv.imwrite('CaptureNameLabelCropTemp.png', masked);
+  cv.imwrite(`CaptureNameLabelCrop_${qualityRatio}_Temp.png`, masked);
   return masked;
 }

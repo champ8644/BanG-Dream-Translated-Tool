@@ -1,15 +1,25 @@
 import {
   nameLabelCrop,
   nameLabelThreshold,
+  qualityRatio,
+  rx,
   threshPercentDiff
 } from '../constants';
 
 import cv from 'opencv4nodejs';
 import subtitleFinder from './subtitleFinder';
 
-const CaptureNameLabel = cv
-  .imread('CaptureNameLabelCrop.png')
-  .cvtColor(cv.COLOR_BGR2GRAY);
+let CaptureNameLabel;
+try {
+  CaptureNameLabel = cv
+    .imread(`CaptureNameLabelCrop_${qualityRatio}.png`)
+    .cvtColor(cv.COLOR_BGR2GRAY);
+} catch {
+  CaptureNameLabel = cv
+    .imread(`CaptureNameLabelCrop.png`)
+    .rescale(rx)
+    .cvtColor(cv.COLOR_BGR2GRAY);
+}
 const countNameLabel = CaptureNameLabel.countNonZero();
 const { innerX, outerX, innerY, outerY } = nameLabelCrop;
 const rectOuterNameLabel = new cv.Rect(

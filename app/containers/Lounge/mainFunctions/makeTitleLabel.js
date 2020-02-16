@@ -1,5 +1,7 @@
 import {
   placeLabelThreshold,
+  qualityRatio,
+  rx,
   threshTitlePercentDiff,
   titleLabelCrop
 } from '../constants';
@@ -8,9 +10,17 @@ import cv from 'opencv4nodejs';
 import titleLineWidthFinder from './titleLineWidthFinder';
 import titleNameFinder from './titleNameFinder';
 
-const CaptureTitleLabel = cv
-  .imread('CaptureTitleLabelCrop.png')
-  .cvtColor(cv.COLOR_BGR2GRAY);
+let CaptureTitleLabel;
+try {
+  CaptureTitleLabel = cv
+    .imread(`CaptureTitleLabelCrop_${qualityRatio}.png`)
+    .cvtColor(cv.COLOR_BGR2GRAY);
+} catch {
+  CaptureTitleLabel = cv
+    .imread(`CaptureTitleLabelCrop.png`)
+    .rescale(rx)
+    .cvtColor(cv.COLOR_BGR2GRAY);
+}
 const countTitleLabel = CaptureTitleLabel.countNonZero();
 const { outerX, outerY } = titleLabelCrop;
 const rectTitleLabel = new cv.Rect(
@@ -19,6 +29,7 @@ const rectTitleLabel = new cv.Rect(
   outerX[1] - outerX[0],
   outerY[1] - outerY[0]
 );
+
 export default function titleLabelGenerator(mat, refractory) {
   const { val, sat, hue } = placeLabelThreshold;
   const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);

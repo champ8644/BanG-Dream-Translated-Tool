@@ -1,15 +1,25 @@
 import {
   placeLabelCrop,
   placeLabelThreshold,
+  qualityRatio,
+  rx,
   threshPlacePercentDiff
 } from '../constants';
 
 import cv from 'opencv4nodejs';
 import placeNameFinder from './placeNameFinder';
 
-const CapturePlaceLabel = cv
-  .imread('CapturePlaceLabelCrop.png')
-  .cvtColor(cv.COLOR_BGR2GRAY);
+let CapturePlaceLabel;
+try {
+  CapturePlaceLabel = cv
+    .imread(`CapturePlaceLabelCrop_${qualityRatio}.png`)
+    .cvtColor(cv.COLOR_BGR2GRAY);
+} catch {
+  CapturePlaceLabel = cv
+    .imread(`CapturePlaceLabelCrop.png`)
+    .rescale(rx)
+    .cvtColor(cv.COLOR_BGR2GRAY);
+}
 const countPlaceLabel = CapturePlaceLabel.countNonZero();
 const { outerX, outerY } = placeLabelCrop;
 const rectOuterPlaceLabel = new cv.Rect(

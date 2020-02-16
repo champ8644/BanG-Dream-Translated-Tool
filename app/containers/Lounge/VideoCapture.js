@@ -1,4 +1,4 @@
-import { green, maxHeight, maxWidth } from './constants';
+import { green, maxHeight, maxWidth, rx } from './constants';
 
 import cv from 'opencv4nodejs';
 import mainEvent from './mainFunctions/mainEvent';
@@ -7,9 +7,10 @@ import matFunctions from './matFunctions';
 export default class VideoCapture {
   constructor({ path, canvas, updateFrame, modePostProcessor, colorSlider }) {
     this.vCap = new cv.VideoCapture(path);
-    this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH);
-    this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT);
+    this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH) * rx;
+    this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT) * rx;
     this.ratio = Math.max(maxWidth / this.width, maxHeight / this.height);
+    // if (this.ratio > 1) this.ratio = 1;
     this.length = this.vCap.get(cv.CAP_PROP_FRAME_COUNT) - 1;
     this.FPS = this.vCap.get(cv.CAP_PROP_FPS);
     this.dWidth = this.width * this.ratio;
@@ -65,10 +66,10 @@ export default class VideoCapture {
   }
 
   getMat(frame, mode = 'frame') {
-    if (frame === undefined) return this.vCap.read();
+    if (frame === undefined) return this.vCap.read().rescale(rx);
     const currentFrame = this.getFrame(mode);
     if (frame !== currentFrame) this.setFrame(frame, mode);
-    return this.vCap.read();
+    return this.vCap.read().rescale(rx);
   }
 
   showMatInCanvas(_mat) {
