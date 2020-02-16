@@ -10,6 +10,7 @@ import XLSX from 'xlsx';
 import _ from 'lodash';
 import cv from 'opencv4nodejs';
 import mainEvent from './mainFunctions/mainEvent';
+import { message2Worker } from './utils';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
 
@@ -39,6 +40,12 @@ const actionTypesList = [
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
+
+export function sendMessage() {
+  return () => {
+    message2Worker('test', { text: 'hello world from UI' });
+  };
+}
 
 export function sendCanvas(canvasRef) {
   return {

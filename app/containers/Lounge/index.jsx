@@ -176,7 +176,8 @@ class Lounge extends Component {
       handleCommittedSlider,
       sliderObj,
       commitOnChange,
-      mainEventBtn
+      mainEventBtn,
+      sendMessage
     } = this.props;
 
     return (
@@ -290,6 +291,12 @@ class Lounge extends Component {
                     onClick={mainEventBtn}
                   >
                     Main Event
+                  </Button>
+                  <Button
+                    className={clsx(classes.btn, classes.marginLeft)}
+                    onClick={sendMessage}
+                  >
+                    send message
                   </Button>
                 </div>
                 {sliderObj && (

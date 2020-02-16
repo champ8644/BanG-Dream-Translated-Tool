@@ -5,14 +5,15 @@
  * Note: Don't import log helper file from utils here
  */
 
-import { join, parse, resolve } from 'path';
-import { homedir as homedirOs } from 'os';
-import url from 'url';
-import { rootPath as root } from 'electron-root-path';
-import { isPackaged } from './isPackaged';
-import { IS_DEV } from '../constants/env';
-import { yearMonthNow } from './date';
 import { APP_IDENTIFIER, APP_NAME } from '../constants/meta';
+import { join, parse, resolve } from 'path';
+
+import { IS_DEV } from '../constants/env';
+import { homedir as homedirOs } from 'os';
+import { isPackaged } from './isPackaged';
+import { rootPath as root } from 'electron-root-path';
+import url from 'url';
+import { yearMonthNow } from './date';
 
 const appPath = join(root, `./app`);
 const configDir = join(root, `./config`);
@@ -45,6 +46,13 @@ export const PATHS = {
     pathname: !isPackaged
       ? join(appPath, './app.html')
       : join(__dirname, './app.html')
+  }),
+  loadWorkerUrlPath: url.format({
+    protocol: 'file',
+    slashes: true,
+    pathname: !isPackaged
+      ? join(appPath, './worker.html')
+      : join(__dirname, './worker.html')
   })
 };
 

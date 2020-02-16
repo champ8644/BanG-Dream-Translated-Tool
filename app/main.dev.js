@@ -2,24 +2,33 @@
 
 /* eslint global-require: off */
 
-import { app, BrowserWindow, ipcMain } from 'electron';
-import electronIs from 'electron-is';
-import MenuBuilder from './menu';
-import { log } from './utils/log';
+import { BrowserWindow, app, ipcMain } from 'electron';
 import { DEBUG_PROD, IS_DEV, IS_PROD } from './constants/env';
-import AppUpdate from './classes/AppUpdate';
-import { PATHS } from './utils/paths';
-import { settingsStorage } from './utils/storageHelper';
+
+import { APP_TITLE } from './constants/meta';
 import { AUTO_UPDATE_CHECK_FIREUP_DELAY } from './constants';
+import AppUpdate from './classes/AppUpdate';
+import MenuBuilder from './menu';
+import { PATHS } from './utils/paths';
 import { appEvents } from './utils/eventHandling';
 import { bootLoader } from './utils/bootHelper';
-import { nonBootableDeviceWindow } from './utils/createWindows';
-import { APP_TITLE } from './constants/meta';
+import electronIs from 'electron-is';
 import { isPackaged } from './utils/isPackaged';
+import { log } from './utils/log';
+import { nonBootableDeviceWindow } from './utils/createWindows';
+import { settingsStorage } from './utils/storageHelper';
 
 const isDeviceBootable = bootTheDevice();
 const isMas = electronIs.mas();
 let mainWindow = null;
+let workerWindow = null;
+
+function sendWindowMessage(targetWindow, message, payload) {
+  if (typeof targetWindow === 'undefined') {
+    return Error('Target window does not exist');
+  }
+  targetWindow.webContents.send(message, payload);
+}
 
 if (IS_PROD) {
   const sourceMapSupport = require('source-map-support');
@@ -150,10 +159,28 @@ if (!isDeviceBootable) {
 
       mainWindow.on('closed', () => {
         mainWindow = null;
+        workerWindow.close();
+        workerWindow = null;
       });
+
+      workerWindow = new BrowserWindow({
+        title: 'worker window',
+        show: false,
+        webPreferences: { nodeIntegration: true }
+      });
+
+      workerWindow.loadURL(`${PATHS.loadWorkerUrlPath}`);
     } catch (e) {
       log.error(e, `main.dev -> createWindow`);
     }
+
+    ipcMain.on('message-from-worker', (event, arg) => {
+      sendWindowMessage(mainWindow, 'message-from-worker', arg);
+    });
+
+    ipcMain.on('message-from-renderer', (event, arg) => {
+      sendWindowMessage(workerWindow, 'message-from-renderer', arg);
+    });
   };
 
   app.on('window-all-closed', () => {
