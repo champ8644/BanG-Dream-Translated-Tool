@@ -42,8 +42,9 @@ const actionTypesList = [
 export const actionTypes = prefixer(prefix, actionTypesList);
 
 export function sendMessage() {
-  return () => {
-    message2Worker('test', { text: 'hello world from UI' });
+  return (dispatch, getState) => {
+    const { videoFilePath } = getState().Lounge;
+    message2Worker('start-events', { videoFilePath });
   };
 }
 

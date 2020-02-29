@@ -15,11 +15,11 @@ export default class VideoCapture {
     this.FPS = this.vCap.get(cv.CAP_PROP_FPS);
     this.dWidth = this.width * this.ratio;
     this.dHeight = this.height * this.ratio;
-    this.canvas = canvas;
-    this.updateFrame = updateFrame;
-    this.colorSlider = colorSlider;
     this.path = path;
-    this.setPostProcessor(modePostProcessor);
+    if (canvas) this.canvas = canvas;
+    if (updateFrame) this.updateFrame = updateFrame;
+    if (colorSlider) this.colorSlider = colorSlider;
+    if (modePostProcessor) this.setPostProcessor(modePostProcessor);
   }
 
   frame() {
@@ -85,7 +85,7 @@ export default class VideoCapture {
       mat.rows
     );
     this.putImageData(imgData);
-    this.updateFrame();
+    if (this.updateFrame) this.updateFrame();
   }
 
   read(frame, mode = 'frame') {
@@ -118,7 +118,8 @@ export default class VideoCapture {
   }
 
   putImageData(imgData) {
-    this.canvas.current.getContext('2d').putImageData(imgData, 0, 0);
+    if (this.canvas)
+      this.canvas.current.getContext('2d').putImageData(imgData, 0, 0);
   }
 
   async playing() {
@@ -157,8 +158,10 @@ export default class VideoCapture {
   }
 
   changeColorSlider(payload) {
-    this.colorSlider = { ...this.colorSlider, ...payload };
-    this.show();
+    if (this.colorSlider) {
+      this.colorSlider = { ...this.colorSlider, ...payload };
+      this.show();
+    }
   }
 
   mainEvent() {

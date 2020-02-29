@@ -10,7 +10,7 @@
       if (!process.env.HOT) {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = '../dist/worker.css';
+        link.href = './dist/worker.css';
         document.getElementsByTagName('head')[0].appendChild(link);
       }
     })();
@@ -27,15 +27,15 @@
       // Dynamically insert the DLL script in development env in the
       // renderer process
       if (process.env.NODE_ENV === 'development') {
-        scripts.push('../../dll/renderer.dev.dll.js');
-        PORT = require('../../config/env').PORT;
+        scripts.push('../dll/renderer.dev.dll.js');
+        PORT = require('../config/env').PORT;
       }
 
       // Dynamically insert the bundled app script in the renderer process
       scripts.push(
         process.env.HOT ?
         'http://localhost:' + PORT + '/dist/worker.renderer.dev.js' :
-        '../dist/worker.renderer.prod.js'
+        './dist/worker.renderer.prod.js'
       );
 
       document.write(

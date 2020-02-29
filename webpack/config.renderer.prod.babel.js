@@ -20,7 +20,7 @@ export default merge.smart(baseConfig, {
   target: 'electron-renderer',
   entry: {
     main: ['./app/index.js'],
-    worker: ['./app/workerWindow/index.js']
+    worker: ['./app/worker.js']
   },
 
   output: {

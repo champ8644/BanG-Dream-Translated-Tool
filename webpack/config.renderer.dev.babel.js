@@ -52,7 +52,7 @@ export default merge.smart(baseConfig, {
       'react-hot-loader/patch',
       `webpack-dev-server/client?http://localhost:${PORT}/`,
       'webpack/hot/only-dev-server',
-      path.join(PATHS.app, 'workerWindow/index.js')
+      path.join(PATHS.app, 'worker.js')
     ]
   },
 

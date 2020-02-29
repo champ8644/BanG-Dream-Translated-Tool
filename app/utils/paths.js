@@ -51,8 +51,8 @@ export const PATHS = {
     protocol: 'file',
     slashes: true,
     pathname: !isPackaged
-      ? join(appPath, './workerWindow/app.html')
-      : join(__dirname, './workerWindow/app.html')
+      ? join(appPath, './worker.html')
+      : join(__dirname, './worker.html')
   })
 };
 
