@@ -170,6 +170,27 @@ if (!isDeviceBootable) {
       });
 
       workerWindow.loadURL(`${PATHS.loadWorkerUrlPath}`);
+
+      workerWindow.webContents.on('did-finish-load', () => {
+        if (!workerWindow) {
+          throw new Error(`"workerWindow" is not defined`);
+        }
+        // if (process.env.START_MINIMIZED) {
+        //   workerWindow.minimize();
+        // } else {
+        //   workerWindow.maximize();
+        //   workerWindow.show();
+        //   workerWindow.focus();
+        // }
+      });
+
+      workerWindow.onerror = error => {
+        log.error(error, `main.dev -> workerWindow -> onerror`);
+      };
+
+      workerWindow.on('closed', () => {
+        workerWindow = null;
+      });
     } catch (e) {
       log.error(e, `main.dev -> createWindow`);
     }

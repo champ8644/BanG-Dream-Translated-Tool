@@ -19,7 +19,8 @@ export default merge.smart(baseConfig, {
   mode: 'production',
   target: 'electron-renderer',
   entry: {
-    main: ['./app/index.js']
+    main: ['./app/index.js'],
+    worker: ['./app/workerWindow/index.js']
   },
 
   output: {
@@ -238,7 +239,7 @@ export default merge.smart(baseConfig, {
     }),
 
     new MiniCssExtractPlugin({
-      filename: 'style.css'
+      filename: '[name].css'
     }),
 
     new BundleAnalyzerPlugin({

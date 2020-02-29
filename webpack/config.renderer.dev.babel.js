@@ -7,15 +7,16 @@
  * https://webpack.js.org/concepts/hot-module-replacement/
  */
 
-import path from 'path';
-import fs from 'fs';
-import webpack from 'webpack';
-import chalk from 'chalk';
-import merge from 'webpack-merge';
-import { spawn, execSync } from 'child_process';
-import baseConfig from './config.base';
+import { execSync, spawn } from 'child_process';
+
 import { PATHS } from '../app/utils/paths';
 import { PORT } from '../config/env';
+import baseConfig from './config.base';
+import chalk from 'chalk';
+import fs from 'fs';
+import merge from 'webpack-merge';
+import path from 'path';
+import webpack from 'webpack';
 
 const publicPath = `http://localhost:${PORT}/dist`;
 const dll = path.resolve(PATHS.root, 'dll');
@@ -46,6 +47,12 @@ export default merge.smart(baseConfig, {
       `webpack-dev-server/client?http://localhost:${PORT}/`,
       'webpack/hot/only-dev-server',
       path.join(PATHS.app, 'index.js')
+    ],
+    worker: [
+      'react-hot-loader/patch',
+      `webpack-dev-server/client?http://localhost:${PORT}/`,
+      'webpack/hot/only-dev-server',
+      path.join(PATHS.app, 'workerWindow/index.js')
     ]
   },
 
