@@ -40,16 +40,18 @@ export default merge.smart(baseConfig, {
   devtool: 'inline-source-map',
   mode: 'development',
   target: 'electron-renderer',
-  entry: [
-    'react-hot-loader/patch',
-    `webpack-dev-server/client?http://localhost:${PORT}/`,
-    'webpack/hot/only-dev-server',
-    path.join(PATHS.app, 'index.js')
-  ],
+  entry: {
+    main: [
+      'react-hot-loader/patch',
+      `webpack-dev-server/client?http://localhost:${PORT}/`,
+      'webpack/hot/only-dev-server',
+      path.join(PATHS.app, 'index.js')
+    ]
+  },
 
   output: {
     publicPath: `http://localhost:${PORT}/dist/`,
-    filename: 'renderer.dev.js'
+    filename: '[name].renderer.dev.js'
   },
 
   module: {
