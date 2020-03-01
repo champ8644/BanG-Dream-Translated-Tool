@@ -11,6 +11,8 @@ function timestamp(ms) {
   return `${h}:${mm}:${ss}`;
 }
 
+let convertToMs;
+
 function writeCredit(ms) {
   return `Dialogue: 0,0:00:00.00,${timestamp(
     ms
@@ -46,7 +48,22 @@ function writeNameActor({ ms, uid }) {
   `;
 }
 
+function writeWhite({ begin, end, fadeIn, fadeOut }) {
+  return `Dialogue: 0,${timestamp(begin)},${timestamp(
+    end
+  )},ฉากขาว,${fadeIn};${fadeOut},0,0,0,,
+  `;
+}
+
+function writeBlack({ begin, end, fadeIn, fadeOut }) {
+  return `Dialogue: 0,${timestamp(begin)},${timestamp(
+    end
+  )},ฉากดำ,${fadeIn};${fadeOut},0,0,0,,
+  `;
+}
+
 export default function writeAss(data, nameActor, vCap) {
+  convertToMs = frame => Math.round(((frame * 1000) / vCap.FPS) * 1000) / 1000;
   // console.log('data: ', data);
   const stream = fs.createWriteStream(
     `${vCap.path.substr(0, vCap.path.lastIndexOf('.'))}.ass`,
@@ -62,14 +79,15 @@ export default function writeAss(data, nameActor, vCap) {
 
   for (let i = 0; i < keys.length; i++) {
     const type = keys[i];
-    outData[type] = [];
     if (data[type].length > 0) {
       if (!data[type][data[type].length - 1].off) {
-        data[type].push({
-          frame: limitVCap,
-          ms: (limitVCap * 1000) / vCap.FPS,
-          off: true
-        });
+        if (!(type === 'fadeB' || type === 'fadeW')) {
+          data[type].push({
+            frame: limitVCap,
+            ms: convertToMs(limitVCap),
+            off: true
+          });
+        }
       }
     }
   }
@@ -77,7 +95,19 @@ export default function writeAss(data, nameActor, vCap) {
   for (let i = 0; i < keys.length; i++) {
     const type = keys[i];
     for (let j = 0; j < data[type].length; j++) {
-      if (!data[type][j].off) {
+      if (type === 'fadeB' || type === 'fadeW') {
+        if (data[type][j].progress === 4) {
+          outData.push({
+            type,
+            begin: convertToMs(data[type][j - 3].frame),
+            end: convertToMs(data[type][j].frame),
+            fadeIn: convertToMs(
+              data[type][j - 2].frame - data[type][j - 3].frame
+            ),
+            fadeOut: convertToMs(data[type][j].frame - data[type][j - 1].frame)
+          });
+        }
+      } else if (!data[type][j].off) {
         outData.push({
           type,
           begin: data[type][j].ms,
@@ -104,6 +134,12 @@ export default function writeAss(data, nameActor, vCap) {
           break;
         case 'title':
           stream.write(writeTitle(item));
+          break;
+        case 'fadeB':
+          stream.write(writeBlack(item));
+          break;
+        case 'fadeW':
+          stream.write(writeWhite(item));
           break;
         default:
       }

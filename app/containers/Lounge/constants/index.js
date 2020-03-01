@@ -44,8 +44,9 @@ export const cols = 1920;
 export const threshPercentDiff = 5;
 export const threshPlacePercentDiff = 5;
 export const threshTitlePercentDiff = 5;
-export const blackThreshold = 2;
-export const whiteThreshold = 253;
+export const blackThreshold = 3;
+export const whiteThreshold = 252;
+export const fadeThreshold = 3;
 export const actorThreshold = 500;
 
 export const gapConst = 10;
@@ -96,6 +97,7 @@ export const titleHeader = {
 };
 
 export const meanSmooth = 5;
-export const meanLength = 100;
-export const limitVCap = 3500;
+export const meanLength = 1000;
+export const startVCap = 250;
+export const limitVCap = 320;
 export const chunkCount = 10;

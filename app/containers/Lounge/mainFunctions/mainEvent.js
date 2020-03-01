@@ -1,4 +1,13 @@
-import { chunkCount, limitVCap, meanLength, meanSmooth } from '../constants';
+import {
+  blackThreshold,
+  chunkCount,
+  fadeThreshold,
+  limitVCap,
+  meanLength,
+  meanSmooth,
+  startVCap,
+  whiteThreshold
+} from '../constants';
 
 import findActorID from './findActorID';
 import makeNameLabel from './makeNameLabel';
@@ -16,7 +25,8 @@ class Meaning {
     this.length = meanLength;
   }
 
-  avg5(frame) {
+  avg(frame) {
+    if (frame - this.div < 0) return null;
     let sum = 0;
     for (let i = 1; i <= this.div; i++) {
       const prevFrame = (frame - i + this.length) % this.length;
@@ -25,17 +35,51 @@ class Meaning {
     return sum / this.div;
   }
 
-  push(frame, val) {
-    this.data[frame % this.length] = val;
+  at(frame) {
+    return this.data[(frame + this.length) % this.length];
   }
 
-  isFadingToBlack() {}
+  push(frame, val) {
+    this.data[(frame + this.length) % this.length] = val;
+  }
 
-  isFadingFromBlack() {}
+  isBlack(frame) {
+    return this.data[frame % this.length] < blackThreshold;
+  }
 
-  isFadingToWhite() {}
+  findFadeInBlack(frame) {
+    for (let i = 0; i < this.length; i++) {
+      const curFrame = frame - i;
+      const avg = this.avg(curFrame);
+      if (avg !== null) {
+        if (avg - this.at(curFrame) < fadeThreshold) return i;
+      } else return null;
+    }
+    return null;
+  }
 
-  isFadingFromWhite() {}
+  isOutOfBlack(frame) {
+    return this.avg(frame) - this.at(frame - this.div) < fadeThreshold;
+  }
+
+  isWhite(frame) {
+    return this.data[frame % this.length] > whiteThreshold;
+  }
+
+  findFadeInWhite(frame) {
+    for (let i = 0; i < this.length; i++) {
+      const curFrame = frame - i;
+      const avg = this.avg(curFrame);
+      if (avg !== null) {
+        if (this.at(curFrame) - avg < fadeThreshold) return i;
+      } else return null;
+    }
+    return null;
+  }
+
+  isOutOfWhite(frame) {
+    return this.at(frame - this.div) - this.avg(frame) < fadeThreshold;
+  }
 }
 
 let prevDialog = 999999999;
@@ -44,22 +88,25 @@ const data = {
   name: [],
   place: [],
   title: [],
-  fade: []
+  fadeB: [],
+  fadeW: []
 };
 const refractory = {
   name: false,
   place: false,
-  title: false
+  title: false,
+  fadeB: 0,
+  fadeW: 0
 };
 
 let isLoopValid;
 function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
-  let i = 0;
+  let i = startVCap;
   isLoopValid = true;
   const beginTime = new Date().getTime();
   (function chunk() {
     const end = Math.min(i + chunksize, count);
-    for (; i < end; i += 60) {
+    for (; i < end; i++) {
       callback.call(null, i);
     }
     // eslint-disable-next-line no-console
@@ -79,7 +126,7 @@ export default function mainEvent(vCap) {
   const nameActor = [];
   nonBlockingLoop(
     limitVCap,
-    chunkCount * 60,
+    chunkCount,
     i => {
       const frame = i;
       const ms = (i * 1000) / vCap.FPS;
@@ -140,14 +187,66 @@ export default function mainEvent(vCap) {
         refractory.name = false;
       }
 
-      if (meanClass.isFadingToBlack()) {
-        data.fade.push({ ms, frame, type: 'fadein', color: 'black' });
-      } else if (meanClass.isFadingFromBlack()) {
-        data.fade.push({ ms, frame, type: 'fadeout', color: 'black' });
-      } else if (meanClass.isFadingToWhite()) {
-        data.fade.push({ ms, frame, type: 'fadein', color: 'white' });
-      } else if (meanClass.isFadingFromWhite()) {
-        data.fade.push({ ms, frame, type: 'fadeout', color: 'white' });
+      if (meanClass.isBlack(frame)) {
+        if (refractory.fadeB === 0) {
+          const beginBlack = meanClass.findFadeInBlack(frame);
+          data.fadeB.push({
+            progress: 1,
+            frame: frame - beginBlack
+          });
+          data.fadeB.push({
+            progress: 2,
+            frame
+          });
+          refractory.fadeB = meanSmooth + 1;
+        }
+      } else if (refractory.fadeB > meanSmooth) {
+        data.fadeB.push({
+          progress: 3,
+          frame
+        });
+        refractory.fadeB--;
+      } else if (refractory.fadeB > 1) {
+        refractory.fadeB--;
+      } else if (refractory.fadeB === 1) {
+        if (meanClass.isOutOfBlack(frame)) {
+          data.fadeB.push({
+            progress: 4,
+            frame: frame - meanSmooth
+          });
+          refractory.fadeB = 0;
+        }
+      }
+
+      if (meanClass.isWhite(frame)) {
+        if (refractory.fadeW === 0) {
+          const beginWhite = meanClass.findFadeInWhite(frame);
+          data.fadeW.push({
+            progress: 1,
+            frame: frame - beginWhite
+          });
+          data.fadeW.push({
+            progress: 2,
+            frame
+          });
+          refractory.fadeW = meanSmooth + 1;
+        }
+      } else if (refractory.fadeW > meanSmooth) {
+        data.fadeW.push({
+          progress: 3,
+          frame
+        });
+        refractory.fadeW--;
+      } else if (refractory.fadeW > 1) {
+        refractory.fadeW--;
+      } else if (refractory.fadeW === 1) {
+        if (meanClass.isOutOfWhite(frame)) {
+          data.fadeW.push({
+            progress: 4,
+            frame: frame - meanSmooth
+          });
+          refractory.fadeW = 0;
+        }
       }
     },
     () => {

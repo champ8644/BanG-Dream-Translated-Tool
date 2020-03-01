@@ -9,6 +9,12 @@ export default class VideoCapture {
     this.vCap = new cv.VideoCapture(path);
     this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH) * rx;
     this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT) * rx;
+    if (this.width < this.height) {
+      this.rotate = true;
+      const t = this.height;
+      this.height = this.width;
+      this.width = t;
+    } else this.rotate = false;
     this.ratio = Math.max(maxWidth / this.width, maxHeight / this.height);
     // if (this.ratio > 1) this.ratio = 1;
     this.length = this.vCap.get(cv.CAP_PROP_FRAME_COUNT) - 1;
@@ -66,9 +72,21 @@ export default class VideoCapture {
   }
 
   getMat(frame, mode = 'frame') {
-    if (frame === undefined) return this.vCap.read().rescale(rx);
+    if (frame === undefined) {
+      if (this.rotate)
+        return this.vCap
+          .read()
+          .rotate(cv.ROTATE_90_COUNTERCLOCKWISE)
+          .rescale(rx);
+      return this.vCap.read().rescale(rx);
+    }
     const currentFrame = this.getFrame(mode);
     if (frame !== currentFrame) this.setFrame(frame, mode);
+    if (this.rotate)
+      return this.vCap
+        .read()
+        .rotate(cv.ROTATE_90_COUNTERCLOCKWISE)
+        .rescale(rx);
     return this.vCap.read().rescale(rx);
   }
 

@@ -22,8 +22,9 @@ Style: ข้อความ,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0
 Style: ชื่อตอน,Layiji MaHaNiYom V1.61,54,&H00524F52,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,7,50,0,0,1
 Style: ชื่อสถานที่,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,2,0,0,673,1
 Style: ชื่อสถานที่ black,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,2,0,0,673,1
+Style: ฉากขาว,Layiji MaHaNiYom V1.61,93,&H00000000,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
+Style: ฉากดำ,Layiji MaHaNiYom V1.61,93,&H00000000,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
 Style: Credit,Layiji MaHaNiYom V1.61,80,&H00EEDDFF,&H0006067E,&H007733FF,&H00000000,-1,-1,0,0,100,100,0,0,1,12,2,9,0,70,20,1
-Style: Persistent,Layiji MaHaNiYom V1.61,93,&H00000000,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -48,5 +49,9 @@ Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template line,
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\1c&HFFFFFF&\\shad0.2\\fs95\\pos(130,1150)\\an4}!name[$actor]!
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx750\\fscy1200\\move(961,1274,3350,1274,0,2750)\\clip(90,1198,1820,1296)}m -120 -15 l 120 -15 120 13 -120 13
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx750\\fscy1200\\move(961,1274,3350,1274,2750,5300)\\clip(90,1298,1820,1403)}m -120 -15 l 120 -15 120 13 -120 13
+Comment: 1,0:00:00.00,0:00:00.00,ฉากดำ,,0,0,0,code line,_, _,fadeIn,fadeOut = string.find(line.actor, "([%d.]*)%p*([%d.]*)");
+Comment: 1,0:00:00.00,0:00:00.00,ฉากดำ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\an5\\bord0\\shad0\\c&000000&\\fade(!fadeIn!,!fadeOut!)}m 0 0 l 1920 0 l 1920 1440 l 0 1440
+Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,code line,_, _,fadeIn,fadeOut = string.find(line.actor, "([%d.]*)%p*([%d.]*)");
+Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\an5\\bord0\\shad0\\c&FFFFFF&\\fade(!fadeIn!,!fadeOut!)}m 0 0 l 1920 0 l 1920 1440 l 0 1440
 `;
 }
