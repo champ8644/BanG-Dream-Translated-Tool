@@ -34,6 +34,7 @@ export const initialState = {
   progressFull: null,
   importedFile: null,
   willUpdateNextFrame: false,
+  percentLinear: null,
   overlayMode: 'none'
 };
 
@@ -97,6 +98,8 @@ export default function Lounge(state = initialState, action) {
       return { ...state, progress: state.progress + payload };
     case actionTypes.IMPORTING:
       return { ...state, importedFile: payload };
+    case actionTypes.UPDATE_LINEAR:
+      return { ...state, percentLinear: payload };
     default:
       return state;
   }

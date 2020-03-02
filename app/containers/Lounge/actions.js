@@ -36,7 +36,8 @@ const actionTypesList = [
   'ADD_PROGRESS',
   'IMPORTING',
   'HANDLE_RADIO_SELECT',
-  'HANDLE_COMMITTED_SLIDER'
+  'HANDLE_COMMITTED_SLIDER',
+  'UPDATE_LINEAR'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -45,6 +46,13 @@ export function sendMessage() {
   return (dispatch, getState) => {
     const { videoFilePath } = getState().Lounge;
     message2Worker('start-events', { videoFilePath });
+  };
+}
+
+export function updateLinear(percent) {
+  return {
+    type: actionTypes.UPDATE_LINEAR,
+    payload: percent
   };
 }
 

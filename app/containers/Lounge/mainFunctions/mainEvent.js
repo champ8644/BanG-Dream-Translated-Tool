@@ -14,6 +14,7 @@ import makeNameLabel from './makeNameLabel';
 import makePlaceLabel from './makePlaceLabel';
 import makeTitleLabel from './makeTitleLabel';
 import meanFinder from './meanFinder';
+import message2UI from '../../../worker/message2UI';
 import writeAss from './writeAss';
 
 const dialogThreshold = 10;
@@ -114,6 +115,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
       frame: i,
       FPS: (i / (new Date().getTime() - beginTime)) * 1000
     });
+    message2UI('update-progress', (i / count) * 100);
     if (i < count && isLoopValid) {
       setTimeout(chunk, 0);
     } else {

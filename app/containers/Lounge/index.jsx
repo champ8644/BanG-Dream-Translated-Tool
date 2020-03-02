@@ -7,6 +7,7 @@ import {
   makeCurrentFrame,
   makeDialogData,
   makeOverlayMode,
+  makePercentLinear,
   makeProgress,
   makeProgressBar,
   makeSlider,
@@ -51,12 +52,15 @@ import Typography from '@material-ui/core/Typography';
 import { bindActionCreators } from 'redux';
 import clsx from 'clsx';
 import { connect } from 'react-redux';
+import electron from 'electron';
 import { formatNumber } from './constants/function';
 import { radioObj } from './constants/config';
 import reducers from './reducers';
 import { styles } from './styles';
 import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
+
+const { ipcRenderer } = electron;
 
 const mapStateToProps = (state, props) => {
   return {
@@ -70,7 +74,8 @@ const mapStateToProps = (state, props) => {
     valueSlider: makeSlider(state),
     willUpdateNextFrame: makeWillUpdateNextFrame(state),
     overlayMode: makeOverlayMode(state),
-    sliderObj: makeSliderObj(state)
+    sliderObj: makeSliderObj(state),
+    percentLinear: makePercentLinear(state)
   };
 };
 
@@ -133,8 +138,20 @@ class Lounge extends Component {
   }
 
   componentDidMount() {
-    const { sendCanvas } = this.props;
+    const { sendCanvas, updateLinear, finishJobs } = this.props;
     sendCanvas(this.canvas);
+    ipcRenderer.on('message-from-worker', (e, arg) => {
+      const { command, payload } = arg;
+      switch (command) {
+        case 'update-progress':
+          updateLinear(payload);
+          break;
+        case 'finish-progress':
+          finishJobs();
+          break;
+        default:
+      }
+    });
   }
 
   componentDidUpdate() {
@@ -177,7 +194,8 @@ class Lounge extends Component {
       sliderObj,
       commitOnChange,
       mainEventBtn,
-      sendMessage
+      sendMessage,
+      percentLinear
     } = this.props;
 
     return (
@@ -255,6 +273,11 @@ class Lounge extends Component {
               label={`${formatNumber(percent)} / 100 %`}
               variant='outlined'
             />
+            {percentLinear !== null && (
+              <Paper className={classes.paperLinear}>
+                <LinearProgress variant='determinate' value={percentLinear} />
+              </Paper>
+            )}
             <Grid container>
               <Grid item>
                 <Paper className={classes.paperRadio}>

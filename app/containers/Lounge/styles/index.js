@@ -68,6 +68,12 @@ export const styles = theme => {
       justifyContent: 'center',
       padding: '1em'
     },
+    paperLinear: {
+      width: '100%',
+      '& > * + *': {
+        marginTop: theme.spacing(2)
+      }
+    },
     sliderLabel: {
       width: '3rem'
     },

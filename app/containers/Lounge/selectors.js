@@ -78,3 +78,8 @@ export const makeSliderObj = createSelector(
   make,
   state => (state ? state.sliderObj : initialState.sliderObj)
 );
+
+export const makePercentLinear = createSelector(
+  make,
+  state => (state ? state.percentLinear : initialState.percentLinear)
+);

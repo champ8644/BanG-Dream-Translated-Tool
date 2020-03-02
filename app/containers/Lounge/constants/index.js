@@ -98,6 +98,6 @@ export const titleHeader = {
 
 export const meanSmooth = 5;
 export const meanLength = 1000;
-export const startVCap = 250;
-export const limitVCap = 320;
-export const chunkCount = 10;
+export const startVCap = 0;
+export const limitVCap = 10000;
+export const chunkCount = 60;
