@@ -1,6 +1,7 @@
 import {
   blackThreshold,
   chunkCount,
+  dialogThreshold,
   fadeThreshold,
   limitVCap,
   meanLength,
@@ -16,8 +17,6 @@ import makeTitleLabel from './makeTitleLabel';
 import meanFinder from './meanFinder';
 import message2UI from '../../../worker/message2UI';
 import writeAss from './writeAss';
-
-const dialogThreshold = 10;
 
 class Meaning {
   constructor() {

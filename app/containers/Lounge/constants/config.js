@@ -9,7 +9,8 @@ export const radioObj = [
   'nameLabelGenerator',
   'nameLabelTemplater',
   'titleLabelGenerator',
-  'titleLabelTemplater'
+  'titleLabelTemplater',
+  'starTemplater'
 ];
 
 export const sliderObjSelector = {
