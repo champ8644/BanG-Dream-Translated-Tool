@@ -99,8 +99,8 @@ function writeShake(item) {
     item.map(itemitem =>
       embrace([
         `t=${timeMs(itemitem.frame)}`,
-        `x=${timeMs(itemitem.x)}`,
-        `y=${timeMs(itemitem.y)}`
+        `x=${itemitem.x}`,
+        `y=${itemitem.y}`
       ])
     )
   )})
