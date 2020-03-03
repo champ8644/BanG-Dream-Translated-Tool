@@ -2,7 +2,10 @@ import assTemplate from '../constants/assTemplate';
 import fs from 'fs';
 import { limitVCap } from '../constants';
 
-function timestamp(ms) {
+let toMs;
+
+function timestamp(frame) {
+  const ms = toMs(frame);
   const h = Math.floor(ms / 60 / 60 / 1000);
   let mm = Math.floor(ms / 60 / 1000) % 60;
   mm = mm.toString().padStart(2, '0');
@@ -11,60 +14,74 @@ function timestamp(ms) {
   return `${h}:${mm}:${ss}`;
 }
 
-let convertToMs;
+function timeMs(frame) {
+  const ms = toMs(frame);
+  return Math.round(ms * 1000) / 1000;
+}
 
-function writeCredit(ms) {
+function writeCredit(frame) {
   return `Dialogue: 0,0:00:00.00,${timestamp(
-    ms
+    frame
   )},Credit,,0,0,0,,Facebook.com/Nep4A4Life
   `;
 }
 
-function writePlace({ begin, end, content = '' }) {
+function writePlace({ begin, end = limitVCap, content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ชื่อสถานที่,93,0,0,0,,${content}
   `;
 }
 
-function writeTitle({ begin, end, width, content = '' }) {
+function writeTitle({ begin, end = limitVCap, width, content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ชื่อตอน,${width},0,0,0,,${content}
   `;
 }
 
-function writeSubtitle({ begin, end, actor = 'จิซาโตะ', content = '' }) {
+function writeSubtitle({ begin, end = limitVCap, actor = '', content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ข้อความ,${actor},0,0,0,,${content}
   `;
 }
 
-function writeNameActor({ ms, uid }) {
-  return `Comment: 0,${timestamp(ms)},${timestamp(
-    ms + 1000
+function writeNameActor({ frame, uid }) {
+  return `Comment: 0,${timestamp(frame)},${timestamp(
+    frame + 1
   )},ข้อความ,,0,0,0,code once,name[${uid}] = ""
   `;
 }
 
-function writeWhite({ begin, end, fadeIn, fadeOut }) {
-  return `Dialogue: 0,${timestamp(begin)},${timestamp(
-    end
-  )},ฉากขาว,${fadeIn};${fadeOut},0,0,0,,
+function writeWhite({
+  begin,
+  end = limitVCap,
+  fadeIn = limitVCap,
+  fadeOut = limitVCap
+}) {
+  return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},ฉากขาว,${timeMs(
+    fadeIn - begin
+  )};${timeMs(end - fadeOut)},0,0,0,,
   `;
 }
 
-function writeBlack({ begin, end, fadeIn, fadeOut }) {
-  return `Dialogue: 0,${timestamp(begin)},${timestamp(
-    end
-  )},ฉากดำ,${fadeIn};${fadeOut},0,0,0,,
+function writeBlack({
+  begin,
+  end = limitVCap,
+  fadeIn = limitVCap,
+  fadeOut = limitVCap
+}) {
+  return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},ฉากดำ,${timeMs(
+    fadeIn - begin
+  )};${timeMs(end - fadeOut)},0,0,0,,
   `;
 }
 
 export default function writeAss(data, nameActor, vCap) {
-  convertToMs = frame => Math.round(((frame * 1000) / vCap.FPS) * 1000) / 1000;
-  // console.log('data: ', data);
+  toMs = frame => (frame * 1000) / vCap.FPS;
+  // eslint-disable-next-line no-console
+  console.log('data: ', data);
   const stream = fs.createWriteStream(
     `${vCap.path.substr(0, vCap.path.lastIndexOf('.'))}.ass`,
     {
@@ -79,51 +96,17 @@ export default function writeAss(data, nameActor, vCap) {
 
   for (let i = 0; i < keys.length; i++) {
     const type = keys[i];
-    if (data[type].length > 0) {
-      if (!data[type][data[type].length - 1].off) {
-        if (!(type === 'fadeB' || type === 'fadeW')) {
-          data[type].push({
-            frame: limitVCap,
-            ms: convertToMs(limitVCap),
-            off: true
-          });
-        }
-      }
-    }
+    for (let j = 0; j < data[type].length; j++)
+      outData.push({ type, ...data[type][j] });
   }
-
-  for (let i = 0; i < keys.length; i++) {
-    const type = keys[i];
-    for (let j = 0; j < data[type].length; j++) {
-      if (type === 'fadeB' || type === 'fadeW') {
-        if (data[type][j].progress === 4) {
-          outData.push({
-            type,
-            begin: convertToMs(data[type][j - 3].frame),
-            end: convertToMs(data[type][j].frame),
-            fadeIn: convertToMs(
-              data[type][j - 2].frame - data[type][j - 3].frame
-            ),
-            fadeOut: convertToMs(data[type][j].frame - data[type][j - 1].frame)
-          });
-        }
-      } else if (!data[type][j].off) {
-        outData.push({
-          type,
-          begin: data[type][j].ms,
-          end: data[type][j + 1].ms,
-          ...data[type][j].payload
-        });
-      }
-    }
-  }
-
   outData.sort((a, b) => a.begin - b.begin);
+  // eslint-disable-next-line no-console
+  console.log('outData: ', outData);
 
   stream.once('open', () => {
     stream.write(assTemplate(vCap.path));
     nameActor.forEach(item => stream.write(writeNameActor(item)));
-    stream.write(writeCredit((vCap.length * 1000) / vCap.FPS));
+    stream.write(writeCredit(vCap.length));
     outData.forEach(item => {
       switch (item.type) {
         case 'name':

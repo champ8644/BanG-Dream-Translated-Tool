@@ -22,7 +22,7 @@ try {
 }
 const countNameLabel = CaptureNameLabel.countNonZero();
 const { innerX, outerX, innerY, outerY } = nameLabelCrop;
-const rectOuterNameLabel = new cv.Rect(
+const _rectOuterNameLabel = new cv.Rect(
   outerX[0],
   outerY[0],
   outerX[1] - outerX[0],
@@ -35,7 +35,18 @@ const rectNameLabel = new cv.Rect(
   innerY[1] - innerY[0]
 );
 
-export default function nameLabelGenerator(mat) {
+export default function nameLabelGenerator(mat, starMove) {
+  let rectOuterNameLabel;
+  if (starMove) {
+    rectOuterNameLabel = new cv.Rect(
+      _rectOuterNameLabel.x + starMove.x,
+      _rectOuterNameLabel.y + starMove.y,
+      _rectOuterNameLabel.width,
+      _rectOuterNameLabel.height
+    );
+  } else {
+    rectOuterNameLabel = _rectOuterNameLabel;
+  }
   const { val, sat, hue } = nameLabelThreshold;
   const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
   const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
@@ -44,6 +55,7 @@ export default function nameLabelGenerator(mat) {
     .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds);
   const masked = threshMat.and(CaptureNameLabel).bitwiseXor(CaptureNameLabel);
+
   const percentDiff = (masked.countNonZero() / countNameLabel) * 100;
   let actor;
   let dialog;

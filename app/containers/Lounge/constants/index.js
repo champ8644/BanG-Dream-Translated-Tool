@@ -43,6 +43,7 @@ export const rows = 1440;
 export const cols = 1920;
 export const dialogThreshold = 300;
 export const threshPercentDiff = 5;
+export const threshStarMatching = 0.9;
 export const threshPlacePercentDiff = 5;
 export const threshTitlePercentDiff = 5;
 export const blackThreshold = 3;
@@ -75,9 +76,16 @@ export const starCrop = {
   rectX: [Math.round(555 * rx), Math.round(616 * rx)],
   rectY: [Math.round(1105 * rx), Math.round(1189 * rx)]
 };
+const diffShaken = 30;
 export const starROI = {
-  rectX: [Math.round(400 * rx), Math.round(800 * rx)],
-  rectY: [Math.round(900 * rx), Math.round(1400 * rx)]
+  rectX: [
+    Math.round((555 - diffShaken) * rx),
+    Math.round((616 + diffShaken) * rx)
+  ],
+  rectY: [
+    Math.round((900 - diffShaken) * rx),
+    Math.round((1400 + diffShaken) * rx)
+  ]
 };
 export const subtitleCrop = {
   rectX: [Math.round(100 * rx), Math.round(1800 * rx)],

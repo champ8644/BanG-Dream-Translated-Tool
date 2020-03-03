@@ -16,6 +16,7 @@ import makePlaceLabel from './makePlaceLabel';
 import makeTitleLabel from './makeTitleLabel';
 import meanFinder from './meanFinder';
 import message2UI from '../../../worker/message2UI';
+import starMatching from './starMatching';
 import writeAss from './writeAss';
 
 class Meaning {
@@ -112,9 +113,12 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
     // eslint-disable-next-line no-console
     console.log({
       frame: i,
-      FPS: (i / (new Date().getTime() - beginTime)) * 1000
+      FPS: ((i - startVCap) / (new Date().getTime() - beginTime)) * 1000
     });
-    message2UI('update-progress', (i / count) * 100);
+    message2UI(
+      'update-progress',
+      ((i - startVCap) / (count - startVCap)) * 100
+    );
     if (i < count && isLoopValid) {
       setTimeout(chunk, 0);
     } else {
@@ -130,7 +134,7 @@ export default function mainEvent(vCap) {
     chunkCount,
     i => {
       const frame = i;
-      const ms = (i * 1000) / vCap.FPS;
+      // const ms = (i * 1000) / vCap.FPS;
       // const frame = vCap.getFrame();
       // const ms = vCap.getFrame('ms');
       const mat = vCap.getMat(frame);
@@ -140,81 +144,86 @@ export default function mainEvent(vCap) {
       }
       const placeObj = makePlaceLabel(mat, refractory.place);
       const titleObj = makeTitleLabel(mat, refractory.title);
-      const nameObj = makeNameLabel(mat);
+      let nameObj = makeNameLabel(mat);
+
       meanClass.push(frame, meanFinder(mat));
 
       if (placeObj.status) {
         if (!refractory.place) {
-          data.place.push({ ms, frame, payload: placeObj.payload });
+          data.place.push({ begin: frame });
           refractory.place = true;
         }
       } else if (refractory.place) {
-        data.place.push({ ms, frame, off: true });
+        data.place[data.place.length - 1].end = frame;
         refractory.place = false;
       }
 
       if (titleObj.status) {
         if (!refractory.title) {
-          data.title.push({ ms, frame, payload: titleObj.payload });
+          data.title.push({ begin: frame });
           refractory.title = true;
         }
       } else if (refractory.title) {
-        data.title.push({ ms, frame, off: true });
+        data.title[data.title.length - 1].end = frame;
         refractory.title = false;
       }
 
       if (nameObj.status) {
         if (!refractory.name) {
           refractory.name = true;
-          if (prevDialog - nameObj.dialog > dialogThreshold)
-            vCap.showMatInCanvas(nameObj.actor);
+          // if (prevDialog - nameObj.dialog > dialogThreshold)
+          //   vCap.showMatInCanvas(nameObj.actor);
           data.name.push({
-            ms,
-            frame,
-            payload: { actor: findActorID(nameObj.actor, ms, nameActor) }
+            begin: frame,
+            actor: findActorID(nameObj.actor, frame, nameActor)
           });
         } else if (prevDialog - nameObj.dialog > dialogThreshold) {
-          data.name.push({ ms, frame, off: true });
+          data.name[data.name.length - 1].end = frame;
           data.name.push({
-            ms,
-            frame,
-            payload: { actor: findActorID(nameObj.actor, ms, nameActor) }
+            begin: frame,
+            actor: findActorID(nameObj.actor, frame, nameActor)
           });
         }
         prevDialog = nameObj.dialog;
       } else if (refractory.name) {
-        data.name.push({ ms, frame, off: true });
-        prevDialog = 999999999;
-        refractory.name = false;
+        const starMatched = starMatching(mat);
+
+        if (starMatched) {
+          nameObj = makeNameLabel(mat, starMatched);
+
+          if (!data.name[data.name.length - 1].shake)
+            data.name[data.name.length - 1].shake = [];
+          data.name[data.name.length - 1].shake.push({ frame, ...starMatched });
+          if (prevDialog - nameObj.dialog > dialogThreshold) {
+            data.name[data.name.length - 1].end = frame;
+            data.name.push({
+              begin: frame,
+              actor: findActorID(nameObj.actor, frame, nameActor)
+            });
+          }
+          prevDialog = nameObj.dialog;
+        } else {
+          data.name[data.name.length - 1].end = frame;
+          prevDialog = 999999999;
+          refractory.name = false;
+        }
       }
 
       if (meanClass.isBlack(frame)) {
         if (refractory.fadeB === 0) {
           const beginBlack = meanClass.findFadeInBlack(frame);
-          data.fadeB.push({
-            progress: 1,
-            frame: frame - beginBlack
-          });
-          data.fadeB.push({
-            progress: 2,
-            frame
-          });
+          data.fadeB.push({ begin: frame - beginBlack });
+          data.fadeB[data.fadeB.length - 1].fadeIn = frame;
           refractory.fadeB = meanSmooth + 1;
         }
       } else if (refractory.fadeB > meanSmooth) {
-        data.fadeB.push({
-          progress: 3,
-          frame
-        });
+        data.fadeB[data.fadeB.length - 1].fadeOut = frame;
         refractory.fadeB--;
       } else if (refractory.fadeB > 1) {
         refractory.fadeB--;
       } else if (refractory.fadeB === 1) {
         if (meanClass.isOutOfBlack(frame)) {
-          data.fadeB.push({
-            progress: 4,
-            frame: frame - meanSmooth
-          });
+          data.fadeB[data.fadeB.length - 1].end = frame - meanSmooth;
           refractory.fadeB = 0;
         }
       }
@@ -222,30 +231,18 @@ export default function mainEvent(vCap) {
       if (meanClass.isWhite(frame)) {
         if (refractory.fadeW === 0) {
           const beginWhite = meanClass.findFadeInWhite(frame);
-          data.fadeW.push({
-            progress: 1,
-            frame: frame - beginWhite
-          });
-          data.fadeW.push({
-            progress: 2,
-            frame
-          });
+          data.fadeW.push({ begin: frame - beginWhite });
+          data.fadeW[data.fadeW.length - 1].fadeIn = frame;
           refractory.fadeW = meanSmooth + 1;
         }
       } else if (refractory.fadeW > meanSmooth) {
-        data.fadeW.push({
-          progress: 3,
-          frame
-        });
+        data.fadeW[data.fadeW.length - 1].fadeOut = frame;
         refractory.fadeW--;
       } else if (refractory.fadeW > 1) {
         refractory.fadeW--;
       } else if (refractory.fadeW === 1) {
         if (meanClass.isOutOfWhite(frame)) {
-          data.fadeW.push({
-            progress: 4,
-            frame: frame - meanSmooth
-          });
+          data.fadeW[data.fadeW.length - 1].end = frame - meanSmooth;
           refractory.fadeW = 0;
         }
       }
