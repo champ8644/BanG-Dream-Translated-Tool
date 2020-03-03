@@ -19,6 +19,7 @@ Video File: ${path.basename(fileName)}
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: ข้อความ,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,125,100,1200,1
+Style: ข้อความสั่น,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,125,100,1200,1
 Style: ชื่อตอน,Layiji MaHaNiYom V1.61,54,&H00524F52,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,7,50,0,0,1
 Style: ชื่อสถานที่,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,2,0,0,673,1
 Style: ชื่อสถานที่ black,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,2,0,0,673,1
@@ -41,6 +42,10 @@ Comment: 0,0:00:00.00,0:00:00.00,ชื่อสถานที่,,0,0,0,templa
 Comment: 0,0:00:00.00,0:00:00.00,ชื่อตอน,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an4\\p1\\bord0\\shad0\\fscx1000\\fad(300,300)\\c&HFFFFFF&\\fscy500\\clip(400,20,!$actor+310!,75)\\t(0,200,0.5,\\clip(120,20,!$actor+20!,75))\\t(200,350,1,\\clip(90,20,$actor,75))\\t(1050,1100,\\clip(70,20,!$actor-20!,75))\\t(1100,1300,\\clip(70,20,!$actor-180!,75))\\t(1300,1500,\\clip(70,20,!$actor-400!,75))\\pos(800.236,85)}m -96 -1 l 100 -1 100 18 -96  18
 Comment: 0,0:00:00.00,0:00:00.00,ชื่อตอน,,0,0,0,template line,!retime("line", 0, 0)!{\\an4\\move(300,55,100,55,0,300)\\alpha&HFF&\\t(50,300,\\alpha&H00&\\t(750,751,\\alpha&HFF&))}
 Comment: 0,0:00:00.00,0:00:00.00,ชื่อตอน,,0,0,0,template line,!retime("line", 0, 0)!{\\an4\\move(100,55,-100,55,1050,1500)\\alpha&HFF&\\t(750,751,\\alpha&H00&\\t(1100,1300,\\alpha&HFF&))}
+Comment: 1,0:00:00.00,0:00:00.00,ฉากดำ,,0,0,0,code line,_, _,fadeIn,fadeOut = string.find(line.actor, "([%d.]*)%p*([%d.]*)");
+Comment: 1,0:00:00.00,0:00:00.00,ฉากดำ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\an5\\bord0\\shad0\\c&000000&\\fade(!fadeIn!,!fadeOut!)}m 0 0 l 1920 0 l 1920 1440 l 0 1440
+Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,code line,_, _,fadeIn,fadeOut = string.find(line.actor, "([%d.]*)%p*([%d.]*)");
+Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\an5\\bord0\\shad0\\c&FFFFFF&\\fade(!fadeIn!,!fadeOut!)}m 0 0 l 1920 0 l 1920 1440 l 0 1440
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,name = {}
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,colorBackground = "f0f0f0"
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an7\\bord0\\shad0\\p1\\c&H733CFF&\\fscx150\\fscy500\\clip(106,1115,554,1181)\\pos(366.845,1050)}m -200 5 l 200 5 200 32 -200 32
@@ -49,9 +54,6 @@ Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template line,
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\1c&HFFFFFF&\\shad0.2\\fs95\\pos(130,1150)\\an4}!name[$actor]!
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx750\\fscy1200\\move(961,1274,3350,1274,0,2750)\\clip(90,1198,1820,1296)}m -120 -15 l 120 -15 120 13 -120 13
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx750\\fscy1200\\move(961,1274,3350,1274,2750,5300)\\clip(90,1298,1820,1403)}m -120 -15 l 120 -15 120 13 -120 13
-Comment: 1,0:00:00.00,0:00:00.00,ฉากดำ,,0,0,0,code line,_, _,fadeIn,fadeOut = string.find(line.actor, "([%d.]*)%p*([%d.]*)");
-Comment: 1,0:00:00.00,0:00:00.00,ฉากดำ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\an5\\bord0\\shad0\\c&000000&\\fade(!fadeIn!,!fadeOut!)}m 0 0 l 1920 0 l 1920 1440 l 0 1440
-Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,code line,_, _,fadeIn,fadeOut = string.find(line.actor, "([%d.]*)%p*([%d.]*)");
-Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\an5\\bord0\\shad0\\c&FFFFFF&\\fade(!fadeIn!,!fadeOut!)}m 0 0 l 1920 0 l 1920 1440 l 0 1440
+Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,shake = {}
 `;
 }

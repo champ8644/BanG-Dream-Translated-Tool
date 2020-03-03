@@ -105,23 +105,36 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
   let i = startVCap;
   isLoopValid = true;
   const beginTime = new Date().getTime();
+  message2UI('update-progress', {
+    percent: 0,
+    FPS: 0,
+    delay: 1
+  });
   (function chunk() {
     const end = Math.min(i + chunksize, count);
     for (; i < end; i++) {
       callback.call(null, i);
     }
+    const FPS = ((i - startVCap) / (new Date().getTime() - beginTime)) * 1000;
     // eslint-disable-next-line no-console
     console.log({
       frame: i,
-      FPS: ((i - startVCap) / (new Date().getTime() - beginTime)) * 1000
+      FPS,
+      delay: (chunksize / FPS) * 1000
     });
-    message2UI(
-      'update-progress',
-      ((i - startVCap) / (count - startVCap)) * 100
-    );
     if (i < count && isLoopValid) {
+      message2UI('update-progress', {
+        percent: ((i - startVCap) / (count - startVCap)) * 100,
+        FPS,
+        delay: (chunksize / FPS) * 1000
+      });
       setTimeout(chunk, 0);
     } else {
+      message2UI('update-progress', {
+        percent: 100,
+        FPS,
+        delay: 100
+      });
       finished.call(null);
     }
   })();
@@ -193,7 +206,10 @@ export default function mainEvent(vCap) {
 
           if (!data.name[data.name.length - 1].shake)
             data.name[data.name.length - 1].shake = [];
-          data.name[data.name.length - 1].shake.push({ frame, ...starMatched });
+          data.name[data.name.length - 1].shake.push({
+            frame: frame - data.name[data.name.length - 1].begin,
+            ...starMatched
+          });
           if (prevDialog - nameObj.dialog > dialogThreshold) {
             data.name[data.name.length - 1].end = frame;
             data.name.push({

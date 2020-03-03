@@ -47,6 +47,18 @@ function writeSubtitle({ begin, end = limitVCap, actor = '', content = '' }) {
   `;
 }
 
+function writeSubtitleShake({
+  begin,
+  end = limitVCap,
+  actor = '',
+  shakeUID,
+  content = ''
+}) {
+  return `Dialogue: 0,${timestamp(begin)},${timestamp(
+    end
+  )},ข้อความสั่น,${shakeUID};${actor},0,0,0,,${content}
+  `;
+}
 function writeNameActor({ frame, uid }) {
   return `Comment: 0,${timestamp(frame)},${timestamp(
     frame
@@ -78,6 +90,23 @@ function writeBlack({
   `;
 }
 
+function embrace(arr) {
+  return `{${arr.join()}}`;
+}
+
+function writeShake(item) {
+  return `Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,code once,_G.table.insert(shake,${embrace(
+    item.map(itemitem =>
+      embrace([
+        `t=${timeMs(itemitem.frame)}`,
+        `x=${timeMs(itemitem.x)}`,
+        `y=${timeMs(itemitem.y)}`
+      ])
+    )
+  )})
+  `;
+}
+
 export default function writeAss(data, nameActor, vCap) {
   toMs = frame => (frame * 1000) / vCap.FPS;
   // eslint-disable-next-line no-console
@@ -92,23 +121,37 @@ export default function writeAss(data, nameActor, vCap) {
   stream.on('finish', () => console.log('Finish writing file!!'));
 
   const outData = [];
+  const shakeArr = [];
   const keys = Object.keys(data);
 
   for (let i = 0; i < keys.length; i++) {
     const type = keys[i];
-    for (let j = 0; j < data[type].length; j++)
-      outData.push({ type, ...data[type][j] });
+    for (let j = 0; j < data[type].length; j++) {
+      if (type === 'name' && data[type][j].shake) {
+        outData.push({
+          type: 'shake',
+          ...data[type][j],
+          shakeUID: shakeArr.length
+        });
+        shakeArr.push(data[type][j].shake);
+      } else outData.push({ type, ...data[type][j] });
+    }
   }
   outData.sort((a, b) => a.begin - b.begin);
   // eslint-disable-next-line no-console
   console.log('outData: ', outData);
-
   stream.once('open', () => {
+    stream.write(assTemplate(vCap.path));
+    shakeArr.forEach(item => stream.write(writeShake(item)));
+    stream.write(writeCredit(vCap.length));
     nameActor.forEach(item => stream.write(writeNameActor(item)));
     outData.forEach(item => {
       switch (item.type) {
         case 'name':
           stream.write(writeSubtitle(item));
+          break;
+        case 'shake':
+          stream.write(writeSubtitleShake(item));
           break;
         case 'place':
           stream.write(writePlace(item));
@@ -125,8 +168,6 @@ export default function writeAss(data, nameActor, vCap) {
         default:
       }
     });
-    stream.write(writeCredit(vCap.length));
-    stream.write(assTemplate(vCap.path));
     stream.end();
   });
 }

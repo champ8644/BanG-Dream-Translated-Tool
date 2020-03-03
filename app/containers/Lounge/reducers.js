@@ -35,6 +35,8 @@ export const initialState = {
   importedFile: null,
   willUpdateNextFrame: false,
   percentLinear: null,
+  delayLinear: 1000,
+  FPSLinear: null,
   overlayMode: 'none'
 };
 
@@ -99,7 +101,12 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.IMPORTING:
       return { ...state, importedFile: payload };
     case actionTypes.UPDATE_LINEAR:
-      return { ...state, percentLinear: payload };
+      return {
+        ...state,
+        percentLinear: payload.percent,
+        delayLinear: payload.delay,
+        FPSLinear: payload.FPS
+      };
     default:
       return state;
   }

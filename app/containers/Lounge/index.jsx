@@ -63,12 +63,10 @@ import { withStyles } from '@material-ui/core/styles';
 const { ipcRenderer } = electron;
 
 const CustomLinearProgress = withStyles({
-  root: props => {
-    return {
-      height: 10,
-      backgroundColor: props.background || '#FFB1A8'
-    };
-  },
+  root: props => ({
+    height: 10,
+    backgroundColor: props.background || '#FFB1A8'
+  }),
   bar: props => ({
     borderRadius: 20,
     backgroundColor: '#FF6C5C',
@@ -89,7 +87,7 @@ const mapStateToProps = (state, props) => {
     willUpdateNextFrame: makeWillUpdateNextFrame(state),
     overlayMode: makeOverlayMode(state),
     sliderObj: makeSliderObj(state),
-    percentLinear: makePercentLinear(state)
+    ...makePercentLinear(state)
   };
 };
 
@@ -209,7 +207,9 @@ class Lounge extends Component {
       commitOnChange,
       mainEventBtn,
       sendMessage,
-      percentLinear
+      percentLinear,
+      FPSLinear,
+      delayLinear
     } = this.props;
 
     return (
@@ -289,7 +289,24 @@ class Lounge extends Component {
             />
             {percentLinear !== null && (
               <Paper className={classes.paperLinear}>
-                <LinearProgress variant='determinate' value={percentLinear} />
+                <CustomLinearProgress
+                  delay={delayLinear}
+                  variant='determinate'
+                  value={percentLinear}
+                />
+                <Chip
+                  className={classes.chip}
+                  icon={<PieChartIcon />}
+                  label={`${formatNumber(percentLinear)} / 100 %`}
+                  variant='outlined'
+                />
+                <Chip
+                  className={classes.chip}
+                  icon={<PieChartIcon />}
+                  color='primary'
+                  label={`FPS: ${formatNumber(FPSLinear)}`}
+                  variant='outlined'
+                />
               </Paper>
             )}
             <Grid container>
@@ -355,9 +372,8 @@ class Lounge extends Component {
               </Grid>
             </Grid>
             {progressFull > 0 && (
-              <CustomLinearProgress
+              <LinearProgress
                 variant='determinate'
-                delay={2000}
                 value={(progress / progressFull) * 100}
               />
             )}
