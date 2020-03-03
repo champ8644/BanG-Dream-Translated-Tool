@@ -160,7 +160,7 @@ export default function mainEvent(vCap) {
 
       if (titleObj.status) {
         if (!refractory.title) {
-          data.title.push({ begin: frame });
+          data.title.push({ begin: frame, width: titleObj.width });
           refractory.title = true;
         }
       } else if (refractory.title) {

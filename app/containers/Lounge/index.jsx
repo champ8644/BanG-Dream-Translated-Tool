@@ -62,6 +62,20 @@ import { withStyles } from '@material-ui/core/styles';
 
 const { ipcRenderer } = electron;
 
+const CustomLinearProgress = withStyles({
+  root: props => {
+    return {
+      height: 10,
+      backgroundColor: props.background || '#FFB1A8'
+    };
+  },
+  bar: props => ({
+    borderRadius: 20,
+    backgroundColor: '#FF6C5C',
+    transition: `transform ${props.delay}ms linear`
+  })
+})(LinearProgress);
+
 const mapStateToProps = (state, props) => {
   return {
     ...makeVideoFilePath(state),
@@ -341,8 +355,9 @@ class Lounge extends Component {
               </Grid>
             </Grid>
             {progressFull > 0 && (
-              <LinearProgress
+              <CustomLinearProgress
                 variant='determinate'
+                delay={2000}
                 value={(progress / progressFull) * 100}
               />
             )}

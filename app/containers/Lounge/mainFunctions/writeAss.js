@@ -49,7 +49,7 @@ function writeSubtitle({ begin, end = limitVCap, actor = '', content = '' }) {
 
 function writeNameActor({ frame, uid }) {
   return `Comment: 0,${timestamp(frame)},${timestamp(
-    frame + 1
+    frame
   )},ข้อความ,,0,0,0,code once,name[${uid}] = ""
   `;
 }
@@ -104,9 +104,7 @@ export default function writeAss(data, nameActor, vCap) {
   console.log('outData: ', outData);
 
   stream.once('open', () => {
-    stream.write(assTemplate(vCap.path));
     nameActor.forEach(item => stream.write(writeNameActor(item)));
-    stream.write(writeCredit(vCap.length));
     outData.forEach(item => {
       switch (item.type) {
         case 'name':
@@ -127,6 +125,8 @@ export default function writeAss(data, nameActor, vCap) {
         default:
       }
     });
+    stream.write(writeCredit(vCap.length));
+    stream.write(assTemplate(vCap.path));
     stream.end();
   });
 }

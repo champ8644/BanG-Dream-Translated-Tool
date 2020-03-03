@@ -49,7 +49,7 @@ export default function titleLabelGenerator(mat, refractory) {
   return {
     percentDiff,
     status: percentDiff < threshTitlePercentDiff,
-    payload: { width: titleWidth },
+    width: titleWidth,
     titleCrop
   };
 }
