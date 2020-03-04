@@ -54,6 +54,6 @@ Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template line,
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\1c&HFFFFFF&\\shad0.2\\fs95\\pos(130,1150)\\an4}!name[$actor]!
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx750\\fscy1200\\move(961,1274,3350,1274,0,2750)\\clip(90,1198,1820,1296)}m -120 -15 l 120 -15 120 13 -120 13
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx750\\fscy1200\\move(961,1274,3350,1274,2750,5300)\\clip(90,1298,1820,1403)}m -120 -15 l 120 -15 120 13 -120 13
-Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,shake = {}
+Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,code once,shake = {}
 `;
 }
