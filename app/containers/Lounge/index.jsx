@@ -58,7 +58,6 @@ import clsx from 'clsx';
 import { connect } from 'react-redux';
 import electron from 'electron';
 import { formatNumber } from './constants/function';
-import moment from 'moment';
 import { radioObj } from './constants/config';
 import reducers from './reducers';
 import { styles } from './styles';
@@ -314,22 +313,16 @@ class Lounge extends Component {
                   className={classes.chip}
                   icon={<AccessAlarmIcon />}
                   color='secondary'
-                  label={`Estimated time left: ${moment
-                    .duration(Number(percentLinear.timeLeft))
-                    .humanize()}`}
+                  label={`Estimated time left: ${percentLinear.timeLeft}`}
                   variant='outlined'
                 />
                 <Chip
                   className={classes.chip}
                   icon={<HourglassEmptyIcon />}
                   color='secondary'
-                  label={`Time Elapsed: ${moment
-                    .duration(Number(percentLinear.timePassed))
-                    .humanize()} / ${moment
-                    .duration(
-                      Number(percentLinear.timeLeft + percentLinear.timePassed)
-                    )
-                    .humanize()}`}
+                  label={`Time Elapsed: ${percentLinear.timePassed} / ${
+                    percentLinear.timeAll
+                  }`}
                   variant='outlined'
                 />
               </Paper>
@@ -379,9 +372,27 @@ class Lounge extends Component {
                   )}
                   <Button
                     className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={sendMessage}
+                    onClick={() => sendMessage()}
                   >
                     Start Main Jobs
+                  </Button>
+                  <Button
+                    className={clsx(classes.btn, classes.marginLeft)}
+                    onClick={() => sendMessage(100)}
+                  >
+                    Start Until 100 frames
+                  </Button>
+                  <Button
+                    className={clsx(classes.btn, classes.marginLeft)}
+                    onClick={() => sendMessage(1000)}
+                  >
+                    Start Until 1000 frames
+                  </Button>
+                  <Button
+                    className={clsx(classes.btn, classes.marginLeft)}
+                    onClick={() => sendMessage(10000)}
+                  >
+                    Start Until 10000 frames
                   </Button>
                 </div>
                 {sliderObj && (

@@ -42,10 +42,10 @@ const actionTypesList = [
 
 export const actionTypes = prefixer(prefix, actionTypesList);
 
-export function sendMessage() {
+export function sendMessage(timeLimit) {
   return (dispatch, getState) => {
     const { videoFilePath } = getState().Lounge;
-    message2Worker('start-events', { videoFilePath });
+    message2Worker('start-events', { videoFilePath, timeLimit });
   };
 }
 

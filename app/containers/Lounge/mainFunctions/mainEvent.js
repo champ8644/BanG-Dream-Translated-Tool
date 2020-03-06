@@ -3,7 +3,6 @@ import {
   chunkCount,
   dialogThreshold,
   fadeThreshold,
-  limitVCap,
   meanLength,
   meanSmooth,
   startVCap,
@@ -16,6 +15,7 @@ import makePlaceLabel from './makePlaceLabel';
 import makeTitleLabel from './makeTitleLabel';
 import meanFinder from './meanFinder';
 import message2UI from '../../../worker/message2UI';
+import moment from 'moment';
 import starMatching from './starMatching';
 import writeAss from './writeAss';
 
@@ -100,6 +100,14 @@ const refractory = {
   fadeW: 0
 };
 
+function showTime(dur) {
+  const h = dur.hours();
+  const mm = `${dur.minutes()}`.padStart(2, '0');
+  const ss = `${dur.seconds()}`.padStart(2, '0');
+  if (h > 0) return `${h}:${mm}:${ss}`;
+  return `${mm}:${ss}`;
+}
+
 let isLoopValid;
 function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
   let i = startVCap;
@@ -108,7 +116,10 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
   message2UI('update-progress', {
     percent: 0,
     FPS: 0,
-    delay: 1
+    delay: 1,
+    timePassed: showTime(moment.duration(0)),
+    timeLeft: 'determining...',
+    timeAll: 'determining...'
   });
   (function chunk() {
     const end = Math.min(i + chunksize, count);
@@ -125,29 +136,36 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
     //   timeLeft: ((count - i) / FPS) * 1000
     // });
     if (i < count && isLoopValid) {
+      const timeLeft = ((count - i) / FPS) * 1000;
+      const timePassed = new Date().getTime() - beginTime;
       message2UI('update-progress', {
         percent: ((i - startVCap) / (count - startVCap)) * 100,
         FPS,
         delay: (chunksize / FPS) * 1000,
-        timePassed: new Date().getTime() - beginTime,
-        timeLeft: ((count - i) / FPS) * 1000
+        timePassed: showTime(moment.duration(timePassed)),
+        timeLeft: showTime(moment.duration(timeLeft)),
+        timeAll: showTime(moment.duration(timeLeft + timePassed))
       });
       setTimeout(chunk, 0);
     } else {
+      const timePassed = new Date().getTime() - beginTime;
       message2UI('update-progress', {
         percent: 100,
         FPS,
         delay: 100,
-        timePassed: new Date().getTime() - beginTime,
-        timeLeft: ((count - i) / FPS) * 1000
+        timePassed: showTime(moment.duration(timePassed)),
+        timeLeft: 'Job finished',
+        timeAll: showTime(moment.duration(timePassed))
       });
       finished.call(null);
     }
   })();
 }
 
-export default function mainEvent(vCap) {
+export default function mainEvent(vCap, timeLimit) {
   const nameActor = [];
+  let limitVCap = vCap.length;
+  if (limitVCap > timeLimit) limitVCap = timeLimit;
   nonBlockingLoop(
     limitVCap,
     chunkCount,
