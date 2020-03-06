@@ -34,9 +34,7 @@ export const initialState = {
   progressFull: null,
   importedFile: null,
   willUpdateNextFrame: false,
-  percentLinear: null,
-  delayLinear: 1000,
-  FPSLinear: null,
+  progressFromWorker: null,
   overlayMode: 'none'
 };
 
@@ -103,9 +101,7 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.UPDATE_LINEAR:
       return {
         ...state,
-        percentLinear: payload.percent,
-        delayLinear: payload.delay,
-        FPSLinear: payload.FPS
+        progressFromWorker: payload
       };
     default:
       return state;

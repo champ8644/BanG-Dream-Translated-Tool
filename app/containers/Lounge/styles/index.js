@@ -70,6 +70,7 @@ export const styles = theme => {
     },
     paperLinear: {
       width: '100%',
+      marginTop: theme.spacing(3),
       '& > * + *': {
         marginTop: theme.spacing(2)
       }

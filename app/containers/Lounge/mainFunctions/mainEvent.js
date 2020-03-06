@@ -117,23 +117,29 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
     }
     const FPS = ((i - startVCap) / (new Date().getTime() - beginTime)) * 1000;
     // eslint-disable-next-line no-console
-    console.log({
-      frame: i,
-      FPS,
-      delay: (chunksize / FPS) * 1000
-    });
+    // console.log({
+    //   frame: i,
+    //   FPS,
+    //   delay: (chunksize / FPS) * 1000,
+    //   timePassed: new Date().getTime() - beginTime,
+    //   timeLeft: ((count - i) / FPS) * 1000
+    // });
     if (i < count && isLoopValid) {
       message2UI('update-progress', {
         percent: ((i - startVCap) / (count - startVCap)) * 100,
         FPS,
-        delay: (chunksize / FPS) * 1000
+        delay: (chunksize / FPS) * 1000,
+        timePassed: new Date().getTime() - beginTime,
+        timeLeft: ((count - i) / FPS) * 1000
       });
       setTimeout(chunk, 0);
     } else {
       message2UI('update-progress', {
         percent: 100,
         FPS,
-        delay: 100
+        delay: 100,
+        timePassed: new Date().getTime() - beginTime,
+        timeLeft: ((count - i) / FPS) * 1000
       });
       finished.call(null);
     }
@@ -200,10 +206,8 @@ export default function mainEvent(vCap) {
         prevDialog = nameObj.dialog;
       } else if (refractory.name) {
         const starMatched = starMatching(mat);
-
         if (starMatched) {
           nameObj = makeNameLabel(mat, starMatched);
-
           if (!data.name[data.name.length - 1].shake)
             data.name[data.name.length - 1].shake = [];
           data.name[data.name.length - 1].shake.push({

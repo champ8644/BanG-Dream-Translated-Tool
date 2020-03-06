@@ -19,11 +19,13 @@ import {
 } from './selectors';
 
 import { APP_TITLE } from '../../constants/meta';
+import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import DonutLargeIcon from '@material-ui/icons/DonutLarge';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
 import FormControl from '@material-ui/core/FormControl';
@@ -31,6 +33,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import { Helmet } from 'react-helmet';
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import IconButton from '@material-ui/core/IconButton';
 // import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -43,6 +46,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import Slider from '@material-ui/core/Slider';
+import SpeedIcon from '@material-ui/icons/Speed';
 import StopIcon from '@material-ui/icons/Stop';
 import TextField from '@material-ui/core/TextField';
 import TheatersIcon from '@material-ui/icons/Theaters';
@@ -54,6 +58,7 @@ import clsx from 'clsx';
 import { connect } from 'react-redux';
 import electron from 'electron';
 import { formatNumber } from './constants/function';
+import moment from 'moment';
 import { radioObj } from './constants/config';
 import reducers from './reducers';
 import { styles } from './styles';
@@ -87,7 +92,7 @@ const mapStateToProps = (state, props) => {
     willUpdateNextFrame: makeWillUpdateNextFrame(state),
     overlayMode: makeOverlayMode(state),
     sliderObj: makeSliderObj(state),
-    ...makePercentLinear(state)
+    percentLinear: makePercentLinear(state)
   };
 };
 
@@ -207,20 +212,18 @@ class Lounge extends Component {
       commitOnChange,
       mainEventBtn,
       sendMessage,
-      percentLinear,
-      FPSLinear,
-      delayLinear
+      percentLinear
     } = this.props;
 
     return (
       <div className={classes.root}>
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
-          <title>OpenCV Tests!</title>
+          <title>BanG Dream Translator Tools!</title>
         </Helmet>
 
         <Grid container>
           <Grid item>
-            <h1>OpenCV Tests!</h1>
+            <h1>BanG Dream Translator Tools!</h1>
           </Grid>
           <Grid item style={{ flexGrow: 1 }}>
             {videoFileName && (
@@ -231,7 +234,7 @@ class Lounge extends Component {
           </Grid>
         </Grid>
         <Button className={classes.btn} onClick={openFile}>
-          Open CV Tests
+          Open file
         </Button>
         {vCap && (
           <>
@@ -290,67 +293,91 @@ class Lounge extends Component {
             {percentLinear !== null && (
               <Paper className={classes.paperLinear}>
                 <CustomLinearProgress
-                  delay={delayLinear}
+                  delay={percentLinear.delay}
                   variant='determinate'
                   value={percentLinear}
                 />
                 <Chip
                   className={classes.chip}
-                  icon={<PieChartIcon />}
-                  label={`${formatNumber(percentLinear)} / 100 %`}
+                  icon={<DonutLargeIcon />}
+                  label={`${formatNumber(percentLinear.percent)} / 100 %`}
                   variant='outlined'
                 />
                 <Chip
                   className={classes.chip}
-                  icon={<PieChartIcon />}
+                  icon={<SpeedIcon />}
                   color='primary'
-                  label={`FPS: ${formatNumber(FPSLinear)}`}
+                  label={`FPS: ${formatNumber(percentLinear.FPS)}`}
+                  variant='outlined'
+                />
+                <Chip
+                  className={classes.chip}
+                  icon={<AccessAlarmIcon />}
+                  color='secondary'
+                  label={`Estimated time left: ${formatNumber(
+                    moment.duration(percentLinear.timeLeft).humanized()
+                  )}`}
+                  variant='outlined'
+                />
+                <Chip
+                  className={classes.chip}
+                  icon={<HourglassEmptyIcon />}
+                  color='secondary'
+                  label={`Time Elapsed: ${formatNumber(
+                    moment.duration(percentLinear.timePassed).humanized()
+                  )}`}
                   variant='outlined'
                 />
               </Paper>
             )}
             <Grid container>
-              <Grid item>
-                <Paper className={classes.paperRadio}>
-                  <FormControl
-                    component='fieldset'
-                    className={classes.formControl}
-                  >
-                    <FormLabel component='legend'>Overlay mode</FormLabel>
-                    <RadioGroup
-                      name='overlayRadio'
-                      value={overlayMode}
-                      onChange={handleRadioSelect}
+              {radioObj.length > 0 && (
+                <Grid item>
+                  <Paper className={classes.paperRadio}>
+                    <FormControl
+                      component='fieldset'
+                      className={classes.formControl}
                     >
-                      {radioObj.map(name => (
-                        <RadioTemplate name={name} key={name} />
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                </Paper>
-              </Grid>
+                      <FormLabel component='legend'>Overlay mode</FormLabel>
+                      <RadioGroup
+                        name='overlayRadio'
+                        value={overlayMode}
+                        onChange={handleRadioSelect}
+                      >
+                        {radioObj.map(name => (
+                          <RadioTemplate name={name} key={name} />
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                  </Paper>
+                </Grid>
+              )}
               <Grid item>
                 <div className={classes.buttonSliderContainer}>
-                  <Button className={classes.btn} onClick={exporting}>
-                    Export
-                  </Button>
-                  <Button
-                    className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={importing}
-                  >
-                    Import
-                  </Button>
-                  <Button
-                    className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={mainEventBtn}
-                  >
-                    Main Event
-                  </Button>
+                  {radioObj.length > 0 && (
+                    <>
+                      <Button className={classes.btn} onClick={exporting}>
+                        Export
+                      </Button>
+                      <Button
+                        className={clsx(classes.btn, classes.marginLeft)}
+                        onClick={importing}
+                      >
+                        Import
+                      </Button>
+                      <Button
+                        className={clsx(classes.btn, classes.marginLeft)}
+                        onClick={mainEventBtn}
+                      >
+                        Main Event
+                      </Button>
+                    </>
+                  )}
                   <Button
                     className={clsx(classes.btn, classes.marginLeft)}
                     onClick={sendMessage}
                   >
-                    send message
+                    Start Main Jobs
                   </Button>
                 </div>
                 {sliderObj && (

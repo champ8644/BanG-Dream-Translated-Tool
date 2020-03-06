@@ -107,6 +107,24 @@ function writeShake(item) {
   `;
 }
 
+function bakeShake(item) {
+  const min = item.shake[0].frame;
+  const max = item.shake[item.shake.length - 1].frame;
+  const shakeTree = {};
+  item.shake.forEach(it => {
+    shakeTree[it.frame] = { x: it.x, y: it.y };
+  });
+  for (let i = min + 1; i <= max + 1; i++)
+    if (!shakeTree[i]) shakeTree[i] = { x: 0, y: 0 };
+  shakeTree[0] = { x: 0, y: 0 };
+  shakeTree[item.end - item.begin] = { x: 0, y: 0 };
+  const shakeOut = Object.keys(shakeTree).map(key => ({
+    frame: Number(key),
+    ...shakeTree[key]
+  }));
+  return shakeOut;
+}
+
 export default function writeAss(data, nameActor, vCap) {
   toMs = frame => (frame * 1000) / vCap.FPS;
   // eslint-disable-next-line no-console
@@ -128,12 +146,12 @@ export default function writeAss(data, nameActor, vCap) {
     const type = keys[i];
     for (let j = 0; j < data[type].length; j++) {
       if (type === 'name' && data[type][j].shake) {
+        shakeArr.push(bakeShake(data[type][j]));
         outData.push({
           type: 'shake',
           ...data[type][j],
           shakeUID: shakeArr.length
         });
-        shakeArr.push(data[type][j].shake);
       } else outData.push({ type, ...data[type][j] });
     }
   }

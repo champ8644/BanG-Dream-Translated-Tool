@@ -81,16 +81,5 @@ export const makeSliderObj = createSelector(
 
 export const makePercentLinear = createSelector(
   make,
-  state =>
-    state
-      ? {
-          percentLinear: state.percentLinear,
-          FPSLinear: state.FPSLinear,
-          delayLinear: state.delayLinear
-        }
-      : {
-          percentLinear: initialState.percentLinear,
-          FPSLinear: initialState.FPSLinear,
-          delayLinear: initialState.delayLinear
-        }
+  state => (state ? state.progressFromWorker : initialState.progressFromWorker)
 );
