@@ -43,7 +43,7 @@ export default function Toolbar(state = initialState, action) {
         const ress = res[1].split('/');
         switch (ress[0]) {
           case 'mainmenu':
-            toolbarTitle += 'BanG Dream! Translator Tool (DEMO) [alpha 0.0.1]';
+            toolbarTitle += 'BanG Dream! Translator Tool (DEMO) [alpha 1.0.0]';
             break;
           case 'pvsat':
             toolbarTitle += 'PVSAT';

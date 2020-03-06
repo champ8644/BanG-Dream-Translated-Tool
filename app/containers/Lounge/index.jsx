@@ -295,7 +295,7 @@ class Lounge extends Component {
                 <CustomLinearProgress
                   delay={percentLinear.delay}
                   variant='determinate'
-                  value={percentLinear}
+                  value={percentLinear.percent}
                 />
                 <Chip
                   className={classes.chip}
@@ -314,18 +314,22 @@ class Lounge extends Component {
                   className={classes.chip}
                   icon={<AccessAlarmIcon />}
                   color='secondary'
-                  label={`Estimated time left: ${formatNumber(
-                    moment.duration(percentLinear.timeLeft).humanized()
-                  )}`}
+                  label={`Estimated time left: ${moment
+                    .duration(Number(percentLinear.timeLeft))
+                    .humanize()}`}
                   variant='outlined'
                 />
                 <Chip
                   className={classes.chip}
                   icon={<HourglassEmptyIcon />}
                   color='secondary'
-                  label={`Time Elapsed: ${formatNumber(
-                    moment.duration(percentLinear.timePassed).humanized()
-                  )}`}
+                  label={`Time Elapsed: ${moment
+                    .duration(Number(percentLinear.timePassed))
+                    .humanize()} / ${moment
+                    .duration(
+                      Number(percentLinear.timeLeft + percentLinear.timePassed)
+                    )
+                    .humanize()}`}
                   variant='outlined'
                 />
               </Paper>
