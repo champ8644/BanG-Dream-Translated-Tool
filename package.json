@@ -86,7 +86,7 @@
     "mac": {
       "type": "distribution",
       "category": "public.app-category.productivity",
-      "icon": "build/icon.icns",
+      "icon": "build/icons/mac/icon.icns",
       "target": [
         "dmg",
         "zip"
@@ -96,7 +96,7 @@
       "type": "distribution",
       "category": "public.app-category.productivity",
       "entitlements": "build/entitlements.mas.plist",
-      "icon": "build/icon.icns",
+      "icon": "build/icons/mac/icon.icns",
       "binaries": [
         "dist/mas/BanG Dream Translated Tool.app/Contents/Resources/bin/some-binary"
       ]
