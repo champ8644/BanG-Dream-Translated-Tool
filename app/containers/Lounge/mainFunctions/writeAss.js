@@ -155,7 +155,11 @@ export default function writeAss(data, nameActor, vCap) {
       } else outData.push({ type, ...data[type][j] });
     }
   }
-  outData.sort((a, b) => a.begin - b.begin);
+  outData.sort(
+    (a, b) =>
+      (a.type === 'fadeB' || a.type === 'fadeW') -
+        (b.type === 'fadeB' || b.type === 'fadeW') || a.begin - b.begin
+  );
   // eslint-disable-next-line no-console
   console.log('outData: ', outData);
   stream.once('open', () => {
