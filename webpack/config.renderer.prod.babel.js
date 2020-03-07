@@ -25,7 +25,7 @@ export default merge.smart(baseConfig, {
 
   output: {
     path: path.join(PATHS.app, 'dist'),
-    publicPath: '../dist/',
+    publicPath: './dist/',
     filename: '[name].renderer.prod.js'
   },
 

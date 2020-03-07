@@ -69,7 +69,7 @@
     "files": [
       "app/dist/",
       "app/app.html",
-      "app/workerWindow/app.html",
+      "app/worker.html",
       "app/main.prod.js",
       "app/main.prod.js.map",
       "package.json"
