@@ -7,6 +7,8 @@
 //   invert: false
 // };
 
+import { APP_VERSION } from '../../constants/meta';
+
 const back = {
   enabled: true,
   label: 'Back',
@@ -43,7 +45,7 @@ export default function Toolbar(state = initialState, action) {
         const ress = res[1].split('/');
         switch (ress[0]) {
           case 'mainmenu':
-            toolbarTitle += 'BanG Dream! Translator Tool (DEMO) [alpha 1.0.0]';
+            toolbarTitle += `BanG Dream! Translator Tool (DEMO) [v.${APP_VERSION}]`;
             break;
           case 'pvsat':
             toolbarTitle += 'PVSAT';
