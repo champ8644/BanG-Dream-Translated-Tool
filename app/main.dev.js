@@ -18,6 +18,14 @@ import { log } from './utils/log';
 import { nonBootableDeviceWindow } from './utils/createWindows';
 import { settingsStorage } from './utils/storageHelper';
 
+if (
+  process.platform === 'win32' &&
+  !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
+) {
+  process.env.path +=
+    ';' + require('../node_modules/opencv-build').opencvBinDir; // eslint-disable-line prefer-template
+}
+
 const isDeviceBootable = bootTheDevice();
 const isMas = electronIs.mas();
 let mainWindow = null;
