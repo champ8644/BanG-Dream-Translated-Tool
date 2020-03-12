@@ -23,7 +23,7 @@ if (
   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
 ) {
   process.env.path +=
-    ';' + require(`${PATHS.nodeModules}/opencv-build`).opencvBinDir; // eslint-disable-line prefer-template
+    ';' + require(`${PATHS.nodeModules}\\opencv-build`).opencvBinDir; // eslint-disable-line prefer-template
 }
 
 const isDeviceBootable = bootTheDevice();
