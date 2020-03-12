@@ -16,6 +16,7 @@ import electronIs from 'electron-is';
 import { isPackaged } from './utils/isPackaged';
 import { log } from './utils/log';
 import { nonBootableDeviceWindow } from './utils/createWindows';
+import path from 'path';
 import { settingsStorage } from './utils/storageHelper';
 
 if (
@@ -23,7 +24,7 @@ if (
   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
 ) {
   process.env.path +=
-    ';' + require(`${PATHS.nodeModules}\\opencv-build`).opencvBinDir; // eslint-disable-line prefer-template
+    ';' + require(path.join(PATHS.nodeModules, 'opencv-build')).opencvBinDir; // eslint-disable-line prefer-template
 }
 
 const isDeviceBootable = bootTheDevice();
