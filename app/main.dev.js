@@ -23,8 +23,13 @@ if (
   process.platform === 'win32' &&
   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
 ) {
-  process.env.path +=
-    ';' + require(path.join(PATHS.nodeModules, 'opencv-build')).opencvBinDir; // eslint-disable-line prefer-template
+  // eslint-disable-nextline
+  process.env.path += `;${
+    require(path.join(
+      PATHS.root,
+      'resources\\app.asar\\node_modules\\opencv-build'
+    )).opencvBinDir
+  }`;
 }
 
 const isDeviceBootable = bootTheDevice();
