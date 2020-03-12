@@ -1,1 +1,0 @@
-electron-icon-maker --input=/absolute/path/file.png --output=./relative/path/to/folder

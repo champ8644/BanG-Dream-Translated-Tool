@@ -23,7 +23,7 @@ if (
   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
 ) {
   process.env.path +=
-    ';' + require('../node_modules/opencv-build').opencvBinDir; // eslint-disable-line prefer-template
+    ';' + require(`${PATHS.nodeModules}/opencv-build`).opencvBinDir; // eslint-disable-line prefer-template
 }
 
 const isDeviceBootable = bootTheDevice();
@@ -61,15 +61,6 @@ async function bootTheDevice() {
     throw new Error(e);
   }
 }
-
-// if (
-//   process.platform === 'win32' &&
-//   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
-// ) {
-//   process.env.path += `;${
-//     require('../renderer/node_modules/opencv-build').opencvBinDir
-//   }`;
-// }
 
 /**
  * Checks whether device is ready to boot or not.
