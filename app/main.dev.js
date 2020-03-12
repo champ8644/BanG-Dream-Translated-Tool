@@ -16,21 +16,20 @@ import electronIs from 'electron-is';
 import { isPackaged } from './utils/isPackaged';
 import { log } from './utils/log';
 import { nonBootableDeviceWindow } from './utils/createWindows';
-import path from 'path';
 import { settingsStorage } from './utils/storageHelper';
 
-if (
-  process.platform === 'win32' &&
-  !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
-) {
-  // eslint-disable-nextline
-  process.env.path += `;${
-    require(path.join(
-      PATHS.root,
-      'resources\\app.asar\\node_modules\\opencv-build'
-    )).opencvBinDir
-  }`;
-}
+// if (
+//   process.platform === 'win32' &&
+//   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
+// ) {
+//   // eslint-disable-nextline
+//   process.env.path += `;${
+//     require(path.join(
+//       PATHS.root,
+//       'resources\\app.asar\\node_modules\\opencv-build'
+//     )).opencvBinDir
+//   }`;
+// }
 
 const isDeviceBootable = bootTheDevice();
 const isMas = electronIs.mas();

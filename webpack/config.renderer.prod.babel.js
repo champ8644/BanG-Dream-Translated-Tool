@@ -202,6 +202,10 @@ export default merge.smart(baseConfig, {
             }
           }
         ]
+      },
+      {
+        test: /\.node$/,
+        loader: 'node-loader'
       }
     ]
   },
