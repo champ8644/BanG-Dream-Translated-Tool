@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -174,7 +174,7 @@
     "url": "git+https://github.com/champ8644/BanG-Dream-Tranlated-Tool.git"
   },
   "author": {
-    "name": "Varis Ratanasirisawad",
+    "name": "Charis Champ",
     "email": "varis_champ@hotmail.com",
     "url": "https://github.com/champ8644/BanG-Dream-Tranlated-Tool/"
   },
