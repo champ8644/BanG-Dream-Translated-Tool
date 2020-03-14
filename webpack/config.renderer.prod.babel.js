@@ -205,7 +205,12 @@ export default merge.smart(baseConfig, {
       },
       {
         test: /\.node$/,
-        loader: 'node-loader'
+        loader: 'node-addon-loader',
+        options: {
+          publicPath: './',
+          name: 'node/[name]'
+          // sourceMap: true
+        }
       }
     ]
   },

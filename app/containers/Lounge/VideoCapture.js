@@ -82,12 +82,11 @@ export default class VideoCapture {
     }
     const currentFrame = this.getFrame(mode);
     if (frame !== currentFrame) this.setFrame(frame, mode);
+    const readFrame = this.vCap.read();
+    if (readFrame.empty) return readFrame;
     if (this.rotate)
-      return this.vCap
-        .read()
-        .rotate(cv.ROTATE_90_COUNTERCLOCKWISE)
-        .rescale(rx);
-    return this.vCap.read().rescale(rx);
+      return readFrame.rotate(cv.ROTATE_90_COUNTERCLOCKWISE).rescale(rx);
+    return readFrame.rescale(rx);
   }
 
   showMatInCanvas(_mat) {

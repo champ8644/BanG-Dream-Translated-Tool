@@ -164,7 +164,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
 
 export default function mainEvent(vCap, timeLimit) {
   const nameActor = [];
-  let limitVCap = vCap.length;
+  let limitVCap = vCap.length - 1;
   if (limitVCap > timeLimit) limitVCap = timeLimit;
   nonBlockingLoop(
     limitVCap,
