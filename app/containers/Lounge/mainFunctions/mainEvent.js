@@ -1,13 +1,16 @@
 import {
   blackThreshold,
-  chunkCount,
   dialogThreshold,
   fadeThreshold,
-  meanLength,
-  meanSmooth,
-  startVCap,
   whiteThreshold
 } from '../constants';
+import {
+  chunkCount,
+  endVCap,
+  meanLength,
+  meanSmooth,
+  startVCap
+} from '../constants/config';
 
 import findActorID from './findActorID';
 import makeNameLabel from './makeNameLabel';
@@ -162,7 +165,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
   })();
 }
 
-export default function mainEvent(vCap, timeLimit) {
+export default function mainEvent(vCap, timeLimit = endVCap) {
   const nameActor = [];
   let limitVCap = vCap.length - 1;
   if (limitVCap > timeLimit) limitVCap = timeLimit;
@@ -204,8 +207,8 @@ export default function mainEvent(vCap, timeLimit) {
 
       let nameObj = makeNameLabel(mat);
       if (nameObj.status) {
+        console.log({ nameObj, frame, refrac: refractory.name }); // eslint-disable-line
         if (!refractory.name) {
-          console.log({ nameObj, frame }); // eslint-disable-line
           refractory.name = true;
           // if (prevDialog - nameObj.dialog > dialogThreshold)
           //   vCap.showMatInCanvas(nameObj.actor);

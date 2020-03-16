@@ -44,3 +44,9 @@ export const sliderObjSelector = {
     commit: true
   }
 };
+
+export const startVCap = 400;
+export const endVCap = 1200;
+export const meanSmooth = 5;
+export const meanLength = 1000;
+export const chunkCount = 60;

@@ -112,9 +112,3 @@ export const titleHeader = {
   y: Math.round(25 * rx),
   height: Math.round(60 * rx)
 };
-
-export const meanSmooth = 5;
-export const meanLength = 1000;
-export const startVCap = 400;
-export const limitVCap = 1200;
-export const chunkCount = 60;

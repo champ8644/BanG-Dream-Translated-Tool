@@ -1,4 +1,4 @@
-import { meanLength, meanSmooth } from '../constants';
+import { meanLength, meanSmooth } from '../constants/config';
 
 class Meaning {
   constructor() {

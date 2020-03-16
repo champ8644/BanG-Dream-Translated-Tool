@@ -6,17 +6,18 @@ import {
   threshPlacePercentDiff
 } from '../constants';
 
+import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 import placeNameFinder from './placeNameFinder';
 
 let CapturePlaceLabel;
 try {
   CapturePlaceLabel = cv
-    .imread(`CapturePlaceLabelCrop_${qualityRatio}.png`)
+    .imread(PATHS.resourcePath(`CapturePlaceLabelCrop_${qualityRatio}.png`))
     .cvtColor(cv.COLOR_BGR2GRAY);
 } catch {
   CapturePlaceLabel = cv
-    .imread(`CapturePlaceLabelCrop.png`)
+    .imread(PATHS.resourcePath(`CapturePlaceLabelCrop.png`))
     .rescale(rx)
     .cvtColor(cv.COLOR_BGR2GRAY);
 }

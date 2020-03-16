@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -74,16 +74,8 @@
       "app/worker.html",
       "app/main.prod.js",
       "app/main.prod.js.map",
+      "app/resources",
       "package.json"
-    ],
-    "extraResources": [
-      {
-        "from": "app/resources",
-        "to": "app/resources",
-        "filter": [
-          "**/*"
-        ]
-      }
     ],
     "extraFiles": [
       {

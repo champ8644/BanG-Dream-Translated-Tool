@@ -6,17 +6,18 @@ import {
   threshPercentDiff
 } from '../constants';
 
+import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 import subtitleFinder from './subtitleFinder';
 
 let CaptureNameLabel;
 try {
   CaptureNameLabel = cv
-    .imread(`CaptureNameLabelCrop_${qualityRatio}.png`)
+    .imread(PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}.png`))
     .cvtColor(cv.COLOR_BGR2GRAY);
 } catch {
   CaptureNameLabel = cv
-    .imread(`CaptureNameLabelCrop.png`)
+    .imread(PATHS.resourcePath(`CaptureNameLabelCrop.png`))
     .rescale(rx)
     .cvtColor(cv.COLOR_BGR2GRAY);
 }

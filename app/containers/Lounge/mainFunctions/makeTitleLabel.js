@@ -6,6 +6,7 @@ import {
   titleLabelCrop
 } from '../constants';
 
+import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 import titleLineWidthFinder from './titleLineWidthFinder';
 import titleNameFinder from './titleNameFinder';
@@ -13,11 +14,11 @@ import titleNameFinder from './titleNameFinder';
 let CaptureTitleLabel;
 try {
   CaptureTitleLabel = cv
-    .imread(`CaptureTitleLabelCrop_${qualityRatio}.png`)
+    .imread(PATHS.resourcePath(`CaptureTitleLabelCrop_${qualityRatio}.png`))
     .cvtColor(cv.COLOR_BGR2GRAY);
 } catch {
   CaptureTitleLabel = cv
-    .imread(`CaptureTitleLabelCrop.png`)
+    .imread(PATHS.resourcePath(`CaptureTitleLabelCrop.png`))
     .rescale(rx)
     .cvtColor(cv.COLOR_BGR2GRAY);
 }
