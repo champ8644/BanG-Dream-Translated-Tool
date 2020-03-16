@@ -40,6 +40,7 @@ export const PATHS = {
   logFile: resolve(logFile),
   settingsFile: resolve(settingsFile),
   appUpdateFile: resolve(appUpdateFile),
+  resourcePath: path => resolve(join(__dirname, `./resources/${path}`)),
   loadUrlPath: url.format({
     protocol: 'file',
     slashes: true,

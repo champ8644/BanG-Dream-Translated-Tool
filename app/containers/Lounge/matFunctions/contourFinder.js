@@ -1,5 +1,6 @@
 import { black, nameLabelCrop, nameLabelThreshold, white } from '../constants';
 
+import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 
 export default function contourFinder(mat) {
@@ -25,7 +26,10 @@ export default function contourFinder(mat) {
     -1
   );
   const outMat = mat.and(maskRect).and(masked);
-  cv.imwrite('CaptureNameLabel.png', outMat);
-  cv.imwrite('CaptureNameLabelBGR.png', outMat.cvtColor(cv.COLOR_BGR2RGB));
+  cv.imwrite(PATHS.resourcePath('CaptureNameLabel.png'), outMat);
+  cv.imwrite(
+    PATHS.resourcePath('CaptureNameLabelBGR.png'),
+    outMat.cvtColor(cv.COLOR_BGR2RGB)
+  );
   return outMat;
 }

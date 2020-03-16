@@ -1,0 +1,62 @@
+/* eslint-disable */
+
+0: {type: "place", begin: 293, end: 360}
+1: {type: "title", begin: 339, width: 749, end: 364}
+2: {type: "name", begin: 408, actor: 1, end: 1126}
+3: {type: "place", begin: 439, end: 501}
+4: {type: "title", begin: 466, width: 821, end: 504}
+5: {type: "name", begin: 549, actor: 1, end: 704}
+6: {type: "name", begin: 704, actor: 2, end: 885}
+7: {type: "name", begin: 885, actor: 3, end: 1218}
+8: {type: "name", begin: 1126, actor: 1, end: 1357}
+9: {type: "name", begin: 1218, actor: 4, end: 1527}
+10: {type: "name", begin: 1357, actor: 2, end: 1761}
+11: {type: "name", begin: 1527, actor: 5, end: 2132}
+12: {type: "name", begin: 1761, actor: 3, end: 2490}
+13: {type: "name", begin: 2132, actor: 3, end: 2530}
+14: {type: "name", begin: 2490, actor: 4, end: 2882}
+15: {type: "name", begin: 2530, actor: 6, end: 2739}
+16: {type: "name", begin: 2739, actor: 7, end: 2995}
+17: {type: "shake", begin: 2882, actor: 3, shake: Array(29), end: 3265, …}
+18: {type: "name", begin: 2995, actor: 3, end: 3145}
+19: {type: "name", begin: 3145, actor: 3, end: 3774}
+20: {type: "name", begin: 3265, actor: 2, end: 3671}
+21: {type: "name", begin: 3671, actor: 5, end: 3970}
+22: {type: "name", begin: 3774, actor: 3, end: 3776}
+23: {type: "name", begin: 3776, actor: 3, end: 3779}
+24: {type: "name", begin: 3779, actor: 1, end: 4058}
+25: {type: "name", begin: 3970, actor: 1, end: 4373}
+26: {type: "name", begin: 4058, actor: 3, end: 4718}
+27: {type: "name", begin: 4373, actor: 4, end: 4788}
+28: {type: "name", begin: 4718, actor: 6, end: 4828}
+29: {type: "name", begin: 4788, actor: 2, end: 5003}
+30: {type: "name", begin: 4828, actor: 5, end: 5001}
+31: {type: "name", begin: 5001, actor: 3, end: 5570}
+32: {type: "place", begin: 5115, end: 5181}
+33: {type: "place", begin: 5233, end: 5299}
+34: {type: "name", begin: 5348, actor: 2, end: 5692}
+35: {type: "name", begin: 5570, actor: 7, end: 5813}
+36: {type: "name", begin: 5692, actor: 5, end: 6098}
+37: {type: "name", begin: 5813, actor: 1, end: 6293}
+38: {type: "name", begin: 6098, actor: 2, end: 6460}
+39: {type: "name", begin: 6293, actor: 4, end: 6591}
+40: {type: "name", begin: 6460, actor: 3, end: 6588}
+41: {type: "name", begin: 6588, actor: 2, end: 6924}
+42: {type: "name", begin: 6591, actor: 3, end: 6883}
+43: {type: "name", begin: 6883, actor: 3, end: 6888}
+44: {type: "name", begin: 6888, actor: 1, end: 7086}
+45: {type: "name", begin: 6924, actor: 3, end: 7701}
+46: {type: "name", begin: 7086, actor: 3, end: 7587}
+47: {type: "name", begin: 7587, actor: 3, end: 7923}
+48: {type: "name", begin: 7701, actor: 4, end: 8325}
+49: {type: "name", begin: 7923, actor: 7, end: 8328}
+50: {type: "name", begin: 8325, actor: 3, end: 8915}
+51: {type: "name", begin: 8328, actor: 3, end: 8826}
+52: {type: "name", begin: 8826, actor: 1, end: 9135}
+53: {type: "name", begin: 8915, actor: 4, end: 9572}
+54: {type: "name", begin: 9135, actor: 3, end: 9836}
+55: {type: "name", begin: 9572, actor: 1, end: 0}
+56: {type: "name", begin: 9836, actor: 3}
+57: {type: "fadeB", begin: 210, fadeIn: 211, fadeOut: 275, end: 293}
+58: {type: "fadeB", begin: 302, fadeIn: 303, fadeOut: 424, end: 424}
+59: {type: "fadeB", begin: 5004, fadeIn: 5034, fadeOut: 5060, end: 5089}

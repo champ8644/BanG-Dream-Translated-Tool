@@ -7,9 +7,12 @@ import {
   threshStarMatching
 } from '../constants';
 
+import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 
-const starIM = cv.imread(`CaptureStarCrop_${qualityRatio}.png`);
+const starIM = cv.imread(
+  PATHS.resourcePath(`CaptureStarCrop_${qualityRatio}.png`)
+);
 
 const { val, sat, hue } = nameLabelThreshold;
 const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);

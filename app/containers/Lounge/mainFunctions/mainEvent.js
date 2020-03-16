@@ -179,12 +179,8 @@ export default function mainEvent(vCap, timeLimit) {
         isLoopValid = false;
         return;
       }
+
       const placeObj = makePlaceLabel(mat, refractory.place);
-      const titleObj = makeTitleLabel(mat, refractory.title);
-      let nameObj = makeNameLabel(mat);
-
-      meanClass.push(frame, meanFinder(mat));
-
       if (placeObj.status) {
         if (!refractory.place) {
           data.place.push({ begin: frame });
@@ -195,6 +191,7 @@ export default function mainEvent(vCap, timeLimit) {
         refractory.place = false;
       }
 
+      const titleObj = makeTitleLabel(mat, refractory.title);
       if (titleObj.status) {
         if (!refractory.title) {
           data.title.push({ begin: frame, width: titleObj.width });
@@ -205,8 +202,10 @@ export default function mainEvent(vCap, timeLimit) {
         refractory.title = false;
       }
 
+      let nameObj = makeNameLabel(mat);
       if (nameObj.status) {
         if (!refractory.name) {
+          console.log({ nameObj, frame }); // eslint-disable-line
           refractory.name = true;
           // if (prevDialog - nameObj.dialog > dialogThreshold)
           //   vCap.showMatInCanvas(nameObj.actor);
@@ -247,6 +246,7 @@ export default function mainEvent(vCap, timeLimit) {
         }
       }
 
+      meanClass.push(frame, meanFinder(mat));
       if (meanClass.isBlack(frame)) {
         if (refractory.fadeB === 0) {
           const beginBlack = meanClass.findFadeInBlack(frame);

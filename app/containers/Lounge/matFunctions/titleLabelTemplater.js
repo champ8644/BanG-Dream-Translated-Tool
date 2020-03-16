@@ -4,6 +4,7 @@ import {
   titleLabelCrop
 } from '../constants';
 
+import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 
 const { outerX, outerY } = titleLabelCrop;
@@ -23,6 +24,9 @@ export default function titleLabelTemplater(mat) {
     .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds)
     .cvtColor(cv.COLOR_GRAY2BGR);
-  cv.imwrite(`CaptureTitleLabelCrop_${qualityRatio}_Temp.png`, masked);
+  cv.imwrite(
+    PATHS.resourcePath(`CaptureTitleLabelCrop_${qualityRatio}_Temp.png`),
+    masked
+  );
   return masked;
 }

@@ -5,6 +5,7 @@ import {
   qualityRatio
 } from '../constants';
 
+import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 
 const { innerX, outerX, innerY, outerY } = nameLabelCrop;
@@ -37,6 +38,9 @@ export default function nameLabelTemplater(mat) {
     .inRange(lowerColorBounds, upperColorBounds)
     .cvtColor(cv.COLOR_GRAY2BGR)
     .and(maskRect);
-  cv.imwrite(`CaptureNameLabelCrop_${qualityRatio}_Temp.png`, masked);
+  cv.imwrite(
+    PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}_Temp.png`),
+    masked
+  );
   return masked;
 }

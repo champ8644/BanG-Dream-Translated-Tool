@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.2.2",
+  "version": "1.4.0",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -55,8 +55,8 @@
   "main": "./app/main.prod.js",
   "build": {
     "asar": false,
-    "productName": "BanG-Dream-Translated-Tool",
-    "appId": "temp",
+    "productName": "BanG Dream Translated Tool",
+    "appId": "",
     "forceCodeSigning": false,
     "copyright": "© Varis Ratanasirisawad",
     "readonly": true,
@@ -76,6 +76,15 @@
       "app/main.prod.js.map",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "app/resources",
+        "to": "app/resources",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
     "extraFiles": [
       {
         "from": "build/mac/bin",
@@ -92,21 +101,6 @@
       "target": [
         "dmg",
         "zip"
-      ],
-      "files": [
-        "!node_modules/opencv-build/opencv/opencv/",
-        "!node_modules/opencv-build/opencv/opencv_contrib/",
-        "!node_modules/opencv-build/opencv/build/3rdparty/",
-        "!node_modules/opencv-build/opencv/build/CMakeFiles/",
-        "!node_modules/opencv-build/opencv/build/data/",
-        "!node_modules/opencv-build/opencv/build/doc/",
-        "!node_modules/opencv-build/opencv/build/downloads/",
-        "!node_modules/opencv-build/opencv/build/include/",
-        "!node_modules/opencv-build/opencv/build/junk/",
-        "!node_modules/opencv-build/opencv/build/modules/",
-        "!node_modules/opencv-build/opencv/build/opencv2/",
-        "!node_modules/opencv-build/opencv/build/share/",
-        "!node_modules/opencv-build/opencv/build/unix-install/"
       ]
     },
     "mas": {
@@ -142,25 +136,6 @@
           "to": "../",
           "filter": "*"
         }
-      ],
-      "files": [
-        "!node_modules/opencv-build/opencv/opencv/",
-        "!node_modules/opencv-build/opencv/opencv_contrib/",
-        "!node_modules/opencv-build/opencv/build/3rdparty/",
-        "!node_modules/opencv-build/opencv/build/CMakeFiles/",
-        "!node_modules/opencv-build/opencv/build/data/",
-        "!node_modules/opencv-build/opencv/build/doc/",
-        "!node_modules/opencv-build/opencv/build/downloads/",
-        "!node_modules/opencv-build/opencv/build/etc/",
-        "!node_modules/opencv-build/opencv/build/include/",
-        "!node_modules/opencv-build/opencv/build/junk/",
-        "!node_modules/opencv-build/opencv/build/lib/",
-        "!node_modules/opencv-build/opencv/build/modules/",
-        "!node_modules/opencv-build/opencv/build/opencv2/",
-        "!node_modules/opencv-build/opencv/build/testdata/",
-        "!node_modules/opencv-build/opencv/build/win-install/",
-        "!node_modules/opencv-build/opencv/build/x64/",
-        "!node_modules/opencv-build/opencv/build/bin/Debug/"
       ]
     },
     "linux": {
