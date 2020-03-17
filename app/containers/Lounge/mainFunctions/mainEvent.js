@@ -86,22 +86,10 @@ class Meaning {
   }
 }
 
-let prevDialog = 999999999;
-const meanClass = new Meaning();
-const data = {
-  name: [],
-  place: [],
-  title: [],
-  fadeB: [],
-  fadeW: []
-};
-const refractory = {
-  name: false,
-  place: false,
-  title: false,
-  fadeB: 0,
-  fadeW: 0
-};
+let prevDialog;
+let meanClass;
+let data;
+let refractory;
 
 function showTime(dur) {
   const h = dur.hours();
@@ -165,8 +153,26 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
   })();
 }
 
-export default function mainEvent(vCap, timeLimit = endVCap) {
+export default function mainEvent(vCap, _timeLimit) {
+  prevDialog = 999999999;
+  meanClass = new Meaning();
+  data = {
+    name: [],
+    place: [],
+    title: [],
+    fadeB: [],
+    fadeW: []
+  };
+  refractory = {
+    name: false,
+    place: false,
+    title: false,
+    fadeB: 0,
+    fadeW: 0
+  };
   const nameActor = [];
+  let timeLimit = _timeLimit;
+  if (timeLimit < 0) timeLimit = endVCap;
   let limitVCap = vCap.length - 1;
   if (limitVCap > timeLimit) limitVCap = timeLimit;
   nonBlockingLoop(
@@ -207,11 +213,9 @@ export default function mainEvent(vCap, timeLimit = endVCap) {
 
       let nameObj = makeNameLabel(mat);
       if (nameObj.status) {
-        console.log({ nameObj, frame, refrac: refractory.name }); // eslint-disable-line
         if (!refractory.name) {
           refractory.name = true;
-          // if (prevDialog - nameObj.dialog > dialogThreshold)
-          //   vCap.showMatInCanvas(nameObj.actor);
+          vCap.showMatInCanvas(nameObj.threshMat);
           data.name.push({
             begin: frame,
             actor: findActorID(nameObj.actor, frame, nameActor)

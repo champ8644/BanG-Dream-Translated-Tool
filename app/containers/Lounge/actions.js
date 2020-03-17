@@ -314,7 +314,7 @@ export function handleCanvasClick(_event) {
 export function mainEventBtn() {
   return async (dispatch, getState) => {
     const { vCap } = getState().Lounge;
-    mainEvent(vCap);
+    mainEvent(vCap, -1);
   };
 }
 

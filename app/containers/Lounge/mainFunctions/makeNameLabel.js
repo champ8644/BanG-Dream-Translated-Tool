@@ -12,12 +12,23 @@ import subtitleFinder from './subtitleFinder';
 
 let CaptureNameLabel;
 try {
+  // eslint-disable-next-line
+  console.log(
+    'PATHS.resourcePath(CaptureNameLabelCrop_qualityRatio.png): ',
+    PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}.png`)
+  );
   CaptureNameLabel = cv
     .imread(PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}.png`))
     .cvtColor(cv.COLOR_BGR2GRAY);
 } catch {
+  // eslint-disable-next-line
+  console.log(
+    'PATHS.resourcePath(CaptureNameLabelCrop.png): ',
+    PATHS.resourcePath(`CaptureNameLabelCrop.png`)
+  );
   CaptureNameLabel = cv
     .imread(PATHS.resourcePath(`CaptureNameLabelCrop.png`))
+
     .rescale(rx)
     .cvtColor(cv.COLOR_BGR2GRAY);
 }
@@ -36,7 +47,7 @@ const rectNameLabel = new cv.Rect(
   innerY[1] - innerY[0]
 );
 
-export default function nameLabelGenerator(mat, starMove) {
+export default function makeNameLabel(mat, starMove) {
   let rectOuterNameLabel;
   if (starMove) {
     rectOuterNameLabel = new cv.Rect(
@@ -68,6 +79,8 @@ export default function nameLabelGenerator(mat, starMove) {
     percentDiff,
     status: percentDiff < threshPercentDiff,
     actor,
-    dialog
+    dialog,
+    threshMat,
+    masked
   };
 }
