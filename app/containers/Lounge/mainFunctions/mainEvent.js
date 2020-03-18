@@ -108,6 +108,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
     percent: 0,
     FPS: 0,
     delay: 1,
+    frame: i,
     timePassed: showTime(moment.duration(0)),
     timeLeft: 'determining...',
     timeAll: 'determining...'
@@ -133,6 +134,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
         percent: ((i - startVCap) / (count - startVCap)) * 100,
         FPS,
         delay: (chunksize / FPS) * 1000,
+        frame: i,
         timePassed: showTime(moment.duration(timePassed)),
         timeLeft: showTime(moment.duration(timeLeft)),
         timeAll: showTime(moment.duration(timeLeft + timePassed))
@@ -144,6 +146,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
         percent: 100,
         FPS,
         delay: 100,
+        frame: i,
         timePassed: showTime(moment.duration(timePassed)),
         timeLeft: 'Job finished',
         timeAll: showTime(moment.duration(timePassed))
@@ -175,6 +178,7 @@ export default function mainEvent(vCap, _timeLimit) {
   if (timeLimit < 0) timeLimit = endVCap;
   let limitVCap = vCap.length - 1;
   if (limitVCap > timeLimit) limitVCap = timeLimit;
+  console.log('limitVCap: ', limitVCap); // eslint-disable-line no-console
   nonBlockingLoop(
     limitVCap,
     chunkCount,

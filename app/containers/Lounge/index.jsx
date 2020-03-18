@@ -378,22 +378,23 @@ class Lounge extends Component {
                   </Button>
                   <Button
                     className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={() => sendMessage(100)}
-                  >
-                    Start Until 100 frames
-                  </Button>
-                  <Button
-                    className={clsx(classes.btn, classes.marginLeft)}
                     onClick={() => sendMessage(1000)}
                   >
                     Start Until 1000 frames
                   </Button>
+                  {/* <Button
+                    className={clsx(classes.btn, classes.marginLeft)}
+                    onClick={() => sendMessage(100)}
+                  >
+                    Start Until 100 frames
+                  </Button>
+                  
                   <Button
                     className={clsx(classes.btn, classes.marginLeft)}
                     onClick={() => sendMessage(10000)}
                   >
                     Start Until 10000 frames
-                  </Button>
+                  </Button> */}
                 </div>
                 {sliderObj && (
                   <Paper className={classes.PaperSlider}>
