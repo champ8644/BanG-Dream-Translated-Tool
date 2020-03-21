@@ -48,8 +48,15 @@ export const threshPlacePercentDiff = 5;
 export const threshTitlePercentDiff = 5;
 export const blackThreshold = 3;
 export const whiteThreshold = 252;
-export const fadeThreshold = 3;
+export const fadeThreshold = 2;
 export const actorThreshold = 500;
+export const blackMaxThreshold = 8;
+export const whiteMinThreshold = 255 - blackMaxThreshold;
+
+export const maxMinROI = {
+  rectX: [Math.round(10 * rx), Math.round(1910 * rx)],
+  rectY: [Math.round(10 * rx), Math.round(1280 * rx)]
+};
 
 export const gapConst = 10;
 

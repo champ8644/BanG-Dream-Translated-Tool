@@ -1,9 +1,9 @@
 export const radioObj = [
   // 'none',
-  // 'scopeFinder',
+  // 'maxFinder',
+  // 'scopeFinder'
   // 'GRAYFinder',
   // 'HSVFinder',
-  // 'meanFinder',
   // 'placeLabelGenerator',
   // 'placeLabelTemplater',
   // 'nameLabelGenerator',
@@ -45,8 +45,8 @@ export const sliderObjSelector = {
   }
 };
 
-export const startVCap = 400;
-export const endVCap = 500;
+export const startVCap = 42750;
+export const endVCap = 43130;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

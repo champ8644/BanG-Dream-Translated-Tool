@@ -12,6 +12,7 @@ const fileNames = [
   'index.js',
   'meanClass.js',
   'meanFinder.js',
+  'maxFinder.js',
   'nameLabelGenerator.js',
   'nameLabelTemplater.js',
   'placeFinder.js',

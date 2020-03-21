@@ -1,23 +1,18 @@
 import {
-  blackThreshold,
-  dialogThreshold,
-  fadeThreshold,
-  whiteThreshold
-} from '../constants';
-import {
   chunkCount,
   endVCap,
   meanLength,
   meanSmooth,
   startVCap
 } from '../constants/config';
+import { dialogThreshold, fadeThreshold } from '../constants';
 
 import findActorID from './findActorID';
 import makeNameLabel from './makeNameLabel';
 import makePlaceLabel from './makePlaceLabel';
 import makeTitleLabel from './makeTitleLabel';
-import meanFinder from './meanFinder';
 import message2UI from '../../../worker/message2UI';
+import minMaxFinder from './minMaxFinder';
 import moment from 'moment';
 import starMatching from './starMatching';
 import writeAss from './writeAss';
@@ -47,10 +42,6 @@ class Meaning {
     this.data[(frame + this.length) % this.length] = val;
   }
 
-  isBlack(frame) {
-    return this.data[frame % this.length] < blackThreshold;
-  }
-
   findFadeInBlack(frame) {
     for (let i = 0; i < this.length; i++) {
       const curFrame = frame - i;
@@ -63,11 +54,7 @@ class Meaning {
   }
 
   isOutOfBlack(frame) {
-    return this.avg(frame) - this.at(frame - this.div) < fadeThreshold;
-  }
-
-  isWhite(frame) {
-    return this.data[frame % this.length] > whiteThreshold;
+    return this.at(frame) - this.avg(frame) < fadeThreshold;
   }
 
   findFadeInWhite(frame) {
@@ -82,7 +69,7 @@ class Meaning {
   }
 
   isOutOfWhite(frame) {
-    return this.at(frame - this.div) - this.avg(frame) < fadeThreshold;
+    return this.avg(frame) - this.at(frame - this.div) < fadeThreshold;
   }
 }
 
@@ -257,8 +244,9 @@ export default function mainEvent(vCap, _timeLimit) {
         }
       }
 
-      meanClass.push(frame, meanFinder(mat));
-      if (meanClass.isBlack(frame)) {
+      const minMaxObj = minMaxFinder(mat);
+      meanClass.push(frame, minMaxObj.mean);
+      if (minMaxObj.isBlack) {
         if (refractory.fadeB === 0) {
           const beginBlack = meanClass.findFadeInBlack(frame);
           data.fadeB.push({ begin: frame - beginBlack });
@@ -277,7 +265,7 @@ export default function mainEvent(vCap, _timeLimit) {
         }
       }
 
-      if (meanClass.isWhite(frame)) {
+      if (minMaxObj.isWhite) {
         if (refractory.fadeW === 0) {
           const beginWhite = meanClass.findFadeInWhite(frame);
           data.fadeW.push({ begin: frame - beginWhite });
