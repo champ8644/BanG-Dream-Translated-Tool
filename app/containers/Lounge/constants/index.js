@@ -41,9 +41,9 @@ export const subtitleThreshold = {
 
 export const rows = 1440;
 export const cols = 1920;
-export const dialogThreshold = 300;
-export const threshPercentDiff = 5;
-export const threshStarMatching = 0.9;
+export const dialogThreshold = 200;
+export const threshPercentDiff = 2;
+export const threshStarMatching = 0.98;
 export const threshPlacePercentDiff = 5;
 export const threshTitlePercentDiff = 5;
 export const blackThreshold = 3;
@@ -103,6 +103,20 @@ export const placeLabelCrop = {
   innerY: [Math.round(695 * rx), Math.round(745 * rx)],
   outerX: [Math.round(323 * rx), Math.round(1592 * rx)],
   outerY: [Math.round(649 * rx), Math.round(795 * rx)]
+};
+export const nameLabelStarCrop = {
+  rectX: [Math.round(112 * rx), Math.round(597 * rx)],
+  rectY: [Math.round(1110 * rx), Math.round(1185 * rx)]
+};
+export const nameLabelStarROI = {
+  rectX: [
+    Math.round((112 - diffShaken) * rx),
+    Math.round((597 + diffShaken) * rx)
+  ],
+  rectY: [
+    Math.round((1110 - diffShaken) * rx),
+    Math.round((1185 + diffShaken) * rx)
+  ]
 };
 export const titleLabelCrop = {
   outerX: [Math.round(20 * rx), Math.round(90 * rx)],

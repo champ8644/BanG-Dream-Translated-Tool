@@ -1,6 +1,7 @@
 import {
   black,
   nameLabelCrop,
+  nameLabelStarCrop,
   nameLabelThreshold,
   qualityRatio
 } from '../constants';
@@ -27,6 +28,13 @@ const rectOuterNameLabel = new cv.Rect(
   outerX[1] - outerX[0],
   outerY[1] - outerY[0]
 );
+const { rectX, rectY } = nameLabelStarCrop;
+const rectNameLabelStarCrop = new cv.Rect(
+  rectX[0],
+  rectY[0],
+  rectX[1] - rectX[0],
+  rectY[1] - rectY[0]
+);
 
 export default function nameLabelTemplater(mat) {
   const { val, sat, hue } = nameLabelThreshold;
@@ -42,5 +50,10 @@ export default function nameLabelTemplater(mat) {
     PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}_Temp.png`),
     masked
   );
-  return masked;
+  const mask2 = mat.getRegion(rectNameLabelStarCrop);
+  cv.imwrite(
+    PATHS.resourcePath(`CaptureNameLabelStar_${qualityRatio}_Temp.png`),
+    mask2
+  );
+  return mask2;
 }

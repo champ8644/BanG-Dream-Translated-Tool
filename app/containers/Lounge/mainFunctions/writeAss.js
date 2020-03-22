@@ -94,9 +94,11 @@ function embrace(arr) {
   return `{${arr.join()}}`;
 }
 
-function writeShake(item) {
-  return `Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,code once,_G.table.insert(shake,${embrace(
-    item.map(itemitem =>
+function writeShake({ arr, begin, end }) {
+  return `Comment: 0,${timestamp(begin)},${timestamp(
+    end
+  )},ข้อความสั่น,,0,0,0,code once,_G.table.insert(shake,${embrace(
+    arr.map(itemitem =>
       embrace([
         `t=${timeMs(itemitem.frame)}`,
         `x=${itemitem.x}`,
@@ -108,6 +110,7 @@ function writeShake(item) {
 }
 
 function bakeShake(item) {
+  const { begin, end } = item;
   const min = item.shake[0].frame;
   const max = item.shake[item.shake.length - 1].frame;
   const shakeTree = {};
@@ -122,7 +125,7 @@ function bakeShake(item) {
     frame: Number(key),
     ...shakeTree[key]
   }));
-  return shakeOut;
+  return { arr: shakeOut, begin, end };
 }
 
 export default function writeAss(data, nameActor, vCap) {

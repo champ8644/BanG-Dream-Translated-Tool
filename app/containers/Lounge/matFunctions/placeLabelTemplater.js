@@ -42,5 +42,9 @@ export default function placeLabelTemplater(mat) {
     PATHS.resourcePath(`CapturePlaceLabelCrop_${qualityRatio}_Temp.png`),
     masked
   );
+  cv.imwrite(
+    PATHS.resourcePath(`CapturePlaceLabelCrop_${qualityRatio}_Temp.png`),
+    masked
+  );
   return masked;
 }

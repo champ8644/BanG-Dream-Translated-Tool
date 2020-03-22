@@ -1,5 +1,6 @@
 import {
   nameLabelCrop,
+  nameLabelStarCrop,
   nameLabelThreshold,
   qualityRatio,
   rx,
@@ -12,23 +13,12 @@ import subtitleFinder from './subtitleFinder';
 
 let CaptureNameLabel;
 try {
-  // eslint-disable-next-line
-  console.log(
-    'PATHS.resourcePath(CaptureNameLabelCrop_qualityRatio.png): ',
-    PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}.png`)
-  );
   CaptureNameLabel = cv
     .imread(PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}.png`))
     .cvtColor(cv.COLOR_BGR2GRAY);
 } catch {
-  // eslint-disable-next-line
-  console.log(
-    'PATHS.resourcePath(CaptureNameLabelCrop.png): ',
-    PATHS.resourcePath(`CaptureNameLabelCrop.png`)
-  );
   CaptureNameLabel = cv
     .imread(PATHS.resourcePath(`CaptureNameLabelCrop.png`))
-
     .rescale(rx)
     .cvtColor(cv.COLOR_BGR2GRAY);
 }
@@ -46,7 +36,13 @@ const rectNameLabel = new cv.Rect(
   innerX[1] - innerX[0],
   innerY[1] - innerY[0]
 );
-
+const { rectX, rectY } = nameLabelStarCrop;
+const rectNameLabelStarCrop = new cv.Rect(
+  rectX[0],
+  rectY[0],
+  rectX[1] - rectX[0],
+  rectY[1] - rectY[0]
+);
 export default function makeNameLabel(mat, starMove) {
   let rectOuterNameLabel;
   if (starMove) {
@@ -59,26 +55,32 @@ export default function makeNameLabel(mat, starMove) {
   } else {
     rectOuterNameLabel = _rectOuterNameLabel;
   }
+
   const { val, sat, hue } = nameLabelThreshold;
   const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
   const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
-  const threshMat = mat
-    .getRegion(rectOuterNameLabel)
+  const rangeMat = mat
     .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds);
+  const threshMat = rangeMat.getRegion(rectOuterNameLabel);
+
   const masked = threshMat.and(CaptureNameLabel).bitwiseXor(CaptureNameLabel);
 
   const percentDiff = (masked.countNonZero() / countNameLabel) * 100;
   let actor;
+  let actorStar;
   let dialog;
+
   if (percentDiff < threshPercentDiff) {
     actor = threshMat.getRegion(rectNameLabel);
+    actorStar = rangeMat.getRegion(rectNameLabelStarCrop);
     dialog = subtitleFinder(mat);
   }
   return {
     percentDiff,
     status: percentDiff < threshPercentDiff,
     actor,
+    actorStar,
     dialog,
     threshMat,
     masked

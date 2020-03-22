@@ -87,8 +87,12 @@ function showTime(dur) {
 }
 
 let isLoopValid;
+let newStartVCap;
 function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
-  let i = startVCap;
+  let i;
+  let useStartVCap = startVCap;
+  if (newStartVCap !== null) useStartVCap = newStartVCap;
+  i = useStartVCap;
   isLoopValid = true;
   const beginTime = new Date().getTime();
   message2UI('update-progress', {
@@ -105,7 +109,8 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
     for (; i < end; i++) {
       callback.call(null, i);
     }
-    const FPS = ((i - startVCap) / (new Date().getTime() - beginTime)) * 1000;
+    const FPS =
+      ((i - useStartVCap) / (new Date().getTime() - beginTime)) * 1000;
     // eslint-disable-next-line no-console
     // console.log({
     //   frame: i,
@@ -118,7 +123,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
       const timeLeft = ((count - i) / FPS) * 1000;
       const timePassed = new Date().getTime() - beginTime;
       message2UI('update-progress', {
-        percent: ((i - startVCap) / (count - startVCap)) * 100,
+        percent: ((i - useStartVCap) / (count - useStartVCap)) * 100,
         FPS,
         delay: (chunksize / FPS) * 1000,
         frame: i,
@@ -143,8 +148,11 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
   })();
 }
 
+let currentActor;
+
 export default function mainEvent(vCap, _timeLimit) {
   prevDialog = 999999999;
+  newStartVCap = null;
   meanClass = new Meaning();
   data = {
     name: [],
@@ -164,7 +172,10 @@ export default function mainEvent(vCap, _timeLimit) {
   let timeLimit = _timeLimit;
   if (timeLimit < 0) timeLimit = endVCap;
   let limitVCap = vCap.length - 1;
-  if (limitVCap > timeLimit) limitVCap = timeLimit;
+  if (limitVCap > timeLimit) {
+    limitVCap = timeLimit;
+    newStartVCap = 0;
+  }
   console.log('limitVCap: ', limitVCap); // eslint-disable-line no-console
   nonBlockingLoop(
     limitVCap,
@@ -211,16 +222,18 @@ export default function mainEvent(vCap, _timeLimit) {
             begin: frame,
             actor: findActorID(nameObj.actor, frame, nameActor)
           });
+          currentActor = nameObj.actorStar;
         } else if (prevDialog - nameObj.dialog > dialogThreshold) {
           data.name[data.name.length - 1].end = frame;
           data.name.push({
             begin: frame,
             actor: findActorID(nameObj.actor, frame, nameActor)
           });
+          currentActor = nameObj.actorStar;
         }
         prevDialog = nameObj.dialog;
       } else if (refractory.name) {
-        const starMatched = starMatching(mat);
+        const starMatched = starMatching(mat, currentActor);
         if (starMatched) {
           nameObj = makeNameLabel(mat, starMatched);
           if (!data.name[data.name.length - 1].shake)
