@@ -47,7 +47,7 @@ class Meaning {
       const curFrame = frame - i;
       const avg = this.avg(curFrame);
       if (avg !== null) {
-        if (avg - this.at(curFrame) < fadeThreshold) return i;
+        if (avg - this.at(curFrame) < fadeThreshold) return i - 1;
       } else return null;
     }
     return null;
@@ -62,7 +62,7 @@ class Meaning {
       const curFrame = frame - i;
       const avg = this.avg(curFrame);
       if (avg !== null) {
-        if (this.at(curFrame) - avg < fadeThreshold) return i;
+        if (this.at(curFrame) - avg < fadeThreshold) return i - 1;
       } else return null;
     }
     return null;
