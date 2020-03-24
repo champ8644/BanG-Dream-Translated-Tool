@@ -83,7 +83,21 @@ export const starCrop = {
   rectX: [Math.round(555 * rx), Math.round(616 * rx)],
   rectY: [Math.round(1105 * rx), Math.round(1189 * rx)]
 };
+export const nameLabelStarCrop = {
+  rectX: [Math.round(112 * rx), Math.round(597 * rx)],
+  rectY: [Math.round(1110 * rx), Math.round(1185 * rx)]
+};
 const diffShaken = 30;
+export const nameLabelStarROI = {
+  rectX: [
+    Math.round((112 - diffShaken) * rx),
+    Math.round((597 + diffShaken) * rx)
+  ],
+  rectY: [
+    Math.round((1110 - diffShaken) * rx),
+    Math.round((1185 + diffShaken) * rx)
+  ]
+};
 export const starROI = {
   rectX: [
     Math.round((555 - diffShaken) * rx),
@@ -103,20 +117,6 @@ export const placeLabelCrop = {
   innerY: [Math.round(695 * rx), Math.round(745 * rx)],
   outerX: [Math.round(323 * rx), Math.round(1592 * rx)],
   outerY: [Math.round(649 * rx), Math.round(795 * rx)]
-};
-export const nameLabelStarCrop = {
-  rectX: [Math.round(112 * rx), Math.round(597 * rx)],
-  rectY: [Math.round(1110 * rx), Math.round(1185 * rx)]
-};
-export const nameLabelStarROI = {
-  rectX: [
-    Math.round((112 - diffShaken) * rx),
-    Math.round((597 + diffShaken) * rx)
-  ],
-  rectY: [
-    Math.round((1110 - diffShaken) * rx),
-    Math.round((1185 + diffShaken) * rx)
-  ]
 };
 export const titleLabelCrop = {
   outerX: [Math.round(20 * rx), Math.round(90 * rx)],

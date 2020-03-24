@@ -49,10 +49,14 @@ export function sendMessage(timeLimit) {
   };
 }
 
-export function updateLinear(percent) {
-  return {
-    type: actionTypes.UPDATE_LINEAR,
-    payload: percent
+export function updateLinear(payload) {
+  return (dispatch, getState) => {
+    const { vCap } = getState().Lounge;
+    vCap.show(payload.frame);
+    dispatch({
+      type: actionTypes.UPDATE_LINEAR,
+      payload
+    });
   };
 }
 

@@ -225,7 +225,6 @@ export default function mainEvent(vCap, _timeLimit) {
       if (nameObj.status) {
         if (!refractory.name) {
           refractory.name = true;
-          vCap.showMatInCanvas(nameObj.threshMat);
           data.name.push({
             begin: frame,
             actor: findActorID(nameObj.actor, frame, nameActor)
@@ -241,6 +240,7 @@ export default function mainEvent(vCap, _timeLimit) {
         }
         prevDialog = nameObj.dialog;
       } else if (refractory.name) {
+        vCap.showMatInCanvas(nameObj.actorStar);
         const starMatched = starMatching(mat, currentActor);
         if (starMatched) {
           nameObj = makeNameLabel(mat, starMatched);

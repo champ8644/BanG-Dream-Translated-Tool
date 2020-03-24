@@ -37,9 +37,9 @@ const rectNameLabel = new cv.Rect(
   innerY[1] - innerY[0]
 );
 const { rectX, rectY } = nameLabelStarCrop;
-const rectNameLabelStarCrop = new cv.Rect(
-  rectX[0],
-  rectY[0],
+const rectNameLabelStarCropRelative = new cv.Rect(
+  rectX[0] - outerX[0],
+  rectY[0] - outerY[0],
   rectX[1] - rectX[0],
   rectY[1] - rectY[0]
 );
@@ -59,10 +59,10 @@ export default function makeNameLabel(mat, starMove) {
   const { val, sat, hue } = nameLabelThreshold;
   const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
   const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
-  const rangeMat = mat
+  const threshMat = mat
+    .getRegion(rectOuterNameLabel)
     .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds);
-  const threshMat = rangeMat.getRegion(rectOuterNameLabel);
 
   const masked = threshMat.and(CaptureNameLabel).bitwiseXor(CaptureNameLabel);
 
@@ -70,10 +70,14 @@ export default function makeNameLabel(mat, starMove) {
   let actor;
   let actorStar;
   let dialog;
-
+  // console.log({ percentDiff, threshPercentDiff });
   if (percentDiff < threshPercentDiff) {
+    // console.log(
+    //   'percentDiff < threshPercentDiff: ',
+    //   percentDiff < threshPercentDiff
+    // );
     actor = threshMat.getRegion(rectNameLabel);
-    actorStar = rangeMat.getRegion(rectNameLabelStarCrop);
+    actorStar = threshMat.getRegion(rectNameLabelStarCropRelative);
     dialog = subtitleFinder(mat);
   }
   return {
