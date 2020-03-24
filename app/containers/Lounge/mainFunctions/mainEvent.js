@@ -87,6 +87,9 @@ function showTime(dur) {
 }
 
 let isLoopValid;
+export function devalidLoop() {
+  isLoopValid = false;
+}
 let newStartVCap;
 function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
   let i;
@@ -107,19 +110,36 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
   (function chunk() {
     const end = Math.min(i + chunksize, count);
     for (; i < end; i++) {
+      if (!isLoopValid) break;
       callback.call(null, i);
     }
     const FPS =
       ((i - useStartVCap) / (new Date().getTime() - beginTime)) * 1000;
-    // eslint-disable-next-line no-console
-    // console.log({
-    //   frame: i,
-    //   FPS,
-    //   delay: (chunksize / FPS) * 1000,
-    //   timePassed: new Date().getTime() - beginTime,
-    //   timeLeft: ((count - i) / FPS) * 1000
-    // });
-    if (i < count && isLoopValid) {
+    if (i >= count) {
+      const timePassed = new Date().getTime() - beginTime;
+      message2UI('finish-progress', {
+        percent: 100,
+        FPS,
+        delay: 100,
+        frame: i,
+        timePassed: showTime(moment.duration(timePassed)),
+        timeLeft: 'Job finished',
+        timeAll: showTime(moment.duration(timePassed))
+      });
+      finished.call(null);
+    } else if (!isLoopValid) {
+      const timePassed = new Date().getTime() - beginTime;
+      message2UI('cancel-progress', {
+        percent: 100,
+        FPS,
+        delay: 100,
+        frame: i,
+        timePassed: showTime(moment.duration(timePassed)),
+        timeLeft: 'Job cancelled',
+        timeAll: showTime(moment.duration(timePassed))
+      });
+      finished.call(null);
+    } else {
       const timeLeft = ((count - i) / FPS) * 1000;
       const timePassed = new Date().getTime() - beginTime;
       message2UI('update-progress', {
@@ -132,18 +152,6 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
         timeAll: showTime(moment.duration(timeLeft + timePassed))
       });
       setTimeout(chunk, 0);
-    } else {
-      const timePassed = new Date().getTime() - beginTime;
-      message2UI('update-progress', {
-        percent: 100,
-        FPS,
-        delay: 100,
-        frame: i,
-        timePassed: showTime(moment.duration(timePassed)),
-        timeLeft: 'Job finished',
-        timeAll: showTime(moment.duration(timePassed))
-      });
-      finished.call(null);
     }
   })();
 }

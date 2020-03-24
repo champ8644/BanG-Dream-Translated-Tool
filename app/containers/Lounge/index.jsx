@@ -154,16 +154,15 @@ class Lounge extends Component {
   }
 
   componentDidMount() {
-    const { sendCanvas, updateLinear, finishJobs } = this.props;
+    const { sendCanvas, updateLinear } = this.props;
     sendCanvas(this.canvas);
     ipcRenderer.on('message-from-worker', (e, arg) => {
       const { command, payload } = arg;
       switch (command) {
         case 'update-progress':
-          updateLinear(payload);
-          break;
         case 'finish-progress':
-          finishJobs();
+        case 'cancel-progress':
+          updateLinear(payload);
           break;
         default:
       }

@@ -3,13 +3,13 @@
 /* eslint-disable no-console */
 
 import { gapConst, maxMinDist } from './constants';
+import mainEvent, { devalidLoop } from './mainFunctions/mainEvent';
 
 import Queue from '../../classes/Queue';
 import VideoCapture from './VideoCapture';
 import XLSX from 'xlsx';
 import _ from 'lodash';
 import cv from 'opencv4nodejs';
-import mainEvent from './mainFunctions/mainEvent';
 import { message2Worker } from './utils';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
@@ -109,6 +109,8 @@ export function startVideo() {
 export function stopVideo() {
   return async (dispatch, getState) => {
     const { vCap } = getState().Lounge;
+    devalidLoop();
+    message2Worker('stop-events');
     vCap.stop();
   };
 }

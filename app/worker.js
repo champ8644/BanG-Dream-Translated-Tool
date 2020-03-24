@@ -1,3 +1,4 @@
+import { devalidLoop } from './containers/Lounge/mainFunctions/mainEvent';
 import electron from 'electron';
 import mainEvents from './worker/mainEvents';
 
@@ -16,6 +17,9 @@ ipcRenderer.on('message-from-renderer', (e, arg) => {
   switch (command) {
     case 'start-events':
       mainEvents(payload);
+      break;
+    case 'stop-events':
+      devalidLoop();
       break;
     default:
   }
