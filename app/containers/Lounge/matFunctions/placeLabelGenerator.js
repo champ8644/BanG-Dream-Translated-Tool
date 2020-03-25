@@ -11,16 +11,18 @@ const rectOuterPlaceLabel = new cv.Rect(
   outerY[1] - outerY[0]
 );
 export default function placeLabelGenerator(mat, vCap) {
-  const { percentDiff, status, placeName } = makePlaceLabel(mat);
+  const { percentDiff, status, placeName, threshMat, roiMat } = makePlaceLabel(
+    mat
+  );
   // eslint-disable-next-line no-console
   console.log('percentDiff: ', percentDiff);
   if (status) {
-    mat.drawRectangle(rectOuterPlaceLabel, blue, 1);
+    mat.drawRectangle(rectOuterPlaceLabel, blue, 3);
     // eslint-disable-next-line no-console
     console.log({
       placeName: placeName.countNonZero(),
       frame: vCap.getFrame()
     });
   }
-  return mat;
+  return roiMat.pushBack(threshMat.cvtColor(cv.COLOR_GRAY2BGR));
 }

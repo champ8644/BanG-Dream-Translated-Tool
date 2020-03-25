@@ -1,4 +1,5 @@
 import assTemplate from '../constants/assTemplate';
+import { correctPlaceFadeBlack } from '../constants';
 import { endVCap } from '../constants/config';
 import fs from 'fs';
 
@@ -16,7 +17,7 @@ function timestamp(frame) {
 
 function timeMs(frame) {
   const ms = toMs(frame);
-  return Math.round(ms * 1000) / 1000;
+  return Math.floor(ms * 100) / 100;
 }
 
 function writeCredit(frame) {
@@ -128,6 +129,10 @@ function bakeShake(item) {
   return { arr: shakeOut, begin, end };
 }
 
+function isIntersect(a, b) {
+  return Math.min(a.end, b.end) > Math.max(a.begin, b.begin);
+}
+
 export default function writeAss(data, nameActor, vCap) {
   toMs = frame => (frame * 1000) / vCap.FPS;
   // eslint-disable-next-line no-console
@@ -145,6 +150,17 @@ export default function writeAss(data, nameActor, vCap) {
   const shakeArr = [];
   const keys = Object.keys(data);
 
+  for (let i = 0; i < data.place.length; i++) {
+    const item = data.place[i];
+    for (let j = 0; j < data.fadeB.length; j++) {
+      const jtem = data.fadeB[j];
+      if (isIntersect(item, jtem)) {
+        item.begin -= correctPlaceFadeBlack;
+        break;
+      }
+    }
+  }
+
   for (let i = 0; i < keys.length; i++) {
     const type = keys[i];
     for (let j = 0; j < data[type].length; j++) {
@@ -158,6 +174,7 @@ export default function writeAss(data, nameActor, vCap) {
       } else outData.push({ type, ...data[type][j] });
     }
   }
+
   outData.sort(
     (a, b) =>
       (a.type === 'fadeB' || a.type === 'fadeW') -

@@ -70,12 +70,7 @@ export default function makeNameLabel(mat, starMove) {
   let actor;
   let actorStar;
   let dialog;
-  // console.log({ percentDiff, threshPercentDiff });
   if (percentDiff < threshPercentDiff) {
-    // console.log(
-    //   'percentDiff < threshPercentDiff: ',
-    //   percentDiff < threshPercentDiff
-    // );
     actor = threshMat.getRegion(rectNameLabel);
     actorStar = threshMat.getRegion(rectNameLabelStarCropRelative);
     dialog = subtitleFinder(mat);

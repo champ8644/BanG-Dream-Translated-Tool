@@ -51,8 +51,8 @@ export function sendMessage(timeLimit) {
 
 export function updateLinear(payload) {
   return (dispatch, getState) => {
-    const { vCap } = getState().Lounge;
-    vCap.show(payload.frame);
+    // const { vCap } = getState().Lounge;
+    // vCap.show(payload.frame);
     dispatch({
       type: actionTypes.UPDATE_LINEAR,
       payload

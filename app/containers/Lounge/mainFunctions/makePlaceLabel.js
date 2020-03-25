@@ -45,6 +45,8 @@ export default function placeLabelGenerator(mat, refractory) {
   return {
     percentDiff,
     status: percentDiff < threshPlacePercentDiff,
+    threshMat,
+    roiMat: mat.getRegion(rectOuterPlaceLabel),
     payload: {},
     placeName
   };

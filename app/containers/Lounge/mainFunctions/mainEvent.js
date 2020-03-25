@@ -178,15 +178,18 @@ export default function mainEvent(vCap, _timeLimit) {
   };
   const nameActor = [];
   let timeLimit = _timeLimit;
-  if (timeLimit < 0) timeLimit = endVCap;
-  let limitVCap = vCap.length - 1;
-  if (limitVCap > timeLimit) {
-    limitVCap = timeLimit;
+  const limitVCap = vCap.length - 1;
+  if (timeLimit < 0) {
+    timeLimit = endVCap;
+    newStartVCap = startVCap;
+  } else {
     newStartVCap = 0;
+    if (timeLimit > limitVCap) timeLimit = limitVCap;
   }
-  console.log('limitVCap: ', limitVCap); // eslint-disable-line no-console
+
+  // eslint-disable-line no-console
   nonBlockingLoop(
-    limitVCap,
+    timeLimit,
     chunkCount,
     i => {
       const frame = i;
@@ -240,7 +243,7 @@ export default function mainEvent(vCap, _timeLimit) {
         }
         prevDialog = nameObj.dialog;
       } else if (refractory.name) {
-        vCap.showMatInCanvas(nameObj.actorStar);
+        // vCap.showMatInCanvas(nameObj.actorStar);
         const starMatched = starMatching(mat, currentActor);
         if (starMatched) {
           nameObj = makeNameLabel(mat, starMatched);
