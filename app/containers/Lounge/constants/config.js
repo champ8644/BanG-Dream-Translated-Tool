@@ -1,16 +1,16 @@
 export const radioObj = [
-  'none',
-  'maxFinder',
-  'scopeFinder',
+  // 'none',
+  // 'maxFinder',
+  // 'scopeFinder',
   // 'GRAYFinder',
-  'HSVFinder',
-  'placeLabelGenerator',
-  'placeLabelTemplater',
-  'nameLabelGenerator',
-  'nameLabelTemplater',
+  // 'HSVFinder',
+  // 'placeLabelGenerator',
+  // 'placeLabelTemplater',
+  // 'nameLabelGenerator',
+  // 'nameLabelTemplater',
   // 'titleLabelGenerator',
   // 'titleLabelTemplater',
-  'starMatching'
+  // 'starMatching'
 ];
 
 export const sliderObjSelector = {

@@ -369,7 +369,7 @@ class Lounge extends Component {
                       </Button>
                     </>
                   )}
-                  <Button
+                  {/* <Button
                     className={clsx(classes.btn, classes.marginLeft)}
                     onClick={() => sendMessage(-1)}
                   >
@@ -380,12 +380,12 @@ class Lounge extends Component {
                     onClick={() => sendMessage(1000)}
                   >
                     Start Until 1000 frames
-                  </Button>
+                  </Button> */}
                   <Button
                     className={clsx(classes.btn, classes.marginLeft)}
                     onClick={() => sendMessage()}
                   >
-                    Start Until End of Clip
+                    Start Converting
                   </Button>
                   {/* <Button
                     className={clsx(classes.btn, classes.marginLeft)}

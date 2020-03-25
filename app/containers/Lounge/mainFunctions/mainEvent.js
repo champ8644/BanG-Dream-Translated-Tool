@@ -184,9 +184,8 @@ export default function mainEvent(vCap, _timeLimit) {
     newStartVCap = startVCap;
   } else {
     newStartVCap = 0;
-    if (timeLimit > limitVCap) timeLimit = limitVCap;
+    if (timeLimit > limitVCap || timeLimit === undefined) timeLimit = limitVCap;
   }
-
   // eslint-disable-line no-console
   nonBlockingLoop(
     timeLimit,
