@@ -1,7 +1,15 @@
-import { blue, nameLabelCrop, red, subtitleCrop } from '../constants';
+import {
+  blue,
+  nameLabelCrop,
+  red,
+  subtitleCrop,
+  thickness,
+  yellow
+} from '../constants';
 
 import cv from 'opencv4nodejs';
 import makeNameLabel from '../mainFunctions/makeNameLabel';
+import subtitleFinder from './subtitleFinder';
 
 const { outerX, outerY } = nameLabelCrop;
 const rectOuterNameLabel = new cv.Rect(
@@ -19,14 +27,26 @@ const subtitleRect = new cv.Rect(
 );
 
 export default function nameLabelGenerator(mat) {
-  const { status, dialog, actor, percentDiff } = makeNameLabel(mat);
+  const { status, actor, percentDiff } = makeNameLabel(mat);
   // eslint-disable-next-line no-console
   console.log('percentDiff: ', percentDiff);
   if (status) {
+    const dialogMat = subtitleFinder(mat);
     // eslint-disable-next-line no-console
-    console.log({ dialog, actor });
-    mat.drawRectangle(rectOuterNameLabel, blue, 1);
-    mat.drawRectangle(subtitleRect, red, 1);
+    console.log({ dialog: dialogMat.countNonZero(), actor });
+    mat.drawRectangle(rectOuterNameLabel, blue, thickness);
+    dialogMat.cvtColor(cv.COLOR_GRAY2BGR).copyTo(mat.getRegion(subtitleRect));
+    mat.drawRectangle(subtitleRect, red, thickness);
+    mat.putText(
+      `${dialogMat.countNonZero()}`,
+      new cv.Point2(rectX[0] + 1450, rectY[0] + 180),
+      cv.FONT_HERSHEY_COMPLEX,
+      2,
+      yellow,
+      cv.LINE_4,
+      1
+    );
+    return mat;
   }
   return mat;
 }

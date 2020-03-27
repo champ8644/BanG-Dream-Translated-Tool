@@ -1,4 +1,4 @@
-import { blue, placeLabelCrop } from '../constants';
+import { blue, placeLabelCrop, thickness } from '../constants';
 
 import cv from 'opencv4nodejs';
 import makePlaceLabel from '../mainFunctions/makePlaceLabel';
@@ -17,7 +17,7 @@ export default function placeLabelGenerator(mat, vCap) {
   // eslint-disable-next-line no-console
   console.log('percentDiff: ', percentDiff);
   if (status) {
-    mat.drawRectangle(rectOuterPlaceLabel, blue, 3);
+    mat.drawRectangle(rectOuterPlaceLabel, blue, thickness);
     // eslint-disable-next-line no-console
     console.log({
       placeName: placeName.countNonZero(),

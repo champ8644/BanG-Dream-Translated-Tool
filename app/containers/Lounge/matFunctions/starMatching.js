@@ -5,6 +5,7 @@ import {
   nameLabelThreshold,
   qualityRatio,
   rx,
+  thickness,
   threshPercentDiff,
   threshStarMatching
 } from '../constants';
@@ -117,7 +118,7 @@ export default function starMatching(mat) {
       x: matchLoc.x + roiX[0] - rectX[0],
       y: matchLoc.y + roiY[0] - rectY[0]
     });
-    mat.drawRectangle(getStar, arrColor[i], 2);
+    mat.drawRectangle(getStar, arrColor[i], thickness);
     //   }
     // }
   }

@@ -1,4 +1,4 @@
-import { color, titleHeader } from '../constants';
+import { color, thickness, titleHeader } from '../constants';
 
 import cv from 'opencv4nodejs';
 import makeTitleLabel from '../mainFunctions/makeTitleLabel';
@@ -19,7 +19,7 @@ export default function titleLabelGenerator(mat) {
       titleWidth,
       titleHeader.height
     );
-    mat.drawRectangle(drawRect, color.blue, 2);
+    mat.drawRectangle(drawRect, color.blue, thickness);
   }
   return mat;
 }

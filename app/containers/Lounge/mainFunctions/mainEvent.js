@@ -223,6 +223,7 @@ export default function mainEvent(vCap, _timeLimit) {
         refractory.title = false;
       }
 
+      console.log('frame', frame); // eslint-disable-line no-console
       let nameObj = makeNameLabel(mat);
       if (nameObj.status) {
         if (!refractory.name) {
@@ -233,6 +234,13 @@ export default function mainEvent(vCap, _timeLimit) {
           });
           currentActor = nameObj.actorStar;
         } else if (prevDialog - nameObj.dialog > dialogThreshold) {
+          // eslint-disable-next-line no-console
+          console.log('dialog: ', {
+            exp: prevDialog - nameObj.dialog > dialogThreshold,
+            prevDialog,
+            nameObj: nameObj.dialog,
+            dialogThreshold
+          });
           data.name[data.name.length - 1].end = frame;
           data.name.push({
             begin: frame,

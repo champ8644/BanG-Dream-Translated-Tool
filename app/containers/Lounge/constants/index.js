@@ -34,9 +34,9 @@ export const nameLabelThreshold = {
 };
 
 export const subtitleThreshold = {
-  blue: [64, 164],
-  green: [64, 164],
-  red: [64, 164]
+  blue: [0, 128],
+  green: [0, 128],
+  red: [0, 128]
 };
 
 export const rows = 1440;
@@ -135,3 +135,4 @@ export const titleHeader = {
 };
 
 export const correctPlaceFadeBlack = 6;
+export const thickness = 3;

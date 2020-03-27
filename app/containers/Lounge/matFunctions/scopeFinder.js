@@ -1,4 +1,4 @@
-import { cyan, red } from '../constants';
+import { cyan, red, thickness } from '../constants';
 
 import cv from 'opencv4nodejs';
 
@@ -10,13 +10,13 @@ export default function scopeFinder(mat, vCap) {
     new cv.Point2(outerX[0], outerY[0]),
     new cv.Point2(outerX[1], outerY[1]),
     red,
-    1
+    thickness
   );
   mat.drawRectangle(
     new cv.Point2(innerX[0], innerY[0]),
     new cv.Point2(innerX[1], innerY[1]),
     cyan,
-    1
+    thickness
   );
   return mat;
 }

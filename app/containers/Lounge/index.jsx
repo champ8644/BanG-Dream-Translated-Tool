@@ -34,6 +34,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import { Helmet } from 'react-helmet';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
+import { IS_DEV } from '../../constants/env';
 import IconButton from '@material-ui/core/IconButton';
 // import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -369,18 +370,22 @@ class Lounge extends Component {
                       </Button>
                     </>
                   )}
-                  {/* <Button
-                    className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={() => sendMessage(-1)}
-                  >
-                    Start Main Jobs
-                  </Button>
-                  <Button
-                    className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={() => sendMessage(1000)}
-                  >
-                    Start Until 1000 frames
-                  </Button> */}
+                  {IS_DEV && (
+                    <>
+                      <Button
+                        className={clsx(classes.btn, classes.marginLeft)}
+                        onClick={() => sendMessage(-1)}
+                      >
+                        Start Main Jobs
+                      </Button>
+                      <Button
+                        className={clsx(classes.btn, classes.marginLeft)}
+                        onClick={() => sendMessage(1000)}
+                      >
+                        Start Until 1000 frames
+                      </Button>{' '}
+                    </>
+                  )}
                   <Button
                     className={clsx(classes.btn, classes.marginLeft)}
                     onClick={() => sendMessage()}

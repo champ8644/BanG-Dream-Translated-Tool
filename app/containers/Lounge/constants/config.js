@@ -1,17 +1,22 @@
-export const radioObj = [
-  // 'none',
-  // 'maxFinder',
-  // 'scopeFinder',
-  // 'GRAYFinder',
-  // 'HSVFinder',
-  // 'placeLabelGenerator',
-  // 'placeLabelTemplater',
-  // 'nameLabelGenerator',
-  // 'nameLabelTemplater',
-  // 'titleLabelGenerator',
-  // 'titleLabelTemplater',
-  // 'starMatching'
-];
+import { IS_DEV } from '../../../constants/env';
+
+export const radioObj = IS_DEV
+  ? [
+      'none',
+      // 'maxFinder',
+      // 'scopeFinder',
+      'GRAYFinder',
+      // 'BGRFinder',
+      // 'HSVFinder',
+      // 'placeLabelGenerator',
+      // 'placeLabelTemplater',
+      'nameLabelGenerator'
+      // 'nameLabelTemplater'
+      // 'titleLabelGenerator',
+      // 'titleLabelTemplater',
+      // 'starMatching'
+    ]
+  : [];
 
 export const sliderObjSelector = {
   BGRFinder: {
@@ -47,8 +52,8 @@ export const sliderObjSelector = {
 
 // export const startVCap = 42750;
 // export const endVCap = 43130;
-export const startVCap = 2880;
-export const endVCap = 3000;
+export const startVCap = 18100;
+export const endVCap = 18420;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
