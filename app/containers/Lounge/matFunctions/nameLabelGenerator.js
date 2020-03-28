@@ -1,10 +1,10 @@
 import {
   blue,
   nameLabelCrop,
+  purple,
   red,
-  subtitleCrop,
-  thickness,
-  yellow
+  subtitlePartialCrop,
+  thickness
 } from '../constants';
 
 import cv from 'opencv4nodejs';
@@ -18,7 +18,7 @@ const rectOuterNameLabel = new cv.Rect(
   outerX[1] - outerX[0],
   outerY[1] - outerY[0]
 );
-const { rectX, rectY } = subtitleCrop;
+const { rectX, rectY } = subtitlePartialCrop;
 const subtitleRect = new cv.Rect(
   rectX[0],
   rectY[0],
@@ -42,7 +42,7 @@ export default function nameLabelGenerator(mat) {
       new cv.Point2(rectX[0] + 1450, rectY[0] + 180),
       cv.FONT_HERSHEY_COMPLEX,
       2,
-      yellow,
+      purple,
       cv.LINE_4,
       1
     );

@@ -34,9 +34,9 @@ export const nameLabelThreshold = {
 };
 
 export const subtitleThreshold = {
-  blue: [0, 128],
-  green: [0, 128],
-  red: [0, 128]
+  blue: [0, 100],
+  green: [0, 100],
+  red: [0, 100]
 };
 
 export const rows = 1440;
@@ -46,6 +46,7 @@ export const threshPercentDiff = 3;
 export const threshStarMatching = 0.8;
 export const threshPlacePercentDiff = 5;
 export const threshTitlePercentDiff = 5;
+export const threshSubSubtitle = 20;
 export const blackThreshold = 3;
 export const whiteThreshold = 252;
 export const fadeThreshold = 2;
@@ -111,6 +112,10 @@ export const starROI = {
 export const subtitleCrop = {
   rectX: [Math.round(100 * rx), Math.round(1800 * rx)],
   rectY: [Math.round(1200 * rx), Math.round(1400 * rx)]
+};
+export const subtitlePartialCrop = {
+  rectX: [Math.round(180 * rx), Math.round(400 * rx)],
+  rectY: [Math.round(1200 * rx), Math.round(1260 * rx)]
 };
 export const placeLabelCrop = {
   innerX: [Math.round(447 * rx), Math.round(1464 * rx)],

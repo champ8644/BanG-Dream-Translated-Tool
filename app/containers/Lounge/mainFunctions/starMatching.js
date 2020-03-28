@@ -45,7 +45,7 @@ export default function starMatching(mat, CaptureNameLabelStar) {
     .getRegion(nameLabelStarRegion)
     .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds)
-    .matchTemplate(CaptureNameLabelStar, cv.TM_CCOEFF_NORMED)
+    .matchTemplate(CaptureNameLabelStar, cv.TM_CCORR_NORMED)
     .minMaxLoc();
   if (maxVal > threshStarMatching) {
     return {

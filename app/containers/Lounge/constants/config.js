@@ -4,7 +4,7 @@ export const radioObj = IS_DEV
   ? [
       'none',
       // 'maxFinder',
-      // 'scopeFinder',
+      'scopeFinder',
       'GRAYFinder',
       // 'BGRFinder',
       // 'HSVFinder',
@@ -50,10 +50,12 @@ export const sliderObjSelector = {
   }
 };
 
-// export const startVCap = 42750;
-// export const endVCap = 43130;
-export const startVCap = 18100;
-export const endVCap = 18420;
+// export const startVCap = 48300;
+// export const endVCap = 50000;
+// export const startVCap = 88250;
+// export const endVCap = 89150;
+export const startVCap = 2800;
+export const endVCap = 3600;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

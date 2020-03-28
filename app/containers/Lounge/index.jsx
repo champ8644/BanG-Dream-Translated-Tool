@@ -383,7 +383,13 @@ class Lounge extends Component {
                         onClick={() => sendMessage(1000)}
                       >
                         Start Until 1000 frames
-                      </Button>{' '}
+                      </Button>
+                      <Button
+                        className={clsx(classes.btn, classes.marginLeft)}
+                        onClick={() => sendMessage(10000)}
+                      >
+                        Start Until 10000 frames
+                      </Button>
                     </>
                   )}
                   <Button
@@ -399,12 +405,7 @@ class Lounge extends Component {
                     Start Until 100 frames
                   </Button>
                   
-                  <Button
-                    className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={() => sendMessage(10000)}
-                  >
-                    Start Until 10000 frames
-                  </Button> */}
+                  */}
                 </div>
                 {sliderObj && (
                   <Paper className={classes.PaperSlider}>

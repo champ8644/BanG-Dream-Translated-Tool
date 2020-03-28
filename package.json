@@ -4,7 +4,7 @@
   "version": "1.5.3",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
-    "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
+    "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\" && version --new-version patch",
     "build-dll": "cross-env NODE_ENV=development node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.dev.dll.babel.js --colors",
     "build-main": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.main.prod.babel.js --colors",
     "build-renderer": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.prod.babel.js --colors  --display-chunks --display-modules",
@@ -51,6 +51,7 @@
       "git add"
     ]
   },
+  "license": "MIT",
   "browserslist": "electron 4.0",
   "main": "./app/main.prod.js",
   "build": {
@@ -147,7 +148,6 @@
     "email": "varis_champ@hotmail.com",
     "url": "https://github.com/champ8644/BanG-Dream-Tranlated-Tool/"
   },
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/champ8644/BanG-Dream-Tranlated-Tool/issues/"
   },

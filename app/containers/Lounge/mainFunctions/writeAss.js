@@ -112,16 +112,25 @@ function writeShake({ arr, begin, end }) {
 
 function bakeShake(item) {
   const { begin, end } = item;
-  const min = item.shake[0].frame;
-  const max = item.shake[item.shake.length - 1].frame;
+  // const min = item.shake[0].frame;
+  let max = -9999;
   const shakeTree = {};
+  let valid = false;
+  let prev = { x: -9999, y: -9999 };
   item.shake.forEach(it => {
-    shakeTree[it.frame] = { x: it.x, y: it.y };
+    if (prev.x !== it.x || prev.y !== it.y) {
+      shakeTree[it.frame] = { x: it.x, y: it.y };
+      if (it.x !== 0 || it.y !== 0) valid = true;
+      prev = it;
+      if (max < it.frame) max = it.frame;
+    }
   });
-  for (let i = min + 1; i <= max + 1; i++)
-    if (!shakeTree[i]) shakeTree[i] = { x: 0, y: 0 };
+  if (!valid) return null;
+  // for (let i = min + 1; i <= max + 1; i++)
+  //   if (!shakeTree[i]) shakeTree[i] = { x: 0, y: 0 };
   shakeTree[0] = { x: 0, y: 0 };
-  shakeTree[item.end - item.begin] = { x: 0, y: 0 };
+  if (max < end && !(shakeTree[max].x === 0 && shakeTree[max].y === 0))
+    shakeTree[max + 1] = { x: 0, y: 0 };
   const shakeOut = Object.keys(shakeTree).map(key => ({
     frame: Number(key),
     ...shakeTree[key]
@@ -129,10 +138,24 @@ function bakeShake(item) {
   return { arr: shakeOut, begin, end };
 }
 
-function isIntersect(a, b) {
-  return Math.min(a.end, b.end) > Math.max(a.begin, b.begin);
+function statusOverlap(a, b) {
+  if (a.begin < b.begin) {
+    if (a.end < b.begin) return -3;
+    if (a.end < b.end) return -2;
+    return -1;
+  }
+  if (a.end < b.end) return 1;
+  if (a.begin < b.end) return 2;
+  return 3;
 }
 
+function isIntersect(a, b) {
+  if (b === undefined) return a > -3 && a < 3;
+  const status = statusOverlap(a, b);
+  return status > -3 && status < 3;
+}
+
+/* eslint-disable no-param-reassign */
 export default function writeAss(data, nameActor, vCap) {
   toMs = frame => (frame * 1000) / vCap.FPS;
   // eslint-disable-next-line no-console
@@ -150,30 +173,88 @@ export default function writeAss(data, nameActor, vCap) {
   const shakeArr = [];
   const keys = Object.keys(data);
 
-  for (let i = 0; i < data.place.length; i++) {
-    const item = data.place[i];
-    for (let j = 0; j < data.fadeB.length; j++) {
-      const jtem = data.fadeB[j];
-      if (isIntersect(item, jtem)) {
-        item.begin -= correctPlaceFadeBlack;
-        break;
+  keys.forEach(type => {
+    if (data[type]) {
+      if (data[type].length > 0) {
+        const item = data[type][data[type].length - 1];
+        if (!item.end) item.end = vCap.length;
       }
     }
-  }
+  });
 
-  for (let i = 0; i < keys.length; i++) {
-    const type = keys[i];
-    for (let j = 0; j < data[type].length; j++) {
-      if (type === 'name' && data[type][j].shake) {
-        shakeArr.push(bakeShake(data[type][j]));
-        outData.push({
-          type: 'shake',
-          ...data[type][j],
-          shakeUID: shakeArr.length
-        });
-      } else outData.push({ type, ...data[type][j] });
+  [('place', 'title', 'name')].forEach(type => {
+    for (let i = 0; i < data[type].length; i++) {
+      const item = data[type][i];
+      ['fadeB', 'fadeW'].forEach(typeF => {
+        for (let j = 0; j < data[typeF].length; j++) {
+          const jtem = data[typeF][j];
+          const status = statusOverlap(item, jtem);
+          if (isIntersect(status)) {
+            if (!jtem.overlapped) jtem.overlapped = {};
+            if (!jtem.overlapped[type]) jtem.overlapped[type] = [];
+            jtem.overlapped[type].push({ index: i, status });
+          }
+        }
+      });
     }
-  }
+  });
+
+  ['fadeB', 'fadeW'].forEach(typeF => {
+    data[typeF].forEach(item => {
+      if (item.overlapped) {
+        const { place, name } = item.overlapped;
+        if (place) {
+          place.forEach(ptem => {
+            if (ptem.status === 2)
+              data.place[ptem.index].begin -= correctPlaceFadeBlack;
+          });
+        }
+        if (name) {
+          name.forEach(ntem => {
+            if (ntem.status === -2) data.name[ntem.index].end = item.fadeIn;
+            else if (ntem.status === 2)
+              data.name[ntem.index].begin = item.fadeOut;
+          });
+          let prevNtem = { index: -999 };
+          name.forEach(ntem => {
+            if (prevNtem.index === ntem.index - 1) {
+              if (prevNtem.status === 2 && ntem.status === -2) {
+                if (
+                  data.name[prevNtem.index].actor ===
+                  data.name[ntem.index].actor
+                ) {
+                  data.name[prevNtem.index].end = data.name[ntem.index].end;
+                  data.name[ntem.index].skip = true;
+                }
+              }
+            }
+            prevNtem = ntem;
+          });
+        }
+      } else item.skip = true;
+    });
+  });
+
+  keys.forEach(type => {
+    for (let j = 0; j < data[type].length; j++) {
+      if (!data[type][j].skip) {
+        if (type === 'name' && data[type][j].shake) {
+          const baked = bakeShake(data[type][j]);
+          if (baked) {
+            shakeArr.push(baked);
+            outData.push({
+              type: 'shake',
+              ...data[type][j],
+              shakeUID: shakeArr.length,
+              shake: baked
+            });
+          } else {
+            outData.push({ type, ...data[type][j] });
+          }
+        } else outData.push({ type, ...data[type][j] });
+      }
+    }
+  });
 
   outData.sort(
     (a, b) =>

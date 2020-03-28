@@ -5,8 +5,8 @@ import {
   meanSmooth,
   startVCap
 } from '../constants/config';
-import { dialogThreshold, fadeThreshold } from '../constants';
 
+import { fadeThreshold } from '../constants';
 import findActorID from './findActorID';
 import makeNameLabel from './makeNameLabel';
 import makePlaceLabel from './makePlaceLabel';
@@ -159,7 +159,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
 let currentActor;
 
 export default function mainEvent(vCap, _timeLimit) {
-  prevDialog = 999999999;
+  prevDialog = null;
   newStartVCap = null;
   meanClass = new Meaning();
   data = {
@@ -223,8 +223,8 @@ export default function mainEvent(vCap, _timeLimit) {
         refractory.title = false;
       }
 
-      console.log('frame', frame); // eslint-disable-line no-console
-      let nameObj = makeNameLabel(mat);
+      // console.log('frame', frame); // eslint-disable-line no-console
+      const nameObj = makeNameLabel(mat);
       if (nameObj.status) {
         if (!refractory.name) {
           refractory.name = true;
@@ -233,14 +233,7 @@ export default function mainEvent(vCap, _timeLimit) {
             actor: findActorID(nameObj.actor, frame, nameActor)
           });
           currentActor = nameObj.actorStar;
-        } else if (prevDialog - nameObj.dialog > dialogThreshold) {
-          // eslint-disable-next-line no-console
-          console.log('dialog: ', {
-            exp: prevDialog - nameObj.dialog > dialogThreshold,
-            prevDialog,
-            nameObj: nameObj.dialog,
-            dialogThreshold
-          });
+        } else if (nameObj.dialog && !prevDialog) {
           data.name[data.name.length - 1].end = frame;
           data.name.push({
             begin: frame,
@@ -253,24 +246,24 @@ export default function mainEvent(vCap, _timeLimit) {
         // vCap.showMatInCanvas(nameObj.actorStar);
         const starMatched = starMatching(mat, currentActor);
         if (starMatched) {
-          nameObj = makeNameLabel(mat, starMatched);
+          // nameObj = makeNameLabel(mat, starMatched);
           if (!data.name[data.name.length - 1].shake)
             data.name[data.name.length - 1].shake = [];
           data.name[data.name.length - 1].shake.push({
             frame: frame - data.name[data.name.length - 1].begin,
             ...starMatched
           });
-          if (prevDialog - nameObj.dialog > dialogThreshold) {
-            data.name[data.name.length - 1].end = frame;
-            data.name.push({
-              begin: frame,
-              actor: findActorID(nameObj.actor, frame, nameActor)
-            });
-          }
+          // if (nameObj.dialog && !prevDialog) {
+          //   data.name[data.name.length - 1].end = frame;
+          //   data.name.push({
+          //     begin: frame,
+          //     actor: findActorID(nameObj.actor, frame, nameActor)
+          //   });
+          // }
           prevDialog = nameObj.dialog;
         } else {
           data.name[data.name.length - 1].end = frame;
-          prevDialog = 999999999;
+          prevDialog = null;
           refractory.name = false;
         }
       }

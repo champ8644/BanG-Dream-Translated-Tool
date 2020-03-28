@@ -1,8 +1,8 @@
-import { subtitleCrop, subtitleThreshold } from '../constants';
+import { subtitlePartialCrop, subtitleThreshold } from '../constants';
 
 import cv from 'opencv4nodejs';
 
-const { rectX, rectY } = subtitleCrop;
+const { rectX, rectY } = subtitlePartialCrop;
 const subtitleRect = new cv.Rect(
   rectX[0],
   rectY[0],
