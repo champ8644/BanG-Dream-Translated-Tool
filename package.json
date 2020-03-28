@@ -10,7 +10,7 @@
     "build-renderer": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.prod.babel.js --colors  --display-chunks --display-modules",
     "dev": "cross-env START_HOT=1 node -r @babel/register ./internals/scripts/CheckPortInUse.js && cross-env START_HOT=1 yarn start-renderer-dev",
     "deploy": "yarn build && electron-builder build --publish always",
-    "package": "yarn patch && yarn build && electron-builder build --publish never",
+    "package": "yarn build && electron-builder build --publish never",
     "package-all": "yarn build && build -mwl --publish never",
     "package-mac": "yarn build && build --mac --publish never",
     "package-linux": "yarn build && build --linux --publish never",
