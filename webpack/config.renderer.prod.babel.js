@@ -4,28 +4,29 @@
  * Build config for electron renderer process
  */
 
-import path from 'path';
-import webpack from 'webpack';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import merge from 'webpack-merge';
+import { PATHS } from '../app/utils/paths';
 import TerserPlugin from 'terser-webpack-plugin';
 import baseConfig from './config.base';
-import { PATHS } from '../app/utils/paths';
+import merge from 'webpack-merge';
+import path from 'path';
+import webpack from 'webpack';
 
 export default merge.smart(baseConfig, {
   devtool: 'source-map',
   mode: 'production',
   target: 'electron-renderer',
   entry: {
-    client: ['./app/index.js']
+    main: ['./app/index.js'],
+    worker: ['./app/worker.js']
   },
 
   output: {
     path: path.join(PATHS.app, 'dist'),
     publicPath: './dist/',
-    filename: 'renderer.prod.js'
+    filename: '[name].renderer.prod.js'
   },
 
   module: {
@@ -201,6 +202,15 @@ export default merge.smart(baseConfig, {
             }
           }
         ]
+      },
+      {
+        test: /\.node$/,
+        loader: 'node-addon-loader',
+        options: {
+          publicPath: './',
+          name: 'node/[name]'
+          // sourceMap: true
+        }
       }
     ]
   },
@@ -238,7 +248,7 @@ export default merge.smart(baseConfig, {
     }),
 
     new MiniCssExtractPlugin({
-      filename: 'style.css'
+      filename: '[name].css'
     }),
 
     new BundleAnalyzerPlugin({

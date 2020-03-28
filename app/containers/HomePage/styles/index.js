@@ -1,12 +1,19 @@
 'use strict';
 
-import { variables, mixins } from '../../../styles/js';
+import { mixins, variables } from '../../../styles/js';
 
 export const styles = theme => {
   return {
-    root: {},
+    root: {
+      overflow: 'auto',
+      background: variables().styles.backgroundColor.main
+    },
     grid: {
       width: `100%`
+    },
+    body: {
+      height: 'calc(100vh - 70px)',
+      overflowY: 'auto'
     }
   };
 };

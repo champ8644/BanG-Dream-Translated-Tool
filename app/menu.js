@@ -1,12 +1,13 @@
 'use strict';
 
-import { app, Menu } from 'electron';
-import { privacyPolicyWindow, reportBugsWindow } from './utils/createWindows';
+import { APP_GITHUB_URL, APP_NAME } from './constants/meta';
 import { DEBUG_PROD, IS_DEV } from './constants/env';
-import { APP_NAME, APP_GITHUB_URL } from './constants/meta';
-import { openExternalUrl } from './utils/url';
+import { Menu, app } from 'electron';
+import { privacyPolicyWindow, reportBugsWindow } from './utils/createWindows';
+
 import { DONATE_PAYPAL_URL } from './constants';
 import { inviteViaEmail } from './templates/menu';
+import { openExternalUrl } from './utils/url';
 
 export default class MenuBuilder {
   constructor({ mainWindow, autoAppUpdate, appUpdaterEnable }) {
@@ -276,6 +277,13 @@ export default class MenuBuilder {
                     this.mainWindow.setFullScreen(
                       !this.mainWindow.isFullScreen()
                     );
+                  }
+                },
+                {
+                  label: 'Toggle &Developer Tools',
+                  accelerator: 'Alt+Ctrl+I',
+                  click: () => {
+                    this.mainWindow.toggleDevTools();
                   }
                 }
               ]

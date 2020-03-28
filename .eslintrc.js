@@ -19,10 +19,12 @@ module.exports = {
     }
   },
   rules: {
+    'no-plusplus': 'off',
     'arrow-parens': 'off',
     'compat/compat': 'error',
     'consistent-return': 'off',
     'comma-dangle': 'off',
+    'no-restricted-globals': 'off',
     'generator-star-spacing': 'off',
     'import/no-cycle': 'off',
     'import/no-unresolved': 'error',

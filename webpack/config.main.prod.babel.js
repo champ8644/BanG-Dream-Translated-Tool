@@ -4,13 +4,13 @@
  * Webpack config for production electron main process
  */
 
-import webpack from 'webpack';
-import merge from 'webpack-merge';
-import TerserPlugin from 'terser-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import CleanWebpackPlugin from 'clean-webpack-plugin';
-import baseConfig from './config.base';
 import { PATHS } from '../app/utils/paths';
+import TerserPlugin from 'terser-webpack-plugin';
+import baseConfig from './config.base';
+import merge from 'webpack-merge';
+import webpack from 'webpack';
 
 export default merge.smart(baseConfig, {
   devtool: 'source-map',

@@ -1,6 +1,7 @@
 import CircularProgress from '@material-ui/core/CircularProgress';
 import React from 'react';
 import { styles } from './styles';
+import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
 function LoadingIndicator(props) {
@@ -16,4 +17,4 @@ function LoadingIndicator(props) {
   );
 }
 
-export default withStyles(styles)(LoadingIndicator);
+export default withRouter(withStyles(styles)(LoadingIndicator));

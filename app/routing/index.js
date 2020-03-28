@@ -1,25 +1,25 @@
 'use strict';
 
-import React from 'react';
-import { Switch, Route } from 'react-router';
-import { HashRouter } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
+
 import HomePage from '../containers/HomePage/Loadable';
-import SecondPage from '../containers/SecondPage/Loadable';
-import ReportBugsPage from '../containers/ReportBugsPage/Loadable';
-import ProgressbarPage from '../containers/ProgressbarPage';
-import PrivacyPolicyPage from '../containers/PrivacyPolicyPage/Loadable';
 import NotFoundPage from '../containers/NotFoundPage/Loadable';
+import PrivacyPolicyPage from '../containers/PrivacyPolicyPage/Loadable';
+import ProgressbarPage from '../containers/ProgressbarPage';
+import React from 'react';
+import { Redirect } from 'react-router';
+import ReportBugsPage from '../containers/ReportBugsPage/Loadable';
 
 export const routes = {
-  Home: {
+  Root: {
     path: '/',
     exact: true,
-    component: HomePage
+    component: () => <Redirect exact from='/' to='home' />
   },
-  SecondPage: {
-    path: '/secondPage',
-    exact: true,
-    component: SecondPage
+  Home: {
+    path: '/home',
+    exact: false,
+    component: HomePage
   },
   ReportBugsPage: {
     path: '/reportBugsPage',
@@ -44,13 +44,15 @@ export const routes = {
 export default () => (
   <HashRouter>
     <Switch>
-      {Object.keys(routes).map(a => (
-        <Route
-          key={routes[a].path || 'notfound'}
-          {...routes[a]}
-          component={routes[a].component}
-        />
-      ))}
+      {Object.keys(routes).map(a => {
+        return (
+          <Route
+            key={routes[a].path || 'notfound'}
+            {...routes[a]}
+            component={routes[a].component}
+          />
+        );
+      })}
     </Switch>
   </HashRouter>
 );

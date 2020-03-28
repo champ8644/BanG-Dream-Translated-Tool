@@ -1,6 +1,6 @@
 'use strict';
 
-import { variables, mixins } from '../../../styles/js';
+import { mixins, variables } from '../../../styles/js';
 
 // eslint-disable-next-line no-unused-vars
 export const theme = args => {

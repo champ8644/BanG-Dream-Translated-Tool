@@ -1,0 +1,4 @@
+diff a/app/containers/MainMenu/index.jsx b/app/containers/MainMenu/index.jsx	(rejected hunks)
+@@ -63 +63 @@ class MainMenu extends Component {
+-          <Grid item xs={16}>
++          <Grid item xs={12}>

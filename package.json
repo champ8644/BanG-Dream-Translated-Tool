@@ -1,19 +1,20 @@
 {
-  "name": "cognitive-fatigue-evaluator",
-  "productName": "Cognitive Fatigue Evaluator",
-  "version": "0.0.1",
-  "description": "Cognitive Fatigue Evaluator for P Pete Thesis",
+  "name": "bang-dream-translated-tool",
+  "productName": "BanG Dream Translated Tool",
+  "version": "1.5.5",
+  "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
-    "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
+    "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\" && yarn update-version",
     "build-dll": "cross-env NODE_ENV=development node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.dev.dll.babel.js --colors",
     "build-main": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.main.prod.babel.js --colors",
-    "build-renderer": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.prod.babel.js --colors",
+    "build-renderer": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.prod.babel.js --colors  --display-chunks --display-modules",
     "dev": "cross-env START_HOT=1 node -r @babel/register ./internals/scripts/CheckPortInUse.js && cross-env START_HOT=1 yarn start-renderer-dev",
     "package": "yarn build && electron-builder build --publish never",
     "package-all": "yarn build && build -mwl --publish never",
     "package-mac": "yarn build && build --mac --publish never",
     "package-linux": "yarn build && build --linux --publish never",
     "package-win": "yarn build && build --win --x64 --publish never",
+    "publish": "yarn build && electron-builder build --publish always",
     "prestart": "yarn build",
     "start": "cross-env NODE_ENV=production run-electron ./app/main.prod.js",
     "start-main-dev": "cross-env HOT=1 NODE_ENV=development run-electron -r @babel/register ./app/main.dev.js",
@@ -29,7 +30,9 @@
     "postlint-styles-fix": "prettier --ignore-path .eslintignore --single-quote --write '**/*.{css,scss}'",
     "precommit": "lint-staged",
     "preinstall": "node ./internals/scripts/CheckYarn.js",
-    "postinstall": "yarn build-dll && electron-builder install-app-deps package.json"
+    "postinstall": "yarn build-dll && electron-builder install-app-deps package.json",
+    "electron-rebuild": "electron-rebuild -w opencv4nodejs",
+    "update-version": "yarn version --new-version patch"
   },
   "lint-staged": {
     "*.{js,jsx}": [
@@ -49,27 +52,31 @@
       "git add"
     ]
   },
+  "license": "MIT",
   "browserslist": "electron 4.0",
   "main": "./app/main.prod.js",
   "build": {
-    "productName": "Cognitive Fatigue Evaluator for P Pete Thesis",
-    "appId": "temp",
-    "forceCodeSigning": true,
+    "asar": false,
+    "productName": "BanG Dream Translated Tool",
+    "appId": "com.electron.bang-dream-translated-tool",
+    "forceCodeSigning": false,
     "copyright": "© Varis Ratanasirisawad",
     "readonly": true,
     "publish": [
       {
         "provider": "github",
         "owner": "champ8644",
-        "repo": "Cognitive-Fatigue-Evaluater",
+        "repo": "BanG-Dream-Translated-Tool",
         "private": true
       }
     ],
     "files": [
       "app/dist/",
       "app/app.html",
+      "app/worker.html",
       "app/main.prod.js",
       "app/main.prod.js.map",
+      "app/resources",
       "package.json"
     ],
     "extraFiles": [
@@ -84,7 +91,7 @@
     "mac": {
       "type": "distribution",
       "category": "public.app-category.productivity",
-      "icon": "build/icon.icns",
+      "icon": "build/icons/mac/icon.icns",
       "target": [
         "dmg",
         "zip"
@@ -94,9 +101,9 @@
       "type": "distribution",
       "category": "public.app-category.productivity",
       "entitlements": "build/entitlements.mas.plist",
-      "icon": "build/icon.icns",
+      "icon": "build/icons/mac/icon.icns",
       "binaries": [
-        "dist/mas/Cognitive Fatigue Evaluator.app/Contents/Resources/bin/some-binary"
+        "dist/mas/BanG Dream Translated Tool.app/Contents/Resources/bin/some-binary"
       ]
     },
     "dmg": {
@@ -116,6 +123,13 @@
     "win": {
       "target": [
         "nsis"
+      ],
+      "extraResources": [
+        {
+          "from": "app/dist/redistributable/",
+          "to": "../",
+          "filter": "*"
+        }
       ]
     },
     "linux": {
@@ -128,16 +142,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/champ8644/Cognitive-Fatigue-Evaluater.git"
+    "url": "git+https://github.com/champ8644/BanG-Dream-Tranlated-Tool.git"
   },
   "author": {
-    "name": "Varis Ratanasirisawad",
+    "name": "Charis Champ",
     "email": "varis_champ@hotmail.com",
-    "url": "https://github.com/champ8644/Cognitive-Fatigue-Evaluater/"
+    "url": "https://github.com/champ8644/BanG-Dream-Tranlated-Tool/"
   },
-  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/champ8644/Cognitive-Fatigue-Evaluater/issues/"
+    "url": "https://github.com/champ8644/BanG-Dream-Tranlated-Tool/issues/"
   },
   "keywords": [
     "electron",
@@ -148,7 +161,7 @@
     "dynamic reducers",
     "code splitting"
   ],
-  "homepage": "https://github.com/champ8644/Cognitive-Fatigue-Evaluater/",
+  "homepage": "https://github.com/champ8644/BanG-Dream-Tranlated-Tool/",
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.2.3",
@@ -186,6 +199,7 @@
     "electron": "4.0.1",
     "electron-builder": "^20.28.4",
     "electron-devtools-installer": "^2.2.4",
+    "electron-rebuild": "^1.8.8",
     "eslint": "^5.12.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^3.3.0",
@@ -221,10 +235,11 @@
     "yarn": "^1.9.2"
   },
   "dependencies": {
-    "@material-ui/core": "3.8.1",
-    "@material-ui/icons": "^3.0.1",
+    "@material-ui/core": "4.7.2",
+    "@material-ui/icons": "^4.5.1",
     "bluebird": "^3.5.2",
     "classnames": "^2.2.6",
+    "clsx": "^1.0.4",
     "devtron": "^1.4.0",
     "electron-debug": "^2.0.0",
     "electron-ga": "^1.0.6",
@@ -239,24 +254,35 @@
     "lodash": "^4.17.11",
     "mkdirp": "^0.5.1",
     "moment": "^2.22.2",
+    "mousetrap": "^1.6.3",
+    "node-addon-loader": "0.0.6",
+    "node-loader": "^0.6.0",
+    "opencv4nodejs": "^5.5.0",
     "prop-types": "^15.6.2",
+    "query-string": "^6.9.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-helmet": "^5.2.0",
-    "react-hot-loader": "^4.3.4",
+    "react-hot-keys": "^2.4.5",
+    "react-hot-loader": "^4.12.18",
     "react-imported-component": "^4.6.2",
     "react-redux": "^5.0.7",
-    "react-router": "^4.3.1",
-    "react-router-dom": "^4.3.1",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
     "react-router-redux": "^5.0.0-alpha.9",
-    "redux": "^4.0.0",
+    "react-text-mask": "^5.4.3",
+    "redux": "^4.0.4",
+    "redux-form-material-ui": "^4.3.4",
     "redux-thunk": "^2.3.0",
     "reselect": "^3.0.1",
     "roboto-fontface": "^0.10.0",
     "run-electron": "^0.1.0",
+    "semantic-ui-react": "^0.88.1",
     "source-map-support": "^0.5.6",
     "styled-components": "^4.1.3",
-    "uuid": "^3.3.2"
+    "tmp-promise": "^2.0.2",
+    "uuid": "^3.3.2",
+    "xlsx": "^0.15.4"
   },
   "devEngines": {
     "node": ">=8.x",
