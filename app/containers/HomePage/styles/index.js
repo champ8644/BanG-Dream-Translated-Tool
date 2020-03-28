@@ -4,7 +4,10 @@ import { mixins, variables } from '../../../styles/js';
 
 export const styles = theme => {
   return {
-    root: { overflow: 'auto' },
+    root: {
+      overflow: 'auto',
+      background: variables().styles.backgroundColor.main
+    },
     grid: {
       width: `100%`
     },

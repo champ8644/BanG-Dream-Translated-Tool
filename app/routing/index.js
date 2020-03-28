@@ -1,16 +1,14 @@
 'use strict';
 
-import { Redirect, Route, Switch } from 'react-router';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 
-import { HashRouter } from 'react-router-dom';
 import HomePage from '../containers/HomePage/Loadable';
 import NotFoundPage from '../containers/NotFoundPage/Loadable';
 import PrivacyPolicyPage from '../containers/PrivacyPolicyPage/Loadable';
 import ProgressbarPage from '../containers/ProgressbarPage';
 import React from 'react';
+import { Redirect } from 'react-router';
 import ReportBugsPage from '../containers/ReportBugsPage/Loadable';
-import TestFieldPage from '../containers/TestFieldPage/Loadable';
-import TestingPage from '../containers/TestFieldPage/test';
 
 export const routes = {
   Root: {
@@ -37,16 +35,6 @@ export const routes = {
     path: '/privacyPolicyPage',
     exact: true,
     component: PrivacyPolicyPage
-  },
-  TestFieldPage: {
-    path: '/testFieldPage',
-    exact: true,
-    component: TestFieldPage
-  },
-  TestingPage: {
-    path: '/testingPage',
-    exact: true,
-    component: TestingPage
   },
   NotFound: {
     component: NotFoundPage

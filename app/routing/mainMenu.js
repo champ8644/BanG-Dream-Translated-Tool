@@ -1,12 +1,10 @@
 'use strict';
 
-import { Redirect, Route, Switch } from 'react-router';
+import { Route, Switch } from 'react-router';
 
 import BodyAreaPane from '../containers/HomePage/component/BodyAreaPane';
 import MainMenu from '../containers/Lounge/Loadable';
-import PVSAT from '../containers/PVSAT/Loadable';
 import React from 'react';
-import Stroop from '../containers/Stroop/Loadable';
 
 export const routes = {
   Home: {
@@ -20,28 +18,6 @@ export const routes = {
     locate: '/home/mainmenu',
     exact: false,
     component: MainMenu
-  },
-  RootStroop: {
-    path: '/home/stroop',
-    exact: true,
-    component: () => <Redirect to='/home/mainmenu' />
-  },
-  Stroop: {
-    path: '/home/stroop/:id',
-    locate: '/home/stroop',
-    exact: true,
-    component: Stroop
-  },
-  RootPVSAT: {
-    path: '/home/pvsat',
-    exact: true,
-    component: () => <Redirect to='/home/mainmenu' />
-  },
-  PVSAT: {
-    path: '/home/pvsat/:id',
-    locate: '/home/pvsat',
-    exact: true,
-    component: PVSAT
   }
 };
 

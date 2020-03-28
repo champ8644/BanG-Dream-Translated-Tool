@@ -17,15 +17,17 @@ class BodyAreaPane extends PureComponent {
     const { classes: styles, history } = this.props;
     return (
       <div className={styles.root}>
-        <div className={styles.title}>BanG Dream</div>
-        <div className={styles.heading1}>Translated Tool</div>
-        <div className={styles.subTitle}>version {APP_VERSION}</div>
-        <Button
-          className={styles.btn}
-          onClick={() => history.push(routes.MainMenu.locate)}
-        >
-          Start!
-        </Button>
+        <div className={styles.subroot}>
+          <div className={styles.title}>BanG Dream</div>
+          <div className={styles.heading1}>Translated Tool</div>
+          <div className={styles.subTitle}>version {APP_VERSION}</div>
+          <Button
+            className={styles.btn}
+            onClick={() => history.push(routes.MainMenu.locate)}
+          >
+            Start!
+          </Button>
+        </div>
       </div>
     );
   }

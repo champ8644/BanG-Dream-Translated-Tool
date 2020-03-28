@@ -5,9 +5,13 @@ import { mixins, variables } from '../../../styles/js';
 export const styles = theme => {
   return {
     root: {
-      height: '100vh',
-      background: variables().styles.backgroundColor.main
+      height: 'calc(100vh - 78px)',
+      padding: theme.spacing(3, 5)
     },
+    chip: {
+      margin: theme.spacing(0.5)
+    },
+    marginLeft: { marginLeft: '1em' },
     marginDivider: { margin: '1em' },
     paperTop: {
       height: '100px',
@@ -15,7 +19,38 @@ export const styles = theme => {
       justifyContent: 'center',
       padding: '2em'
     },
-    paper: { display: 'flex', justifyContent: 'center', padding: '1em' },
+    paper: {
+      display: 'inline-block',
+      margin: theme.spacing(0, 1.5, 0, 3)
+    },
+    paperTitle: {
+      padding: theme.spacing(1),
+      margin: theme.spacing(2)
+    },
+    TitleFileName: {
+      margin: theme.spacing(2.5, 4)
+    },
+    canvas: {
+      marginTop: theme.spacing(3)
+    },
+    Papers: {
+      padding: theme.spacing(2),
+      margin: theme.spacing(2)
+    },
+    paperRadio: {
+      margin: theme.spacing(3, 3, 3, 0)
+    },
+    formControl: {
+      margin: theme.spacing(3)
+    },
+    PaperSlider: {
+      width: '500px',
+      padding: theme.spacing(2),
+      margin: theme.spacing(3, 3, 3, 0)
+    },
+    buttonSliderContainer: {
+      margin: theme.spacing(3, 3, 3, 0)
+    },
     paper1: {
       display: 'flex',
       justifyContent: 'center',
@@ -32,6 +67,16 @@ export const styles = theme => {
       display: 'flex',
       justifyContent: 'center',
       padding: '1em'
+    },
+    paperLinear: {
+      width: '100%',
+      marginTop: theme.spacing(3),
+      '& > * + *': {
+        marginTop: theme.spacing(2)
+      }
+    },
+    sliderLabel: {
+      width: '3rem'
     },
     titlePaper: {
       justifyContent: 'center',
@@ -74,9 +119,6 @@ export const styles = theme => {
     rootBody: {
       marginTop: theme.spacing(3),
       display: 'contents'
-    },
-    chip: {
-      marginRight: theme.spacing(1)
     },
     section1: {
       margin: theme.spacing(1)
