@@ -19,10 +19,9 @@ import { nonBootableDeviceWindow } from './utils/createWindows';
 import { settingsStorage } from './utils/storageHelper';
 
 // if (
-//   process.platform === 'win32' &&
-//   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
+//   process.platform === 'win32' && !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
 // ) {
-//   // eslint-disable-nextline
+// eslint-disable-nextline
 //   process.env.path += `;${
 //     require(path.join(
 //       PATHS.root,
