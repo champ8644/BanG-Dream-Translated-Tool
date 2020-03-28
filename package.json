@@ -1,10 +1,10 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
-    "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\" && version --new-version patch",
+    "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
     "build-dll": "cross-env NODE_ENV=development node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.dev.dll.babel.js --colors",
     "build-main": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.main.prod.babel.js --colors",
     "build-renderer": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.prod.babel.js --colors  --display-chunks --display-modules",
@@ -31,7 +31,8 @@
     "precommit": "lint-staged",
     "preinstall": "node ./internals/scripts/CheckYarn.js",
     "postinstall": "yarn build-dll && electron-builder install-app-deps package.json",
-    "electron-rebuild": "electron-rebuild -w opencv4nodejs"
+    "electron-rebuild": "electron-rebuild -w opencv4nodejs",
+    "update-version": "yarn version --new-version patch"
   },
   "lint-staged": {
     "*.{js,jsx}": [
