@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\" && yarn update-version",
@@ -9,12 +9,12 @@
     "build-main": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.main.prod.babel.js --colors",
     "build-renderer": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.prod.babel.js --colors  --display-chunks --display-modules",
     "dev": "cross-env START_HOT=1 node -r @babel/register ./internals/scripts/CheckPortInUse.js && cross-env START_HOT=1 yarn start-renderer-dev",
+    "deploy": "yarn build && electron-builder build --publish always",
     "package": "yarn build && electron-builder build --publish never",
     "package-all": "yarn build && build -mwl --publish never",
     "package-mac": "yarn build && build --mac --publish never",
     "package-linux": "yarn build && build --linux --publish never",
     "package-win": "yarn build && build --win --x64 --publish never",
-    "publish": "yarn build && electron-builder build --publish always",
     "prestart": "yarn build",
     "start": "cross-env NODE_ENV=production run-electron ./app/main.prod.js",
     "start-main-dev": "cross-env HOT=1 NODE_ENV=development run-electron -r @babel/register ./app/main.dev.js",
