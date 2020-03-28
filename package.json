@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -66,8 +66,7 @@
       {
         "provider": "github",
         "owner": "champ8644",
-        "repo": "BanG-Dream-Translated-Tool",
-        "private": true
+        "repo": "BanG-Dream-Translated-Tool"
       }
     ],
     "files": [
