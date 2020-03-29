@@ -63,7 +63,8 @@
     "copyright": "© Varis Ratanasirisawad",
     "readonly": true,
     "nsisWeb": {
-      "differentialPackage": true
+      "differentialPackage": true,
+      "allowToChangeInstallationDirectory": false
     },
     "publish": [
       {
