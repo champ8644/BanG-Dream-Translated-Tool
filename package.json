@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.5.14",
+  "version": "1.5.15",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -62,9 +62,11 @@
     "forceCodeSigning": false,
     "copyright": "© Varis Ratanasirisawad",
     "readonly": true,
+    "nsis": {
+      "differentialPackage": true
+    },
     "nsisWeb": {
-      "differentialPackage": true,
-      "allowToChangeInstallationDirectory": false
+      "differentialPackage": true
     },
     "publish": [
       {
