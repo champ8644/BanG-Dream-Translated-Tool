@@ -1,15 +1,16 @@
 'use strict';
 
-import { dialog, BrowserWindow } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import { isConnected } from '../utils/isOnline';
-import { log } from '../utils/log';
-import { isPackaged } from '../utils/isPackaged';
-import { PATHS } from '../utils/paths';
+import { BrowserWindow, dialog } from 'electron';
+
 import { ENABLE_BACKGROUND_AUTO_UPDATE } from '../constants';
-import { unixTimestampNow } from '../utils/date';
+import { PATHS } from '../utils/paths';
+import { autoUpdater } from 'electron-updater';
 import { getMainWindow } from '../utils/createWindows';
+import { isConnected } from '../utils/isOnline';
+import { isPackaged } from '../utils/isPackaged';
+import { log } from '../utils/log';
 import { undefinedOrNull } from '../utils/funcs';
+import { unixTimestampNow } from '../utils/date';
 
 let progressbarWindow = null;
 let mainWindow = null;
@@ -24,10 +25,10 @@ const createChildWindow = () => {
       width: 600,
       title: 'Progress...',
       resizable: false,
-      minimizable: false,
+      minimizable: true,
       maximizable: false,
       fullscreenable: false,
-      movable: false,
+      movable: true,
       webPreferences: {
         nodeIntegration: true
       }

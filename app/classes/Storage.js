@@ -1,7 +1,9 @@
 'use strict';
 
-import { log } from '../utils/log';
 import { readFileSync, writeFileSync } from '../api/sys/fileOps';
+
+import { DEFAULT_AUTO_UPDATE_CHECK } from '../constants';
+import { log } from '../utils/log';
 
 export default class Storage {
   constructor(filePath) {
@@ -16,6 +18,7 @@ export default class Storage {
         _stream === null ||
         Object.keys(_stream).length < 1
       ) {
+        if (DEFAULT_AUTO_UPDATE_CHECK) return { enableAutoUpdateCheck: true };
         return {};
       }
       return JSON.parse(_stream);
