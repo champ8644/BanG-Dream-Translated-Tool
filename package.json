@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.5.8",
+  "version": "1.5.10",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -57,6 +57,7 @@
   "main": "./app/main.prod.js",
   "build": {
     "asar": false,
+    "differentialPackage": true,
     "productName": "BanG Dream Translated Tool",
     "appId": "com.electron.bang-dream-translated-tool",
     "forceCodeSigning": false,
@@ -76,6 +77,7 @@
       "app/main.prod.js",
       "app/main.prod.js.map",
       "app/resources",
+      "config/dev-app-update.yml",
       "package.json"
     ],
     "extraFiles": [
