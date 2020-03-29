@@ -69,12 +69,6 @@ export default function makeNameLabel(mat, starMove) {
   let actor;
   let actorStar;
   let dialog;
-  // eslint-disable-next-line no-console
-  // console.log('percentDiff < threshPercentDiff: ', {
-  //   percentDiff,
-  //   threshPercentDiff,
-  //   exp: percentDiff < threshPercentDiff
-  // });
   if (percentDiff < threshPercentDiff) {
     actor = threshMat.getRegion(rectNameLabel);
     actorStar = threshMat.getRegion(rectNameLabelStarCropRelative);
