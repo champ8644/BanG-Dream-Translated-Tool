@@ -19,9 +19,10 @@ import { nonBootableDeviceWindow } from './utils/createWindows';
 import { settingsStorage } from './utils/storageHelper';
 
 // if (
-//   process.platform === 'win32' && !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
+//   process.platform === 'win32' &&
+//   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
 // ) {
-// eslint-disable-nextline
+//   // eslint-disable-nextline
 //   process.env.path += `;${
 //     require(path.join(
 //       PATHS.root,
@@ -178,13 +179,6 @@ if (!isDeviceBootable) {
         if (!workerWindow) {
           throw new Error(`"workerWindow" is not defined`);
         }
-        // if (process.env.START_MINIMIZED) {
-        //   workerWindow.minimize();
-        // } else {
-        //   workerWindow.maximize();
-        //   workerWindow.show();
-        //   workerWindow.focus();
-        // }
       });
 
       workerWindow.onerror = error => {
