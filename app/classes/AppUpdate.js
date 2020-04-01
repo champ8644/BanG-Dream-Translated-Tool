@@ -126,14 +126,14 @@ export default class AppUpdate {
           progressbarWindow.close();
         }
 
-        dialog.showMessageBox(
-          {
+        dialog
+          .showMessageBox({
             type: 'info',
             title: 'Updates Found',
             message: 'New version available. Update the app now?',
             buttons: ['Yes', 'No']
-          },
-          buttonIndex => {
+          })
+          .then(buttonIndex => {
             switch (buttonIndex) {
               case 0:
                 if (progressbarWindow !== null) {
@@ -150,8 +150,9 @@ export default class AppUpdate {
                 }
                 break;
             }
-          }
-        );
+            return null;
+          })
+          .catch(() => {});
       });
 
       this.autoUpdater.on('download-progress', progress => {
@@ -168,21 +169,22 @@ export default class AppUpdate {
           progressbarWindow.close();
         }
 
-        dialog.showMessageBox(
-          {
+        dialog
+          .showMessageBox({
             title: 'Install Updates',
             message: 'Updates downloaded. Application will quit now...',
             buttons: ['Install and Relaunch']
-          },
-          buttonIndex => {
+          })
+          .then(buttonIndex => {
             switch (buttonIndex) {
               case 0:
               default:
                 this.autoUpdater.quitAndInstall();
                 break;
             }
-          }
-        );
+            return null;
+          })
+          .catch(() => {});
       });
 
       this.updateInitFlag = true;
@@ -243,20 +245,21 @@ export default class AppUpdate {
           if (progressbarWindow !== null) {
             progressbarWindow.close();
           }
-          dialog.showMessageBox(
-            {
+          dialog
+            .showMessageBox({
               title: 'No Updates Found',
               message: 'You have the latest version installed.',
               buttons: ['Close']
-            },
-            buttonIndex => {
+            })
+            .then(buttonIndex => {
               switch (buttonIndex) {
                 case 0:
                 default:
                   break;
               }
-            }
-          );
+              return null;
+            })
+            .catch(() => {});
         });
       }
 
@@ -265,14 +268,14 @@ export default class AppUpdate {
       }
 
       if (this.updateIsActive === -1) {
-        dialog.showMessageBox(
-          {
+        dialog
+          .showMessageBox({
             title: 'Update in progress',
             message:
               'Another update is in progess. Are you sure want to restart the update?',
             buttons: ['Yes', 'No']
-          },
-          buttonIndex => {
+          })
+          .then(buttonIndex => {
             switch (buttonIndex) {
               case 0:
                 this.autoUpdater.checkForUpdates();
@@ -282,8 +285,9 @@ export default class AppUpdate {
               default:
                 break;
             }
-          }
-        );
+            return null;
+          })
+          .catch(() => {});
         return null;
       }
 
@@ -429,20 +433,21 @@ export default class AppUpdate {
     switch (type) {
       default:
       case 'message':
-        dialog.showMessageBox(
-          {
+        dialog
+          .showMessageBox({
             title,
             message,
             buttons: ['Close']
-          },
-          buttonIndex => {
+          })
+          .then(buttonIndex => {
             switch (buttonIndex) {
               case 0:
               default:
                 break;
             }
-          }
-        );
+            return null;
+          })
+          .catch(() => {});
         break;
       case 'error':
         dialog.showErrorBox(title, message);
