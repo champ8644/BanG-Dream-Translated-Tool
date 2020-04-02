@@ -10,38 +10,20 @@ import { AUTO_UPDATE_CHECK_FIREUP_DELAY } from './constants';
 import AppUpdate from './classes/AppUpdate';
 import MenuBuilder from './menu';
 import { PATHS } from './utils/paths';
+import WorkerClass from './WorkerClass';
 import { appEvents } from './utils/eventHandling';
 import { bootLoader } from './utils/bootHelper';
 import electronIs from 'electron-is';
 import { isPackaged } from './utils/isPackaged';
 import { log } from './utils/log';
 import { nonBootableDeviceWindow } from './utils/createWindows';
+import { sendWindowMessage } from './utils/sendWindowMessage';
 import { settingsStorage } from './utils/storageHelper';
-
-// if (
-//   process.platform === 'win32' &&
-//   !process.env.OPENCV4NODEJS_DISABLE_AUTOBUILD
-// ) {
-//   // eslint-disable-nextline
-//   process.env.path += `;${
-//     require(path.join(
-//       PATHS.root,
-//       'resources\\app.asar\\node_modules\\opencv-build'
-//     )).opencvBinDir
-//   }`;
-// }
 
 const isDeviceBootable = bootTheDevice();
 const isMas = electronIs.mas();
 let mainWindow = null;
-let workerWindow = null;
-
-function sendWindowMessage(targetWindow, message, payload) {
-  if (typeof targetWindow === 'undefined') {
-    return Error('Target window does not exist');
-  }
-  targetWindow.webContents.send(message, payload);
-}
+let mainWorker = null;
 
 if (IS_PROD) {
   const sourceMapSupport = require('source-map-support');
@@ -163,31 +145,11 @@ if (!isDeviceBootable) {
 
       mainWindow.on('closed', () => {
         mainWindow = null;
-        workerWindow.close();
-        workerWindow = null;
+        mainWorker.close();
+        mainWorker = null;
       });
 
-      workerWindow = new BrowserWindow({
-        title: 'worker window',
-        show: false,
-        webPreferences: { nodeIntegration: true }
-      });
-
-      workerWindow.loadURL(`${PATHS.loadWorkerUrlPath}`);
-
-      workerWindow.webContents.on('did-finish-load', () => {
-        if (!workerWindow) {
-          throw new Error(`"workerWindow" is not defined`);
-        }
-      });
-
-      workerWindow.onerror = error => {
-        log.error(error, `main.dev -> workerWindow -> onerror`);
-      };
-
-      workerWindow.on('closed', () => {
-        workerWindow = null;
-      });
+      mainWorker = new WorkerClass();
     } catch (e) {
       log.error(e, `main.dev -> createWindow`);
     }
@@ -197,7 +159,7 @@ if (!isDeviceBootable) {
     });
 
     ipcMain.on('message-from-renderer', (event, arg) => {
-      sendWindowMessage(workerWindow, 'message-from-renderer', arg);
+      mainWorker.sendMessage(arg);
     });
   };
 

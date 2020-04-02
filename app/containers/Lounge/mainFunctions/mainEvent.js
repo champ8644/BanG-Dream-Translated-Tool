@@ -158,7 +158,7 @@ function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
 
 let currentActor;
 
-export default function mainEvent(vCap, _timeLimit) {
+export default function mainEvent({ vCap, start: _start, end: _end }) {
   prevDialog = null;
   newStartVCap = null;
   meanClass = new Meaning();
@@ -177,7 +177,7 @@ export default function mainEvent(vCap, _timeLimit) {
     fadeW: 0
   };
   const nameActor = [];
-  let timeLimit = _timeLimit;
+  let timeLimit = _end;
   const limitVCap = vCap.length - 1;
   if (timeLimit < 0) {
     timeLimit = endVCap;

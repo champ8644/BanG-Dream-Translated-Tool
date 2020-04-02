@@ -28,7 +28,7 @@ export function handleSubmitHN() {
     dispatch(loadFireData());
     if (state.displayHN !== '') {
       await timeOut(2000);
-      dispatch(_fetchFireData(/* TODO:Firebase */));
+      dispatch(_fetchFireData());
       return;
     }
     dispatch(emptyFireData());

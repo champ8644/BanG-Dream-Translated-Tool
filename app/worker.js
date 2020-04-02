@@ -12,15 +12,5 @@ function message2UI(command, payload) {
   });
 }
 
-ipcRenderer.on('message-from-renderer', (e, arg) => {
-  const { command, payload } = arg;
-  switch (command) {
-    case 'start-events':
-      mainEvents(payload);
-      break;
-    case 'stop-events':
-      devalidLoop();
-      break;
-    default:
-  }
-});
+ipcRenderer.on('start-events', (e, arg) => mainEvents(e, arg));
+ipcRenderer.on('stop-events', () => devalidLoop());
