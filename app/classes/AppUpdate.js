@@ -1,5 +1,6 @@
 'use strict';
 
+/* eslint-disable no-console */
 import { BrowserWindow, dialog } from 'electron';
 
 import { ENABLE_BACKGROUND_AUTO_UPDATE } from '../constants';
@@ -69,11 +70,16 @@ const fireProgressbar = () => {
 export default class AppUpdate {
   constructor() {
     this.autoUpdater = autoUpdater;
+    console.log('autoUpdater: ', autoUpdater);
     if (!isPackaged) {
       this.autoUpdater.updateConfigPath = PATHS.appUpdateFile;
     }
-
+    console.log('isPackaged: ', isPackaged);
     this.autoUpdater.autoDownload = ENABLE_BACKGROUND_AUTO_UPDATE;
+    console.log(
+      'ENABLE_BACKGROUND_AUTO_UPDATE: ',
+      ENABLE_BACKGROUND_AUTO_UPDATE
+    );
     this.domReadyFlag = null;
     this.updateInitFlag = false;
     this.updateForceCheckFlag = false;
@@ -95,7 +101,7 @@ export default class AppUpdate {
       this.autoUpdater.on('error', error => {
         const errorMsg =
           error == null ? 'unknown' : (error.stack || error).toString();
-
+        console.log('errorMsg: ', errorMsg);
         if (progressbarWindow !== null) {
           progressbarWindow.close();
         }
@@ -122,6 +128,7 @@ export default class AppUpdate {
       });
 
       this.autoUpdater.on('update-available', () => {
+        console.log('update-available: ');
         if (progressbarWindow !== null && this.updateIsActive !== -1) {
           progressbarWindow.close();
         }
@@ -134,6 +141,7 @@ export default class AppUpdate {
             buttons: ['Yes', 'No']
           })
           .then(buttonIndex => {
+            console.log('buttonIndex: ', buttonIndex);
             switch (buttonIndex) {
               case 0:
                 if (progressbarWindow !== null) {
@@ -141,12 +149,14 @@ export default class AppUpdate {
                 }
                 this.closeActiveUpdates(-1);
                 this.initDownloadUpdatesProgress();
+                console.log('initDownloadUpdatesProgress: ');
                 this.autoUpdater.downloadUpdate();
                 break;
               default:
               case 1:
                 if (this.updateIsActive !== -1) {
                   this.closeActiveUpdates();
+                  console.log('closeActiveUpdates: ');
                 }
                 break;
             }
@@ -168,7 +178,7 @@ export default class AppUpdate {
         if (progressbarWindow !== null) {
           progressbarWindow.close();
         }
-
+        console.log('Install Updates: ');
         dialog
           .showMessageBox({
             title: 'Install Updates',
@@ -176,6 +186,7 @@ export default class AppUpdate {
             buttons: ['Install and Relaunch']
           })
           .then(buttonIndex => {
+            console.log('buttonIndex: ', buttonIndex);
             switch (buttonIndex) {
               case 0:
               default:
@@ -335,6 +346,7 @@ export default class AppUpdate {
     try {
       isConnected()
         .then(connected => {
+          console.log('connected: ', connected);
           if (!connected) {
             this.spitMessageDialog(
               'Downloading Updates',
@@ -344,6 +356,7 @@ export default class AppUpdate {
           }
 
           fireProgressbar();
+          console.log('fireProgressbar: ', fireProgressbar);
           this.domReadyFlag = false;
           this.setUpdateProgressWindow({ value: 0 });
           return true;
@@ -362,7 +375,7 @@ export default class AppUpdate {
         value,
         variant: `determinate`
       };
-
+      console.log('data: ', data);
       this.setTaskBarProgressBar(value / 100);
       if (this.domReadyFlag) {
         progressbarWindow.webContents.send(
