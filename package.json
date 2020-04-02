@@ -1,20 +1,20 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.5.5",
+  "version": "1.6.0",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
-    "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\" && yarn update-version",
+    "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
     "build-dll": "cross-env NODE_ENV=development node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.dev.dll.babel.js --colors",
     "build-main": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.main.prod.babel.js --colors",
     "build-renderer": "cross-env NODE_ENV=production node --trace-warnings -r @babel/register ./node_modules/webpack/bin/webpack --config ./webpack/config.renderer.prod.babel.js --colors  --display-chunks --display-modules",
     "dev": "cross-env START_HOT=1 node -r @babel/register ./internals/scripts/CheckPortInUse.js && cross-env START_HOT=1 yarn start-renderer-dev",
+    "deploy": "yarn build && electron-builder build --publish always",
     "package": "yarn build && electron-builder build --publish never",
     "package-all": "yarn build && build -mwl --publish never",
     "package-mac": "yarn build && build --mac --publish never",
     "package-linux": "yarn build && build --linux --publish never",
     "package-win": "yarn build && build --win --x64 --publish never",
-    "publish": "yarn build && electron-builder build --publish always",
     "prestart": "yarn build",
     "start": "cross-env NODE_ENV=production run-electron ./app/main.prod.js",
     "start-main-dev": "cross-env HOT=1 NODE_ENV=development run-electron -r @babel/register ./app/main.dev.js",
@@ -32,7 +32,7 @@
     "preinstall": "node ./internals/scripts/CheckYarn.js",
     "postinstall": "yarn build-dll && electron-builder install-app-deps package.json",
     "electron-rebuild": "electron-rebuild -w opencv4nodejs",
-    "update-version": "yarn version --new-version patch"
+    "patch": "yarn version --new-version patch"
   },
   "lint-staged": {
     "*.{js,jsx}": [
@@ -62,12 +62,17 @@
     "forceCodeSigning": false,
     "copyright": "© Varis Ratanasirisawad",
     "readonly": true,
+    "nsis": {
+      "differentialPackage": true
+    },
+    "nsisWeb": {
+      "differentialPackage": true
+    },
     "publish": [
       {
         "provider": "github",
         "owner": "champ8644",
-        "repo": "BanG-Dream-Translated-Tool",
-        "private": true
+        "repo": "BanG-Dream-Translated-Tool"
       }
     ],
     "files": [
@@ -77,6 +82,7 @@
       "app/main.prod.js",
       "app/main.prod.js.map",
       "app/resources",
+      "config/dev-app-update.yml",
       "package.json"
     ],
     "extraFiles": [
@@ -122,6 +128,7 @@
     },
     "win": {
       "target": [
+        "nsis-web",
         "nsis"
       ],
       "extraResources": [
@@ -196,8 +203,8 @@
     "cross-env": "^5.2.0",
     "css-loader": "^1.0.0",
     "detect-port": "^1.2.3",
-    "electron": "4.0.1",
-    "electron-builder": "^20.28.4",
+    "electron": "7.1.8",
+    "electron-builder": "^22.2.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-rebuild": "^1.8.8",
     "eslint": "^5.12.0",
@@ -228,7 +235,7 @@
     "terser-webpack-plugin": "^1.2.1",
     "url-loader": "^1.0.1",
     "webpack": "^4.16.3",
-    "webpack-bundle-analyzer": "^2.13.1",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5",
     "webpack-merge": "^4.1.3",
@@ -245,7 +252,7 @@
     "electron-ga": "^1.0.6",
     "electron-is": "^3.0.0",
     "electron-root-path": "^1.0.1",
-    "electron-updater": "^4.0.6",
+    "electron-updater": "^4.2.0",
     "fs-extra": "^7.0.1",
     "glob": "^7.1.3",
     "history": "^4.7.2",

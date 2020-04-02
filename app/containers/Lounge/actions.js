@@ -68,9 +68,9 @@ export function sendCanvas(canvasRef) {
 }
 
 export function openFile() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const { canvasRef, valueSlider, overlayMode } = getState().Lounge;
-    const userChosenPath = dialog.showOpenDialog({
+    const { filePaths, canceled } = await dialog.showOpenDialog({
       properties: ['openFile'],
       filters: [
         {
@@ -79,9 +79,9 @@ export function openFile() {
         }
       ]
     });
-    if (!userChosenPath) return;
+    if (canceled) return;
     const vCap = new VideoCapture({
-      path: userChosenPath[0],
+      path: filePaths[0],
       canvas: canvasRef,
       updateFrame: async () => dispatch(updateFrame()),
       colorSlider: valueSlider,
@@ -90,7 +90,7 @@ export function openFile() {
     dispatch({
       type: actionTypes.SELECT_NEW_VIDEO,
       payload: {
-        videoFilePath: userChosenPath[0],
+        videoFilePath: filePaths[0],
         vCap
       }
     });
@@ -617,14 +617,14 @@ export function exporting() {
       'height',
       'area'
     ];
-    const userChosenPath = dialog.showSaveDialog({
+    const { filePaths, canceled } = await dialog.showSaveDialog({
       filters: [{ name: 'Excel files', extensions: ['xlsx'] }]
     });
-    if (!userChosenPath) return;
+    if (canceled) return;
     const worksheet = XLSX.utils.json_to_sheet(trueOutput, { header });
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'BanG_Dream');
-    XLSX.writeFile(workbook, userChosenPath);
+    XLSX.writeFile(workbook, filePaths[0]);
     dispatch(stopProgress());
   };
 }
@@ -639,11 +639,12 @@ export function importing() {
     } = getState().Lounge;
     let data = importedFile;
     if (!data) {
-      const o = await dialog.showOpenDialog({
+      const { filePaths, canceled } = await dialog.showOpenDialog({
         properties: ['openFile'],
         filters: [{ name: 'Excel Files', extensions: ['xls', 'xlsx', 'csv'] }]
       });
-      const workbook = XLSX.readFile(o[0]);
+      if (canceled) return;
+      const workbook = XLSX.readFile(filePaths[0]);
       const firstWorksheet = workbook.Sheets[workbook.SheetNames[0]];
       data = XLSX.utils.sheet_to_json(firstWorksheet);
       dispatch({
