@@ -1,11 +1,12 @@
 'use strict';
 
+import { DEFAULT_AUTO_UPDATE_CHECK } from '../../constants';
 import { actionTypes } from './actions';
 
 export const initialState = {
   freshInstall: 0,
   toggleSettings: false,
-  enableAutoUpdateCheck: false,
+  enableAutoUpdateCheck: DEFAULT_AUTO_UPDATE_CHECK,
   enableAnalytics: false
 };
 

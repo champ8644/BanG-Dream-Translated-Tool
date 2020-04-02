@@ -7,6 +7,7 @@ import matFunctions from './matFunctions';
 export default class VideoCapture {
   constructor({ path, canvas, updateFrame, modePostProcessor, colorSlider }) {
     this.vCap = new cv.VideoCapture(path);
+
     this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH) * rx;
     this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT) * rx;
     if (this.width < this.height) {

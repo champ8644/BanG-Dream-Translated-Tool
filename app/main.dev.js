@@ -179,13 +179,6 @@ if (!isDeviceBootable) {
         if (!workerWindow) {
           throw new Error(`"workerWindow" is not defined`);
         }
-        // if (process.env.START_MINIMIZED) {
-        //   workerWindow.minimize();
-        // } else {
-        //   workerWindow.maximize();
-        //   workerWindow.show();
-        //   workerWindow.focus();
-        // }
       });
 
       workerWindow.onerror = error => {

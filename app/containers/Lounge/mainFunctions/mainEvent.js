@@ -223,7 +223,6 @@ export default function mainEvent(vCap, _timeLimit) {
         refractory.title = false;
       }
 
-      // console.log('frame', frame); // eslint-disable-line no-console
       const nameObj = makeNameLabel(mat);
       if (nameObj.status) {
         if (!refractory.name) {

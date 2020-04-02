@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 
 import RoutesSub from '../../routing/mainMenu';
 import ToolbarAreaPane from '../ToolbarAreaPane';
-import cv from 'opencv4nodejs';
 import { log } from '@Log';
 import { styles } from './styles';
 import { withStyles } from '@material-ui/core/styles';
@@ -20,7 +19,6 @@ class Home extends Component {
   };
 
   render() {
-    console.log('opencv', cv); // eslint-disable-line no-console
     const { classes: styles, match, history, location } = this.props;
     return (
       <div className={styles.root}>

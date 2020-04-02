@@ -1,15 +1,17 @@
 'use strict';
 
-import { dialog, BrowserWindow } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import { isConnected } from '../utils/isOnline';
-import { log } from '../utils/log';
-import { isPackaged } from '../utils/isPackaged';
-import { PATHS } from '../utils/paths';
+/* eslint-disable no-console */
+import { BrowserWindow, dialog } from 'electron';
+
 import { ENABLE_BACKGROUND_AUTO_UPDATE } from '../constants';
-import { unixTimestampNow } from '../utils/date';
+import { PATHS } from '../utils/paths';
+import { autoUpdater } from 'electron-updater';
 import { getMainWindow } from '../utils/createWindows';
+import { isConnected } from '../utils/isOnline';
+import { isPackaged } from '../utils/isPackaged';
+import { log } from '../utils/log';
 import { undefinedOrNull } from '../utils/funcs';
+import { unixTimestampNow } from '../utils/date';
 
 let progressbarWindow = null;
 let mainWindow = null;
@@ -24,10 +26,10 @@ const createChildWindow = () => {
       width: 600,
       title: 'Progress...',
       resizable: false,
-      minimizable: false,
+      minimizable: true,
       maximizable: false,
       fullscreenable: false,
-      movable: false,
+      movable: true,
       webPreferences: {
         nodeIntegration: true
       }
@@ -68,11 +70,16 @@ const fireProgressbar = () => {
 export default class AppUpdate {
   constructor() {
     this.autoUpdater = autoUpdater;
+    console.log('autoUpdater: ', autoUpdater);
     if (!isPackaged) {
       this.autoUpdater.updateConfigPath = PATHS.appUpdateFile;
     }
-
+    console.log('isPackaged: ', isPackaged);
     this.autoUpdater.autoDownload = ENABLE_BACKGROUND_AUTO_UPDATE;
+    console.log(
+      'ENABLE_BACKGROUND_AUTO_UPDATE: ',
+      ENABLE_BACKGROUND_AUTO_UPDATE
+    );
     this.domReadyFlag = null;
     this.updateInitFlag = false;
     this.updateForceCheckFlag = false;
@@ -94,7 +101,7 @@ export default class AppUpdate {
       this.autoUpdater.on('error', error => {
         const errorMsg =
           error == null ? 'unknown' : (error.stack || error).toString();
-
+        console.log('errorMsg: ', errorMsg);
         if (progressbarWindow !== null) {
           progressbarWindow.close();
         }
@@ -121,18 +128,20 @@ export default class AppUpdate {
       });
 
       this.autoUpdater.on('update-available', () => {
+        console.log('update-available: ');
         if (progressbarWindow !== null && this.updateIsActive !== -1) {
           progressbarWindow.close();
         }
 
-        dialog.showMessageBox(
-          {
+        dialog
+          .showMessageBox({
             type: 'info',
             title: 'Updates Found',
             message: 'New version available. Update the app now?',
             buttons: ['Yes', 'No']
-          },
-          buttonIndex => {
+          })
+          .then(buttonIndex => {
+            console.log('buttonIndex: ', buttonIndex);
             switch (buttonIndex) {
               case 0:
                 if (progressbarWindow !== null) {
@@ -140,17 +149,20 @@ export default class AppUpdate {
                 }
                 this.closeActiveUpdates(-1);
                 this.initDownloadUpdatesProgress();
+                console.log('initDownloadUpdatesProgress: ');
                 this.autoUpdater.downloadUpdate();
                 break;
               default:
               case 1:
                 if (this.updateIsActive !== -1) {
                   this.closeActiveUpdates();
+                  console.log('closeActiveUpdates: ');
                 }
                 break;
             }
-          }
-        );
+            return null;
+          })
+          .catch(() => {});
       });
 
       this.autoUpdater.on('download-progress', progress => {
@@ -166,22 +178,24 @@ export default class AppUpdate {
         if (progressbarWindow !== null) {
           progressbarWindow.close();
         }
-
-        dialog.showMessageBox(
-          {
+        console.log('Install Updates: ');
+        dialog
+          .showMessageBox({
             title: 'Install Updates',
             message: 'Updates downloaded. Application will quit now...',
             buttons: ['Install and Relaunch']
-          },
-          buttonIndex => {
+          })
+          .then(buttonIndex => {
+            console.log('buttonIndex: ', buttonIndex);
             switch (buttonIndex) {
               case 0:
               default:
                 this.autoUpdater.quitAndInstall();
                 break;
             }
-          }
-        );
+            return null;
+          })
+          .catch(() => {});
       });
 
       this.updateInitFlag = true;
@@ -242,20 +256,21 @@ export default class AppUpdate {
           if (progressbarWindow !== null) {
             progressbarWindow.close();
           }
-          dialog.showMessageBox(
-            {
+          dialog
+            .showMessageBox({
               title: 'No Updates Found',
               message: 'You have the latest version installed.',
               buttons: ['Close']
-            },
-            buttonIndex => {
+            })
+            .then(buttonIndex => {
               switch (buttonIndex) {
                 case 0:
                 default:
                   break;
               }
-            }
-          );
+              return null;
+            })
+            .catch(() => {});
         });
       }
 
@@ -264,14 +279,14 @@ export default class AppUpdate {
       }
 
       if (this.updateIsActive === -1) {
-        dialog.showMessageBox(
-          {
+        dialog
+          .showMessageBox({
             title: 'Update in progress',
             message:
               'Another update is in progess. Are you sure want to restart the update?',
             buttons: ['Yes', 'No']
-          },
-          buttonIndex => {
+          })
+          .then(buttonIndex => {
             switch (buttonIndex) {
               case 0:
                 this.autoUpdater.checkForUpdates();
@@ -281,8 +296,9 @@ export default class AppUpdate {
               default:
                 break;
             }
-          }
-        );
+            return null;
+          })
+          .catch(() => {});
         return null;
       }
 
@@ -330,6 +346,7 @@ export default class AppUpdate {
     try {
       isConnected()
         .then(connected => {
+          console.log('connected: ', connected);
           if (!connected) {
             this.spitMessageDialog(
               'Downloading Updates',
@@ -339,6 +356,7 @@ export default class AppUpdate {
           }
 
           fireProgressbar();
+          console.log('fireProgressbar: ', fireProgressbar);
           this.domReadyFlag = false;
           this.setUpdateProgressWindow({ value: 0 });
           return true;
@@ -357,7 +375,7 @@ export default class AppUpdate {
         value,
         variant: `determinate`
       };
-
+      console.log('data: ', data);
       this.setTaskBarProgressBar(value / 100);
       if (this.domReadyFlag) {
         progressbarWindow.webContents.send(
@@ -428,20 +446,21 @@ export default class AppUpdate {
     switch (type) {
       default:
       case 'message':
-        dialog.showMessageBox(
-          {
+        dialog
+          .showMessageBox({
             title,
             message,
             buttons: ['Close']
-          },
-          buttonIndex => {
+          })
+          .then(buttonIndex => {
             switch (buttonIndex) {
               case 0:
               default:
                 break;
             }
-          }
-        );
+            return null;
+          })
+          .catch(() => {});
         break;
       case 'error':
         dialog.showErrorBox(title, message);
