@@ -1,8 +1,8 @@
 import VideoCapture from '../containers/Lounge/VideoCapture';
 import mainEvent from '../containers/Lounge/mainFunctions/mainEvent';
 
-export default function mainEvents(props) {
-  const { videoFilePath, timeLimit } = props;
+export default function mainEvents(e, arg) {
+  const { videoFilePath, start, end } = arg;
   const vCap = new VideoCapture({ path: videoFilePath });
-  mainEvent(vCap, timeLimit);
+  mainEvent({ vCap, start, end });
 }
