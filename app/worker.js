@@ -1,6 +1,9 @@
-import { devalidLoop } from './containers/Lounge/mainFunctions/mainEvent';
+import mainEvent, {
+  devalidLoop
+} from './containers/Lounge/mainFunctions/mainEvent';
+
+import VideoCapture from './containers/Lounge/VideoCapture';
 import electron from 'electron';
-import mainEvents from './worker/mainEvents';
 
 const { ipcRenderer } = electron;
 
@@ -12,5 +15,16 @@ function message2UI(command, payload) {
   });
 }
 
-ipcRenderer.on('start-events', (e, arg) => mainEvents(e, arg));
-ipcRenderer.on('stop-events', () => devalidLoop());
+ipcRenderer.on('stop-events', devalidLoop);
+
+ipcRenderer.on('start-events', async (e, arg) => {
+  const { videoFilePath, start, end, uuid, index } = arg;
+  const vCap = new VideoCapture({ path: videoFilePath });
+  const res = await mainEvent({ vCap, start, end, index });
+  ipcRenderer.send(uuid, res);
+});
+
+ipcRenderer.on('sum-events', (e, payload) => {
+  // eslint-disable-next-line no-console
+  console.log('data sum', payload);
+});

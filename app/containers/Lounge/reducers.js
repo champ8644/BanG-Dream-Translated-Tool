@@ -1,5 +1,6 @@
 'use strict';
 
+import { NUM_WORKER_PROCESS } from '../../constants/index';
 import { actionTypes } from './actions';
 import { sliderObjSelector } from './constants/config';
 
@@ -34,7 +35,7 @@ export const initialState = {
   progressFull: null,
   importedFile: null,
   willUpdateNextFrame: false,
-  progressFromWorker: null,
+  progressFromWorker: Array(NUM_WORKER_PROCESS).fill(null),
   overlayMode: 'none'
 };
 
@@ -101,7 +102,10 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.UPDATE_LINEAR:
       return {
         ...state,
-        progressFromWorker: payload
+        progressFromWorker: state.progressFromWorker.map((val, idx) => {
+          if (idx === payload.index) return payload;
+          return val;
+        })
       };
     default:
       return state;

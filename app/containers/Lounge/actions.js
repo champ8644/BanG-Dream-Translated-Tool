@@ -2,6 +2,7 @@
 
 /* eslint-disable no-console */
 
+import { endFrameTest, startFrameTest } from './constants/config';
 import { gapConst, maxMinDist } from './constants';
 import mainEvent, { devalidLoop } from './mainFunctions/mainEvent';
 
@@ -42,10 +43,19 @@ const actionTypesList = [
 
 export const actionTypes = prefixer(prefix, actionTypesList);
 
-export function sendMessage(timeLimit) {
+export function sendMessage(payload = {}) {
   return (dispatch, getState) => {
-    const { videoFilePath } = getState().Lounge;
-    message2Worker('start-events', { videoFilePath, timeLimit });
+    const { videoFilePath, vCap } = getState().Lounge;
+    const { start: _start, end: _end, test } = payload;
+    let start = _start;
+    let end = _end;
+    if (start === undefined) start = 0;
+    if (end === undefined) end = vCap.length;
+    if (test) {
+      start = startFrameTest;
+      end = endFrameTest;
+    }
+    message2Worker('start-events', { videoFilePath, start, end });
   };
 }
 

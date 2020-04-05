@@ -1,12 +1,14 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
+
+import { NUM_WORKER_PROCESS } from './constants';
 import { PATHS } from './utils/paths';
 import { log } from './utils/log';
-
-const numWorker = 4;
+import { v4 as uuidv4 } from 'uuid';
 
 export default class WorkerClass {
   constructor() {
-    this.workerWindows = Array.from(Array(numWorker), (x, index) => {
+    this.waiting = [];
+    this.workerWindows = Array.from(Array(NUM_WORKER_PROCESS), (x, index) => {
       let window = new BrowserWindow({
         title: `Worker window ${index}`,
         show: false,
@@ -33,19 +35,33 @@ export default class WorkerClass {
     });
   }
 
+  async startEvents(payload) {
+    const { videoFilePath, start, end } = payload;
+    const batch = Math.round((end - start) / NUM_WORKER_PROCESS);
+    this.workerWindows.forEach((window, index) => {
+      const uuid = uuidv4();
+      window.webContents.send('start-events', {
+        videoFilePath,
+        start: start + batch * index,
+        end: start + batch * (index + 1),
+        uuid,
+        index
+      });
+      this.waiting[index] = new Promise(resolve => {
+        ipcMain.once(uuid, (e, arg) => resolve(arg));
+      });
+    });
+    this.workerWindows[0].webContents.send(
+      'sum-events',
+      await Promise.all(this.waiting)
+    );
+  }
+
   sendMessage(arg) {
     const { command, payload } = arg;
     switch (command) {
       case 'start-events': {
-        const { videoFilePath, timeLimit } = payload;
-        const batch = Math.round(timeLimit / numWorker);
-        this.workerWindows.forEach((window, index) =>
-          window.webContents.send('start-events', {
-            videoFilePath,
-            start: batch * index,
-            end: batch * (index + 1)
-          })
-        );
+        this.startEvents(payload);
         break;
       }
       case 'stop-events':

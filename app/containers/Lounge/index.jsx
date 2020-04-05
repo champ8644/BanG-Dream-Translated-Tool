@@ -39,6 +39,7 @@ import IconButton from '@material-ui/core/IconButton';
 // import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { NUM_WORKER_PROCESS } from '../../constants/index';
 import Paper from '@material-ui/core/Paper';
 import PieChartIcon from '@material-ui/icons/PieChart';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
@@ -66,6 +67,8 @@ import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
 const { ipcRenderer } = electron;
+
+const rangeWorkerProcess = Array.from(Array(NUM_WORKER_PROCESS).keys());
 
 const CustomLinearProgress = withStyles({
   root: props => ({
@@ -209,7 +212,6 @@ class Lounge extends Component {
       handleCommittedSlider,
       sliderObj,
       commitOnChange,
-      mainEventBtn,
       sendMessage,
       percentLinear
     } = this.props;
@@ -291,11 +293,16 @@ class Lounge extends Component {
             />
             {percentLinear !== null && (
               <Paper className={classes.paperLinear}>
-                <CustomLinearProgress
-                  delay={percentLinear.delay}
-                  variant='determinate'
-                  value={percentLinear.percent}
-                />
+                {rangeWorkerProcess.map(
+                  index =>
+                    percentLinear[index] !== null && (
+                      <CustomLinearProgress
+                        delay={percentLinear[index].delay}
+                        variant='determinate'
+                        value={percentLinear[index].percent}
+                      />
+                    )
+                )}
                 <Chip
                   className={classes.chip}
                   icon={<DonutLargeIcon />}
@@ -362,31 +369,25 @@ class Lounge extends Component {
                       >
                         Import
                       </Button>
-                      <Button
-                        className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={mainEventBtn}
-                      >
-                        Main Event
-                      </Button>
                     </>
                   )}
                   {IS_DEV && (
                     <>
                       <Button
                         className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={() => sendMessage(-1)}
+                        onClick={() => sendMessage({ test: true })}
                       >
-                        Start Main Jobs
+                        Start Testing
                       </Button>
                       <Button
                         className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={() => sendMessage(1000)}
+                        onClick={() => sendMessage({ end: 1000 })}
                       >
                         Start Until 1000 frames
                       </Button>
                       <Button
                         className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={() => sendMessage(10000)}
+                        onClick={() => sendMessage({ end: 10000 })}
                       >
                         Start Until 10000 frames
                       </Button>
@@ -398,14 +399,6 @@ class Lounge extends Component {
                   >
                     Start Converting
                   </Button>
-                  {/* <Button
-                    className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={() => sendMessage(100)}
-                  >
-                    Start Until 100 frames
-                  </Button>
-                  
-                  */}
                 </div>
                 {sliderObj && (
                   <Paper className={classes.PaperSlider}>
