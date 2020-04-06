@@ -145,13 +145,13 @@ function isIntersect(a, b) {
 }
 
 /* eslint-disable no-param-reassign */
-export default function writeAss(data, nameActor, info) {
-  const { vCap } = info;
-  toMs = frame => (frame * 1000) / vCap.FPS;
+export default function writeAss({ data, nameActor, info }) {
+  const { path, limitVCap, FPS } = info;
+  toMs = frame => (frame * 1000) / FPS;
   // eslint-disable-next-line no-console
   console.log('data: ', data);
   const stream = fs.createWriteStream(
-    `${vCap.path.substr(0, vCap.path.lastIndexOf('.'))}.ass`,
+    `${path.substr(0, path.lastIndexOf('.'))}.ass`,
     {
       encoding: 'utf8'
     }
@@ -167,7 +167,7 @@ export default function writeAss(data, nameActor, info) {
     if (data[type]) {
       if (data[type].length > 0) {
         const item = data[type][data[type].length - 1];
-        if (!item.end) item.end = vCap.length;
+        if (!item.end) item.end = limitVCap;
       }
     }
   });
@@ -254,9 +254,9 @@ export default function writeAss(data, nameActor, info) {
   // eslint-disable-next-line no-console
   console.log('outData: ', outData);
   stream.once('open', () => {
-    stream.write(assTemplate(vCap.path));
+    stream.write(assTemplate(path));
     shakeArr.forEach(item => stream.write(writeShake(item)));
-    stream.write(writeCredit(vCap.length));
+    stream.write(writeCredit(limitVCap));
     nameActor.forEach(item => stream.write(writeNameActor(item)));
     outData.forEach(item => {
       switch (item.type) {

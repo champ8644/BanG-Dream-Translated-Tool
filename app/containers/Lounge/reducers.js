@@ -236,7 +236,9 @@ export default function Lounge(state = initialState, action) {
 
       const info = newBar.reduce(
         (prev, val) => ({
-          progress: prev.progress + val.progress,
+          progress:
+            prev.progress +
+            Math.min(val.progress, val.endFrame - val.beginFrame),
           beginFrame: Math.min(prev.beginFrame, val.beginFrame),
           endFrame: Math.max(prev.endFrame, val.endFrame)
         }),

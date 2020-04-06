@@ -73,9 +73,9 @@ export default class WorkerClass {
         break;
       }
       case 'stop-events':
-        this.workerWindows.forEach(window =>
-          window.webContents.send('stop-events')
-        );
+        this.workerWindows.forEach(window => {
+          if (window) window.webContents.send('stop-events');
+        });
         break;
       default:
     }

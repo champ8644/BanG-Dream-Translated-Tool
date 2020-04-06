@@ -1,6 +1,9 @@
+import cv from 'opencv4nodejs';
 import findActorID from './findActorID';
 
 export default function mergeData(datas) {
+  // eslint-disable-next-line no-console
+  console.log('datas: ', datas);
   const mergedNameActor = [];
   const mergedData = {
     fadeB: [],
@@ -12,7 +15,12 @@ export default function mergeData(datas) {
   datas.forEach(({ data, nameActor }) => {
     const newUID = {};
     nameActor.forEach(({ actor, frame, uid }) => {
-      newUID[uid] = findActorID(actor, frame, mergedNameActor);
+      const readActor = cv.imread(actor);
+      newUID[uid] = findActorID(
+        readActor.cvtColor(cv.COLOR_BGR2GRAY),
+        frame,
+        mergedNameActor
+      );
     });
 
     Object.keys(data).forEach(key => {
@@ -24,9 +32,11 @@ export default function mergeData(datas) {
               mergedData[key].push({ ...item, actor: newUID[item.actor] });
             else mergedData[key].push(item);
           }
-        }
+        } else if (key === 'name')
+          mergedData[key].push({ ...item, actor: newUID[item.actor] });
+        else mergedData[key].push(item);
       });
     });
   });
-  return { data: mergedData, nameActor: mergedNameActor, info: datas.info };
+  return { data: mergedData, nameActor: mergedNameActor, info: datas[0].info };
 }

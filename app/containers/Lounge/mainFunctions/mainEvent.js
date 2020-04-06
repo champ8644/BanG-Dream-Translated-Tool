@@ -1,6 +1,7 @@
 import { chunkCount, meanLength, meanSmooth } from '../constants/config';
 import { fadeThreshold, intersectCompensate } from '../constants';
 
+import cv from 'opencv4nodejs';
 import findActorID from './findActorID';
 import makeNameLabel from './makeNameLabel';
 import makePlaceLabel from './makePlaceLabel';
@@ -8,6 +9,8 @@ import makeTitleLabel from './makeTitleLabel';
 import message2UI from '../../../worker/message2UI';
 import minMaxFinder from './minMaxFinder';
 import starMatching from './starMatching';
+import tmp from 'tmp-promise';
+import { v4 as uuidv4 } from 'uuid';
 
 class Meaning {
   constructor() {
@@ -294,11 +297,30 @@ export default function mainEvent({ vCap, start, end, index }) {
         return activeWorking;
       },
       finished: () => {
-        resolve({
-          data,
-          nameActor,
-          info: { vCap, beginFrame: start, endFrame: end, index }
-        });
+        tmp
+          .dir({ unsafeCleanup: true })
+          .then(({ path }) => {
+            nameActor.forEach(actorData => {
+              const fileName = `${path}\\${uuidv4()}.png`;
+              cv.imwrite(fileName, actorData.actor);
+              // eslint-disable-next-line no-param-reassign
+              actorData.actor = fileName;
+            });
+            resolve({
+              data,
+              nameActor,
+              info: {
+                limitVCap: vCap.length,
+                path: vCap.path,
+                FPS: vCap.FPS,
+                beginFrame: start,
+                endFrame: end,
+                index
+              }
+            });
+            return null;
+          })
+          .catch(() => {});
       }
     });
   });
