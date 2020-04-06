@@ -15,4 +15,4 @@ export const DONATE_PAYPAL_URL = `https://paypal.me/`;
 
 export const DEFAULT_AUTO_UPDATE_CHECK = true;
 
-export const NUM_WORKER_PROCESS = 2;
+export const NUM_WORKER_PROCESS = 4;

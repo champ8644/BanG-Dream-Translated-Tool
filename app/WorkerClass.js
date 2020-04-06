@@ -1,6 +1,5 @@
 import { BrowserWindow, ipcMain } from 'electron';
 
-import { NUM_WORKER_PROCESS } from './constants';
 import { PATHS } from './utils/paths';
 import { log } from './utils/log';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,8 +7,12 @@ import { v4 as uuidv4 } from 'uuid';
 export default class WorkerClass {
   constructor() {
     this.waiting = [];
-    this.workerWindows = Array.from(Array(NUM_WORKER_PROCESS), (x, index) => {
-      let window = new BrowserWindow({
+    this.workerWindows = [this.openNewWindow(0)];
+  }
+
+  openNewWindow(index) {
+    return new Promise(resolve => {
+      const window = new BrowserWindow({
         title: `Worker window ${index}`,
         show: false,
         webPreferences: { nodeIntegration: true }
@@ -21,23 +24,27 @@ export default class WorkerClass {
         }
       });
       window.webContents.on('did-finish-load', () => {
-        if (!window) {
-          throw new Error(`"window${index}" is not defined`);
-        }
+        if (!window) throw new Error(`"window${index}" is not defined`);
+        resolve(window);
       });
       window.onerror = error => {
         log.error(error, `main.dev -> window${index} -> onerror`);
       };
       window.on('closed', () => {
-        window = null;
+        this.workerWindows[index] = null;
       });
-      return window;
     });
   }
 
   async startEvents(payload) {
-    const { videoFilePath, start, end } = payload;
-    const batch = Math.round((end - start) / NUM_WORKER_PROCESS);
+    const { videoFilePath, start, end, process } = payload;
+    const invokeWindows = [];
+    for (let i = 0; i < process; i++)
+      invokeWindows[i] = this.workerWindows[i]
+        ? this.workerWindows[i]
+        : this.openNewWindow(i);
+    this.workerWindows = await Promise.all(invokeWindows);
+    const batch = Math.round((end - start) / process);
     this.workerWindows.forEach((window, index) => {
       const uuid = uuidv4();
       window.webContents.send('start-events', {
@@ -55,6 +62,7 @@ export default class WorkerClass {
       'sum-events',
       await Promise.all(this.waiting)
     );
+    for (let i = 1; i < process; i++) this.workerWindows[i].close();
   }
 
   sendMessage(arg) {

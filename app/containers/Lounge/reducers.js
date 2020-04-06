@@ -225,6 +225,10 @@ export default function Lounge(state = initialState, action) {
         ...other
       };
 
+      if (substituteBar.percent > 100) {
+        substituteBar.percent = 100;
+      }
+
       const newBar = bar.map((val, idx) => {
         if (idx === index) return substituteBar;
         return val;
@@ -241,6 +245,7 @@ export default function Lounge(state = initialState, action) {
 
       info.bar = newBar;
       info.percent = (info.progress / (info.endFrame - info.beginFrame)) * 100;
+      if (info.percent > 100) info.percent = 100;
       info.FPS = (info.progress / timePassed) * 1000;
       info.beginTime = beginTime;
 

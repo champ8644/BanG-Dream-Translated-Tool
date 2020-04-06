@@ -1,6 +1,6 @@
 import { chunkCount, meanLength, meanSmooth } from '../constants/config';
+import { fadeThreshold, intersectCompensate } from '../constants';
 
-import { fadeThreshold } from '../constants';
 import findActorID from './findActorID';
 import makeNameLabel from './makeNameLabel';
 import makePlaceLabel from './makePlaceLabel';
@@ -93,31 +93,29 @@ function nonBlockingLoop({
     finished
   });
   let i = beginFrame;
-  let isFinishing = false;
   let gracefulFinish = false;
   isLoopValid = true;
   message2UI('begin-progress', { index, beginFrame, endFrame });
   (function chunk() {
     const end = Math.min(i + chunksize, limitVCap);
-    let notActive;
+    let activeWorking;
     for (; i < end; i++) {
       if (!isLoopValid) break;
-      notActive = callback.call(null, i);
-      if (isFinishing && notActive) {
+      activeWorking = callback.call(null, i);
+      if (i >= endFrame + intersectCompensate && !activeWorking.notEmpty) {
         gracefulFinish = true;
         break;
       }
     }
-    const frame = i > endFrame ? endFrame : i;
+    // const frame = i > endFrame ? endFrame : i;
     if (gracefulFinish || i >= limitVCap) {
-      message2UI('finish-progress', { index, frame, beginFrame, endFrame });
+      message2UI('update-progress', { index, frame: i, beginFrame, endFrame });
       finished.call(null);
     } else if (!isLoopValid) {
-      message2UI('cancel-progress', { index, frame, beginFrame, endFrame });
+      message2UI('cancel-progress', { index, frame: i, beginFrame, endFrame });
       finished.call(null);
     } else {
-      message2UI('update-progress', { index, frame, beginFrame, endFrame });
-      if (i >= endFrame) isFinishing = true;
+      message2UI('update-progress', { index, frame: i, beginFrame, endFrame });
       setTimeout(chunk, 0);
     }
   })();
@@ -153,7 +151,7 @@ export default function mainEvent({ vCap, start, end, index }) {
       chunksize: chunkCount,
       callback: i => {
         const frame = i;
-        let notActive = true;
+        let activeWorking = {};
         // const ms = (i * 1000) / vCap.FPS;
         // const frame = vCap.getFrame();
         // const ms = vCap.getFrame('ms');
@@ -168,9 +166,12 @@ export default function mainEvent({ vCap, start, end, index }) {
           if (!refractory.place) {
             data.place.push({ begin: frame });
             refractory.place = true;
-          } else {
-            notActive = false;
-          }
+          } else
+            activeWorking = {
+              ...activeWorking,
+              placeObj: true,
+              notEmpty: true
+            };
         } else if (refractory.place) {
           data.place[data.place.length - 1].end = frame;
           refractory.place = false;
@@ -181,9 +182,12 @@ export default function mainEvent({ vCap, start, end, index }) {
           if (!refractory.title) {
             data.title.push({ begin: frame, width: titleObj.width });
             refractory.title = true;
-          } else {
-            notActive = false;
-          }
+          } else
+            activeWorking = {
+              ...activeWorking,
+              titleObj: true,
+              notEmpty: true
+            };
         } else if (refractory.title) {
           data.title[data.title.length - 1].end = frame;
           refractory.title = false;
@@ -205,16 +209,19 @@ export default function mainEvent({ vCap, start, end, index }) {
               actor: findActorID(nameObj.actor, frame, nameActor)
             });
             currentActor = nameObj.actorStar;
-            notActive = false;
-          } else {
-            notActive = false;
-          }
+          } else
+            activeWorking = { ...activeWorking, nameObj: true, notEmpty: true };
           prevDialog = nameObj.dialog;
         } else if (refractory.name) {
           // vCap.showMatInCanvas(nameObj.actorStar);
           const starMatched = starMatching(mat, currentActor);
           if (starMatched) {
-            notActive = false;
+            activeWorking = {
+              ...activeWorking,
+              nameObj: true,
+              star: true,
+              notEmpty: true
+            };
             // nameObj = makeNameLabel(mat, starMatched);
             if (!data.name[data.name.length - 1].shake)
               data.name[data.name.length - 1].shake = [];
@@ -240,6 +247,7 @@ export default function mainEvent({ vCap, start, end, index }) {
         const minMaxObj = minMaxFinder(mat);
         meanClass.push(frame, minMaxObj.mean);
         if (minMaxObj.isBlack) {
+          activeWorking = { ...activeWorking, fadeB: true, notEmpty: true };
           if (refractory.fadeB === 0) {
             const beginBlack = meanClass.findFadeInBlack(frame);
             data.fadeB.push({ begin: frame - beginBlack });
@@ -247,20 +255,22 @@ export default function mainEvent({ vCap, start, end, index }) {
             refractory.fadeB = meanSmooth + 1;
           }
         } else if (refractory.fadeB > meanSmooth) {
-          notActive = false;
+          activeWorking = { ...activeWorking, fadeB: true, notEmpty: true };
           data.fadeB[data.fadeB.length - 1].fadeOut = frame;
           refractory.fadeB--;
         } else if (refractory.fadeB > 1) {
-          notActive = false;
+          activeWorking = { ...activeWorking, fadeB: true, notEmpty: true };
           refractory.fadeB--;
         } else if (refractory.fadeB === 1) {
           if (meanClass.isOutOfBlack(frame)) {
             data.fadeB[data.fadeB.length - 1].end = frame - meanSmooth;
             refractory.fadeB = 0;
-          }
+          } else
+            activeWorking = { ...activeWorking, fadeB: true, notEmpty: true };
         }
 
         if (minMaxObj.isWhite) {
+          activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
           if (refractory.fadeW === 0) {
             const beginWhite = meanClass.findFadeInWhite(frame);
             data.fadeW.push({ begin: frame - beginWhite });
@@ -268,19 +278,20 @@ export default function mainEvent({ vCap, start, end, index }) {
             refractory.fadeW = meanSmooth + 1;
           }
         } else if (refractory.fadeW > meanSmooth) {
-          notActive = false;
+          activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
           data.fadeW[data.fadeW.length - 1].fadeOut = frame;
           refractory.fadeW--;
         } else if (refractory.fadeW > 1) {
-          notActive = false;
+          activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
           refractory.fadeW--;
         } else if (refractory.fadeW === 1) {
           if (meanClass.isOutOfWhite(frame)) {
             data.fadeW[data.fadeW.length - 1].end = frame - meanSmooth;
             refractory.fadeW = 0;
-          }
+          } else
+            activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
         }
-        return notActive;
+        return activeWorking;
       },
       finished: () => {
         resolve({ data, nameActor });

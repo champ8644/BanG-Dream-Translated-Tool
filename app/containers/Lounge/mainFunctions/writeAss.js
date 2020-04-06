@@ -1,6 +1,5 @@
 import assTemplate from '../constants/assTemplate';
 import { correctPlaceFadeBlack } from '../constants';
-import { endVCap } from '../constants/config';
 import fs from 'fs';
 
 let toMs;
@@ -27,21 +26,21 @@ function writeCredit(frame) {
   `;
 }
 
-function writePlace({ begin, end = endVCap, content = '' }) {
+function writePlace({ begin, end, content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ชื่อสถานที่,93,0,0,0,,${content}
   `;
 }
 
-function writeTitle({ begin, end = endVCap, width, content = '' }) {
+function writeTitle({ begin, end, width, content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ชื่อตอน,${width},0,0,0,,${content}
   `;
 }
 
-function writeSubtitle({ begin, end = endVCap, actor = '', content = '' }) {
+function writeSubtitle({ begin, end, actor = '', content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ข้อความ,${actor},0,0,0,,${content}
@@ -50,7 +49,7 @@ function writeSubtitle({ begin, end = endVCap, actor = '', content = '' }) {
 
 function writeSubtitleShake({
   begin,
-  end = endVCap,
+  end,
   actor = '',
   shakeUID,
   content = ''
@@ -67,24 +66,14 @@ function writeNameActor({ frame, uid }) {
   `;
 }
 
-function writeWhite({
-  begin,
-  end = endVCap,
-  fadeIn = endVCap,
-  fadeOut = endVCap
-}) {
+function writeWhite({ begin, end, fadeIn, fadeOut }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},ฉากขาว,${timeMs(
     fadeIn - begin
   )};${timeMs(end - fadeOut)},0,0,0,,
   `;
 }
 
-function writeBlack({
-  begin,
-  end = endVCap,
-  fadeIn = endVCap,
-  fadeOut = endVCap
-}) {
+function writeBlack({ begin, end, fadeIn, fadeOut }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},ฉากดำ,${timeMs(
     fadeIn - begin
   )};${timeMs(end - fadeOut)},0,0,0,,

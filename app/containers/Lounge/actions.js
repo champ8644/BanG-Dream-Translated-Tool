@@ -6,6 +6,7 @@ import { endFrameTest, startFrameTest } from './constants/config';
 import { gapConst, maxMinDist } from './constants';
 import mainEvent, { devalidLoop } from './mainFunctions/mainEvent';
 
+import { NUM_WORKER_PROCESS } from '../../constants';
 import Queue from '../../classes/Queue';
 import VideoCapture from './VideoCapture';
 import XLSX from 'xlsx';
@@ -58,7 +59,12 @@ export function sendMessage(payload = {}) {
       start = startFrameTest;
       end = endFrameTest;
     }
-    message2Worker('start-events', { videoFilePath, start, end });
+    message2Worker('start-events', {
+      videoFilePath,
+      start,
+      end,
+      process: NUM_WORKER_PROCESS
+    });
   };
 }
 
