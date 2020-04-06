@@ -145,7 +145,8 @@ function isIntersect(a, b) {
 }
 
 /* eslint-disable no-param-reassign */
-export default function writeAss(data, nameActor, vCap) {
+export default function writeAss(data, nameActor, info) {
+  const { vCap } = info;
   toMs = frame => (frame * 1000) / vCap.FPS;
   // eslint-disable-next-line no-console
   console.log('data: ', data);

@@ -5,6 +5,7 @@ import mainEvent, {
 import VideoCapture from './containers/Lounge/VideoCapture';
 import electron from 'electron';
 import mergeData from './containers/Lounge/mainFunctions/mergeData';
+import writeAss from './containers/Lounge/mainFunctions/writeAss';
 
 const { ipcRenderer } = electron;
 
@@ -25,9 +26,7 @@ ipcRenderer.on('start-events', async (e, arg) => {
   ipcRenderer.send(uuid, res);
 });
 
-ipcRenderer.on('sum-events', async (e, payload) => {
-  const data = await mergeData(payload);
-  // eslint-disable-next-line no-console
-  console.log('data: ', data);
+ipcRenderer.on('sum-events', (e, payload) => {
+  writeAss(mergeData(payload));
   message2UI('finish-progress');
 });

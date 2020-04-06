@@ -294,7 +294,11 @@ export default function mainEvent({ vCap, start, end, index }) {
         return activeWorking;
       },
       finished: () => {
-        resolve({ data, nameActor });
+        resolve({
+          data,
+          nameActor,
+          info: { vCap, beginFrame: start, endFrame: end, index }
+        });
       }
     });
   });
