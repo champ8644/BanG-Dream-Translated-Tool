@@ -38,7 +38,10 @@ const actionTypesList = [
   'IMPORTING',
   'HANDLE_RADIO_SELECT',
   'HANDLE_COMMITTED_SLIDER',
-  'UPDATE_LINEAR'
+  'UPDATE_LINEAR',
+  'BEGIN_LINEAR',
+  'FINISH_LINEAR',
+  'CANCEL_LINEAR'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -60,13 +63,28 @@ export function sendMessage(payload = {}) {
 }
 
 export function updateLinear(payload) {
-  return (dispatch, getState) => {
-    // const { vCap } = getState().Lounge;
-    // vCap.show(payload.frame);
-    dispatch({
-      type: actionTypes.UPDATE_LINEAR,
-      payload
-    });
+  return {
+    type: actionTypes.UPDATE_LINEAR,
+    payload
+  };
+}
+
+export function beginLinear(payload) {
+  return {
+    type: actionTypes.BEGIN_LINEAR,
+    payload
+  };
+}
+
+export function cancelLinear() {
+  return {
+    type: actionTypes.CANCEL_LINEAR
+  };
+}
+
+export function finishLinear() {
+  return {
+    type: actionTypes.FINISH_LINEAR
   };
 }
 

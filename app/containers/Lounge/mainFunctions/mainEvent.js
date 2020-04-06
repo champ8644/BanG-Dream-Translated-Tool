@@ -7,7 +7,6 @@ import makePlaceLabel from './makePlaceLabel';
 import makeTitleLabel from './makeTitleLabel';
 import message2UI from '../../../worker/message2UI';
 import minMaxFinder from './minMaxFinder';
-import moment from 'moment';
 import starMatching from './starMatching';
 
 class Meaning {
@@ -71,14 +70,6 @@ let meanClass;
 let data;
 let refractory;
 
-function showTime(dur) {
-  const h = dur.hours();
-  const mm = `${dur.minutes()}`.padStart(2, '0');
-  const ss = `${dur.seconds()}`.padStart(2, '0');
-  if (h > 0) return `${h}:${mm}:${ss}`;
-  return `${mm}:${ss}`;
-}
-
 let isLoopValid;
 export function devalidLoop() {
   isLoopValid = false;
@@ -105,17 +96,7 @@ function nonBlockingLoop({
   let isFinishing = false;
   let gracefulFinish = false;
   isLoopValid = true;
-  const beginTime = new Date().getTime();
-  message2UI('update-progress', {
-    percent: 0,
-    FPS: 0,
-    delay: 1,
-    frame: i,
-    timePassed: showTime(moment.duration(0)),
-    timeLeft: 'determining...',
-    timeAll: 'determining...',
-    index
-  });
+  message2UI('begin-progress', { index, beginFrame, endFrame });
   (function chunk() {
     const end = Math.min(i + chunksize, limitVCap);
     let notActive;
@@ -127,46 +108,15 @@ function nonBlockingLoop({
         break;
       }
     }
-    const FPS = ((i - beginFrame) / (new Date().getTime() - beginTime)) * 1000;
+    const frame = i > endFrame ? endFrame : i;
     if (gracefulFinish || i >= limitVCap) {
-      const timePassed = new Date().getTime() - beginTime;
-      message2UI('finish-progress', {
-        percent: 100,
-        FPS,
-        delay: 100,
-        frame: i,
-        timePassed: showTime(moment.duration(timePassed)),
-        timeLeft: 'Job finished',
-        timeAll: showTime(moment.duration(timePassed)),
-        index
-      });
+      message2UI('finish-progress', { index, frame, beginFrame, endFrame });
       finished.call(null);
     } else if (!isLoopValid) {
-      const timePassed = new Date().getTime() - beginTime;
-      message2UI('cancel-progress', {
-        percent: 100,
-        FPS,
-        delay: 100,
-        frame: i,
-        timePassed: showTime(moment.duration(timePassed)),
-        timeLeft: 'Job cancelled',
-        timeAll: showTime(moment.duration(timePassed)),
-        index
-      });
+      message2UI('cancel-progress', { index, frame, beginFrame, endFrame });
       finished.call(null);
     } else {
-      const timeLeft = ((endFrame - i) / FPS) * 1000;
-      const timePassed = new Date().getTime() - beginTime;
-      message2UI('update-progress', {
-        percent: ((i - beginFrame) / (endFrame - beginFrame)) * 100,
-        FPS,
-        delay: (chunksize / FPS) * 1000,
-        frame: i,
-        timePassed: showTime(moment.duration(timePassed)),
-        timeLeft: showTime(moment.duration(timeLeft)),
-        timeAll: showTime(moment.duration(timeLeft + timePassed)),
-        index
-      });
+      message2UI('update-progress', { index, frame, beginFrame, endFrame });
       if (i >= endFrame) isFinishing = true;
       setTimeout(chunk, 0);
     }

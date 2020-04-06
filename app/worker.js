@@ -25,6 +25,7 @@ ipcRenderer.on('start-events', async (e, arg) => {
 });
 
 ipcRenderer.on('sum-events', (e, payload) => {
+  message2UI('finish-progress');
   // eslint-disable-next-line no-console
   console.log('data sum', payload);
 });
