@@ -1,6 +1,11 @@
-import { devalidLoop } from './containers/Lounge/mainFunctions/mainEvent';
+import mainEvent, {
+  devalidLoop
+} from './containers/Lounge/mainFunctions/mainEvent';
+
+import VideoCapture from './containers/Lounge/VideoCapture';
 import electron from 'electron';
-import mainEvents from './worker/mainEvents';
+import mergeData from './containers/Lounge/mainFunctions/mergeData';
+import writeAss from './containers/Lounge/mainFunctions/writeAss';
 
 const { ipcRenderer } = electron;
 
@@ -12,5 +17,18 @@ function message2UI(command, payload) {
   });
 }
 
-ipcRenderer.on('start-events', (e, arg) => mainEvents(e, arg));
-ipcRenderer.on('stop-events', () => devalidLoop());
+ipcRenderer.on('stop-events', devalidLoop);
+
+ipcRenderer.on('start-events', async (e, arg) => {
+  const { videoFilePath, start, end, uuid, index } = arg;
+  const vCap = new VideoCapture({ path: videoFilePath });
+  const res = await mainEvent({ vCap, start, end, index });
+  ipcRenderer.send(uuid, res);
+});
+
+ipcRenderer.on('sum-events', (e, payload) => {
+  if (payload[0].finished) {
+    writeAss(mergeData(payload));
+    message2UI('finish-progress');
+  } else message2UI('cancel-progress');
+});

@@ -1,6 +1,5 @@
 import assTemplate from '../constants/assTemplate';
 import { correctPlaceFadeBlack } from '../constants';
-import { endVCap } from '../constants/config';
 import fs from 'fs';
 
 let toMs;
@@ -27,21 +26,21 @@ function writeCredit(frame) {
   `;
 }
 
-function writePlace({ begin, end = endVCap, content = '' }) {
+function writePlace({ begin, end, content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ชื่อสถานที่,93,0,0,0,,${content}
   `;
 }
 
-function writeTitle({ begin, end = endVCap, width, content = '' }) {
+function writeTitle({ begin, end, width, content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ชื่อตอน,${width},0,0,0,,${content}
   `;
 }
 
-function writeSubtitle({ begin, end = endVCap, actor = '', content = '' }) {
+function writeSubtitle({ begin, end, actor = '', content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ข้อความ,${actor},0,0,0,,${content}
@@ -50,7 +49,7 @@ function writeSubtitle({ begin, end = endVCap, actor = '', content = '' }) {
 
 function writeSubtitleShake({
   begin,
-  end = endVCap,
+  end,
   actor = '',
   shakeUID,
   content = ''
@@ -67,24 +66,14 @@ function writeNameActor({ frame, uid }) {
   `;
 }
 
-function writeWhite({
-  begin,
-  end = endVCap,
-  fadeIn = endVCap,
-  fadeOut = endVCap
-}) {
+function writeWhite({ begin, end, fadeIn, fadeOut }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},ฉากขาว,${timeMs(
     fadeIn - begin
   )};${timeMs(end - fadeOut)},0,0,0,,
   `;
 }
 
-function writeBlack({
-  begin,
-  end = endVCap,
-  fadeIn = endVCap,
-  fadeOut = endVCap
-}) {
+function writeBlack({ begin, end, fadeIn, fadeOut }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},ฉากดำ,${timeMs(
     fadeIn - begin
   )};${timeMs(end - fadeOut)},0,0,0,,
@@ -131,6 +120,7 @@ function bakeShake(item) {
   shakeTree[0] = { x: 0, y: 0 };
   if (max < end && !(shakeTree[max].x === 0 && shakeTree[max].y === 0))
     shakeTree[max + 1] = { x: 0, y: 0 };
+  shakeTree[end - begin] = { x: 0, y: 0 };
   const shakeOut = Object.keys(shakeTree).map(key => ({
     frame: Number(key),
     ...shakeTree[key]
@@ -156,12 +146,13 @@ function isIntersect(a, b) {
 }
 
 /* eslint-disable no-param-reassign */
-export default function writeAss(data, nameActor, vCap) {
-  toMs = frame => (frame * 1000) / vCap.FPS;
+export default function writeAss({ data, nameActor, info }) {
+  const { path, limitVCap, FPS } = info;
+  toMs = frame => (frame * 1000) / FPS;
   // eslint-disable-next-line no-console
   console.log('data: ', data);
   const stream = fs.createWriteStream(
-    `${vCap.path.substr(0, vCap.path.lastIndexOf('.'))}.ass`,
+    `${path.substr(0, path.lastIndexOf('.'))}.ass`,
     {
       encoding: 'utf8'
     }
@@ -177,7 +168,7 @@ export default function writeAss(data, nameActor, vCap) {
     if (data[type]) {
       if (data[type].length > 0) {
         const item = data[type][data[type].length - 1];
-        if (!item.end) item.end = vCap.length;
+        if (!item.end) item.end = limitVCap;
       }
     }
   });
@@ -264,9 +255,9 @@ export default function writeAss(data, nameActor, vCap) {
   // eslint-disable-next-line no-console
   console.log('outData: ', outData);
   stream.once('open', () => {
-    stream.write(assTemplate(vCap.path));
+    stream.write(assTemplate(path));
     shakeArr.forEach(item => stream.write(writeShake(item)));
-    stream.write(writeCredit(vCap.length));
+    stream.write(writeCredit(limitVCap));
     nameActor.forEach(item => stream.write(writeNameActor(item)));
     outData.forEach(item => {
       switch (item.type) {

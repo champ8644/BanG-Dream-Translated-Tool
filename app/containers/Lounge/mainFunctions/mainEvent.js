@@ -1,21 +1,16 @@
-import {
-  chunkCount,
-  endVCap,
-  meanLength,
-  meanSmooth,
-  startVCap
-} from '../constants/config';
+import { chunkCount, meanLength, meanSmooth } from '../constants/config';
+import { fadeThreshold, intersectCompensate } from '../constants';
 
-import { fadeThreshold } from '../constants';
+import cv from 'opencv4nodejs';
 import findActorID from './findActorID';
 import makeNameLabel from './makeNameLabel';
 import makePlaceLabel from './makePlaceLabel';
 import makeTitleLabel from './makeTitleLabel';
 import message2UI from '../../../worker/message2UI';
 import minMaxFinder from './minMaxFinder';
-import moment from 'moment';
 import starMatching from './starMatching';
-import writeAss from './writeAss';
+import tmp from 'tmp-promise';
+import { v4 as uuidv4 } from 'uuid';
 
 class Meaning {
   constructor() {
@@ -78,237 +73,250 @@ let meanClass;
 let data;
 let refractory;
 
-function showTime(dur) {
-  const h = dur.hours();
-  const mm = `${dur.minutes()}`.padStart(2, '0');
-  const ss = `${dur.seconds()}`.padStart(2, '0');
-  if (h > 0) return `${h}:${mm}:${ss}`;
-  return `${mm}:${ss}`;
-}
-
 let isLoopValid;
 export function devalidLoop() {
   isLoopValid = false;
 }
-let newStartVCap;
-function nonBlockingLoop(count = 1e9, chunksize, callback, finished) {
-  let i;
-  let useStartVCap = startVCap;
-  if (newStartVCap !== null) useStartVCap = newStartVCap;
-  i = useStartVCap;
-  isLoopValid = true;
-  const beginTime = new Date().getTime();
-  message2UI('update-progress', {
-    percent: 0,
-    FPS: 0,
-    delay: 1,
-    frame: i,
-    timePassed: showTime(moment.duration(0)),
-    timeLeft: 'determining...',
-    timeAll: 'determining...'
+function nonBlockingLoop({
+  beginFrame = 0,
+  endFrame = 1e9,
+  limitVCap,
+  chunksize,
+  callback,
+  finished,
+  index
+}) {
+  // eslint-disable-next-line no-console
+  console.log({
+    beginFrame,
+    endFrame,
+    limitVCap,
+    chunksize,
+    callback,
+    finished
   });
+  let i = beginFrame;
+  let gracefulFinish = false;
+  isLoopValid = true;
+  message2UI('begin-progress', { index, beginFrame, endFrame });
   (function chunk() {
-    const end = Math.min(i + chunksize, count);
+    const end = Math.min(i + chunksize, limitVCap);
+    let activeWorking;
     for (; i < end; i++) {
       if (!isLoopValid) break;
-      callback.call(null, i);
+      activeWorking = callback.call(null, i);
+      if (i >= endFrame + intersectCompensate && !activeWorking.notEmpty) {
+        gracefulFinish = true;
+        break;
+      }
     }
-    const FPS =
-      ((i - useStartVCap) / (new Date().getTime() - beginTime)) * 1000;
-    if (i >= count) {
-      const timePassed = new Date().getTime() - beginTime;
-      message2UI('finish-progress', {
-        percent: 100,
-        FPS,
-        delay: 100,
-        frame: i,
-        timePassed: showTime(moment.duration(timePassed)),
-        timeLeft: 'Job finished',
-        timeAll: showTime(moment.duration(timePassed))
-      });
-      finished.call(null);
-    } else if (!isLoopValid) {
-      const timePassed = new Date().getTime() - beginTime;
-      message2UI('cancel-progress', {
-        percent: 100,
-        FPS,
-        delay: 100,
-        frame: i,
-        timePassed: showTime(moment.duration(timePassed)),
-        timeLeft: 'Job cancelled',
-        timeAll: showTime(moment.duration(timePassed))
-      });
-      finished.call(null);
-    } else {
-      const timeLeft = ((count - i) / FPS) * 1000;
-      const timePassed = new Date().getTime() - beginTime;
-      message2UI('update-progress', {
-        percent: ((i - useStartVCap) / (count - useStartVCap)) * 100,
-        FPS,
-        delay: (chunksize / FPS) * 1000,
-        frame: i,
-        timePassed: showTime(moment.duration(timePassed)),
-        timeLeft: showTime(moment.duration(timeLeft)),
-        timeAll: showTime(moment.duration(timeLeft + timePassed))
-      });
-      setTimeout(chunk, 0);
-    }
+    // const frame = i > endFrame ? endFrame : i;
+    message2UI('update-progress', { index, frame: i, beginFrame, endFrame });
+    if (gracefulFinish || i >= limitVCap) finished.call(null, true);
+    else if (!isLoopValid) finished.call(null, false);
+    else setTimeout(chunk, 0);
   })();
 }
 
 let currentActor;
 
-export default function mainEvent({ vCap, start: _start, end: _end }) {
-  prevDialog = null;
-  newStartVCap = null;
-  meanClass = new Meaning();
-  data = {
-    name: [],
-    place: [],
-    title: [],
-    fadeB: [],
-    fadeW: []
-  };
-  refractory = {
-    name: false,
-    place: false,
-    title: false,
-    fadeB: 0,
-    fadeW: 0
-  };
-  const nameActor = [];
-  let timeLimit = _end;
-  const limitVCap = vCap.length - 1;
-  if (timeLimit < 0) {
-    timeLimit = endVCap;
-    newStartVCap = startVCap;
-  } else {
-    newStartVCap = 0;
-    if (timeLimit > limitVCap || timeLimit === undefined) timeLimit = limitVCap;
-  }
-  // eslint-disable-line no-console
-  nonBlockingLoop(
-    timeLimit,
-    chunkCount,
-    i => {
-      const frame = i;
-      // const ms = (i * 1000) / vCap.FPS;
-      // const frame = vCap.getFrame();
-      // const ms = vCap.getFrame('ms');
-      const mat = vCap.getMat(frame);
-      if (mat.empty) {
-        isLoopValid = false;
-        return;
-      }
-
-      const placeObj = makePlaceLabel(mat, refractory.place);
-      if (placeObj.status) {
-        if (!refractory.place) {
-          data.place.push({ begin: frame });
-          refractory.place = true;
+export default function mainEvent({ vCap, start, end, index }) {
+  return new Promise(resolve => {
+    prevDialog = null;
+    meanClass = new Meaning();
+    data = {
+      name: [],
+      place: [],
+      title: [],
+      fadeB: [],
+      fadeW: []
+    };
+    refractory = {
+      name: false,
+      place: false,
+      title: false,
+      fadeB: 0,
+      fadeW: 0
+    };
+    const nameActor = [];
+    // eslint-disable-line no-console
+    nonBlockingLoop({
+      index,
+      beginFrame: start,
+      endFrame: end,
+      limitVCap: vCap.length,
+      chunksize: chunkCount,
+      callback: i => {
+        const frame = i;
+        let activeWorking = {};
+        // const ms = (i * 1000) / vCap.FPS;
+        // const frame = vCap.getFrame();
+        // const ms = vCap.getFrame('ms');
+        const mat = vCap.getMat(frame);
+        if (mat.empty) {
+          isLoopValid = false;
+          return;
         }
-      } else if (refractory.place) {
-        data.place[data.place.length - 1].end = frame;
-        refractory.place = false;
-      }
 
-      const titleObj = makeTitleLabel(mat, refractory.title);
-      if (titleObj.status) {
-        if (!refractory.title) {
-          data.title.push({ begin: frame, width: titleObj.width });
-          refractory.title = true;
+        const placeObj = makePlaceLabel(mat, refractory.place);
+        if (placeObj.status) {
+          if (!refractory.place) {
+            data.place.push({ begin: frame });
+            refractory.place = true;
+          } else
+            activeWorking = {
+              ...activeWorking,
+              placeObj: true,
+              notEmpty: true
+            };
+        } else if (refractory.place) {
+          data.place[data.place.length - 1].end = frame;
+          refractory.place = false;
         }
-      } else if (refractory.title) {
-        data.title[data.title.length - 1].end = frame;
-        refractory.title = false;
-      }
 
-      const nameObj = makeNameLabel(mat);
-      if (nameObj.status) {
-        if (!refractory.name) {
-          refractory.name = true;
-          data.name.push({
-            begin: frame,
-            actor: findActorID(nameObj.actor, frame, nameActor)
-          });
-          currentActor = nameObj.actorStar;
-        } else if (nameObj.dialog && !prevDialog) {
-          data.name[data.name.length - 1].end = frame;
-          data.name.push({
-            begin: frame,
-            actor: findActorID(nameObj.actor, frame, nameActor)
-          });
-          currentActor = nameObj.actorStar;
+        const titleObj = makeTitleLabel(mat, refractory.title);
+        if (titleObj.status) {
+          if (!refractory.title) {
+            data.title.push({ begin: frame, width: titleObj.width });
+            refractory.title = true;
+          } else
+            activeWorking = {
+              ...activeWorking,
+              titleObj: true,
+              notEmpty: true
+            };
+        } else if (refractory.title) {
+          data.title[data.title.length - 1].end = frame;
+          refractory.title = false;
         }
-        prevDialog = nameObj.dialog;
-      } else if (refractory.name) {
-        // vCap.showMatInCanvas(nameObj.actorStar);
-        const starMatched = starMatching(mat, currentActor);
-        if (starMatched) {
-          // nameObj = makeNameLabel(mat, starMatched);
-          if (!data.name[data.name.length - 1].shake)
-            data.name[data.name.length - 1].shake = [];
-          data.name[data.name.length - 1].shake.push({
-            frame: frame - data.name[data.name.length - 1].begin,
-            ...starMatched
-          });
-          // if (nameObj.dialog && !prevDialog) {
-          //   data.name[data.name.length - 1].end = frame;
-          //   data.name.push({
-          //     begin: frame,
-          //     actor: findActorID(nameObj.actor, frame, nameActor)
-          //   });
-          // }
+
+        const nameObj = makeNameLabel(mat);
+        if (nameObj.status) {
+          if (!refractory.name) {
+            refractory.name = true;
+            data.name.push({
+              begin: frame,
+              actor: findActorID(nameObj.actor, frame, nameActor)
+            });
+            currentActor = nameObj.actorStar;
+          } else if (nameObj.dialog && !prevDialog) {
+            data.name[data.name.length - 1].end = frame;
+            data.name.push({
+              begin: frame,
+              actor: findActorID(nameObj.actor, frame, nameActor)
+            });
+            currentActor = nameObj.actorStar;
+          } else
+            activeWorking = { ...activeWorking, nameObj: true, notEmpty: true };
           prevDialog = nameObj.dialog;
-        } else {
-          data.name[data.name.length - 1].end = frame;
-          prevDialog = null;
-          refractory.name = false;
+        } else if (refractory.name) {
+          // vCap.showMatInCanvas(nameObj.actorStar);
+          const starMatched = starMatching(mat, currentActor);
+          if (starMatched) {
+            activeWorking = {
+              ...activeWorking,
+              nameObj: true,
+              star: true,
+              notEmpty: true
+            };
+            // nameObj = makeNameLabel(mat, starMatched);
+            if (!data.name[data.name.length - 1].shake)
+              data.name[data.name.length - 1].shake = [];
+            data.name[data.name.length - 1].shake.push({
+              frame: frame - data.name[data.name.length - 1].begin,
+              ...starMatched
+            });
+            // if (nameObj.dialog && !prevDialog) {
+            //   data.name[data.name.length - 1].end = frame;
+            //   data.name.push({
+            //     begin: frame,
+            //     actor: findActorID(nameObj.actor, frame, nameActor)
+            //   });
+            // }
+            prevDialog = nameObj.dialog;
+          } else {
+            data.name[data.name.length - 1].end = frame;
+            prevDialog = null;
+            refractory.name = false;
+          }
         }
-      }
 
-      const minMaxObj = minMaxFinder(mat);
-      meanClass.push(frame, minMaxObj.mean);
-      if (minMaxObj.isBlack) {
-        if (refractory.fadeB === 0) {
-          const beginBlack = meanClass.findFadeInBlack(frame);
-          data.fadeB.push({ begin: frame - beginBlack });
-          data.fadeB[data.fadeB.length - 1].fadeIn = frame;
-          refractory.fadeB = meanSmooth + 1;
+        const minMaxObj = minMaxFinder(mat);
+        meanClass.push(frame, minMaxObj.mean);
+        if (minMaxObj.isBlack) {
+          activeWorking = { ...activeWorking, fadeB: true, notEmpty: true };
+          if (refractory.fadeB === 0) {
+            const beginBlack = meanClass.findFadeInBlack(frame);
+            data.fadeB.push({ begin: frame - beginBlack });
+            data.fadeB[data.fadeB.length - 1].fadeIn = frame;
+            refractory.fadeB = meanSmooth + 1;
+          }
+        } else if (refractory.fadeB > meanSmooth) {
+          activeWorking = { ...activeWorking, fadeB: true, notEmpty: true };
+          data.fadeB[data.fadeB.length - 1].fadeOut = frame;
+          refractory.fadeB--;
+        } else if (refractory.fadeB > 1) {
+          activeWorking = { ...activeWorking, fadeB: true, notEmpty: true };
+          refractory.fadeB--;
+        } else if (refractory.fadeB === 1) {
+          if (meanClass.isOutOfBlack(frame)) {
+            data.fadeB[data.fadeB.length - 1].end = frame - meanSmooth;
+            refractory.fadeB = 0;
+          } else
+            activeWorking = { ...activeWorking, fadeB: true, notEmpty: true };
         }
-      } else if (refractory.fadeB > meanSmooth) {
-        data.fadeB[data.fadeB.length - 1].fadeOut = frame;
-        refractory.fadeB--;
-      } else if (refractory.fadeB > 1) {
-        refractory.fadeB--;
-      } else if (refractory.fadeB === 1) {
-        if (meanClass.isOutOfBlack(frame)) {
-          data.fadeB[data.fadeB.length - 1].end = frame - meanSmooth;
-          refractory.fadeB = 0;
-        }
-      }
 
-      if (minMaxObj.isWhite) {
-        if (refractory.fadeW === 0) {
-          const beginWhite = meanClass.findFadeInWhite(frame);
-          data.fadeW.push({ begin: frame - beginWhite });
-          data.fadeW[data.fadeW.length - 1].fadeIn = frame;
-          refractory.fadeW = meanSmooth + 1;
+        if (minMaxObj.isWhite) {
+          activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
+          if (refractory.fadeW === 0) {
+            const beginWhite = meanClass.findFadeInWhite(frame);
+            data.fadeW.push({ begin: frame - beginWhite });
+            data.fadeW[data.fadeW.length - 1].fadeIn = frame;
+            refractory.fadeW = meanSmooth + 1;
+          }
+        } else if (refractory.fadeW > meanSmooth) {
+          activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
+          data.fadeW[data.fadeW.length - 1].fadeOut = frame;
+          refractory.fadeW--;
+        } else if (refractory.fadeW > 1) {
+          activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
+          refractory.fadeW--;
+        } else if (refractory.fadeW === 1) {
+          if (meanClass.isOutOfWhite(frame)) {
+            data.fadeW[data.fadeW.length - 1].end = frame - meanSmooth;
+            refractory.fadeW = 0;
+          } else
+            activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
         }
-      } else if (refractory.fadeW > meanSmooth) {
-        data.fadeW[data.fadeW.length - 1].fadeOut = frame;
-        refractory.fadeW--;
-      } else if (refractory.fadeW > 1) {
-        refractory.fadeW--;
-      } else if (refractory.fadeW === 1) {
-        if (meanClass.isOutOfWhite(frame)) {
-          data.fadeW[data.fadeW.length - 1].end = frame - meanSmooth;
-          refractory.fadeW = 0;
-        }
+        return activeWorking;
+      },
+      finished: finished => {
+        tmp
+          .dir({ unsafeCleanup: true })
+          .then(({ path }) => {
+            nameActor.forEach(actorData => {
+              const fileName = `${path}\\${uuidv4()}.png`;
+              cv.imwrite(fileName, actorData.actor);
+              // eslint-disable-next-line no-param-reassign
+              actorData.actor = fileName;
+            });
+            resolve({
+              data,
+              nameActor,
+              finished,
+              info: {
+                limitVCap: vCap.length,
+                path: vCap.path,
+                FPS: vCap.FPS,
+                beginFrame: start,
+                endFrame: end,
+                index
+              }
+            });
+            return null;
+          })
+          .catch(() => {});
       }
-    },
-    () => {
-      writeAss(data, nameActor, vCap);
-    }
-  );
+    });
+  });
 }

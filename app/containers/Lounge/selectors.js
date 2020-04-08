@@ -83,3 +83,28 @@ export const makePercentLinear = createSelector(
   make,
   state => (state ? state.progressFromWorker : initialState.progressFromWorker)
 );
+
+export const makeReadyToWork = createSelector(
+  make,
+  state => (state ? state.readyToWork : initialState.readyToWork)
+);
+
+export const makeCompleteWork = createSelector(
+  make,
+  state => (state ? state.completeWork : initialState.completeWork)
+);
+
+export const makeCancelWork = createSelector(
+  make,
+  state => (state ? state.cancelWork : initialState.cancelWork)
+);
+
+export const makeNumProcess = createSelector(
+  make,
+  state => (state ? state.numProcess : initialState.numProcess)
+);
+
+export const makeDisplayNumProcess = createSelector(
+  make,
+  state => (state ? state.displayNumProcess : initialState.displayNumProcess)
+);

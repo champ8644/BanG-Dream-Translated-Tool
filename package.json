@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.6.1",
+  "version": "1.7.1",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -18,7 +18,7 @@
     "prestart": "yarn build",
     "start": "cross-env NODE_ENV=production run-electron ./app/main.prod.js",
     "start-main-dev": "cross-env HOT=1 NODE_ENV=development run-electron -r @babel/register ./app/main.dev.js",
-    "start-renderer-dev": "cross-env NODE_ENV=development webpack-dev-server --config webpack/config.renderer.dev.babel.js",
+    "start-renderer-dev": "cross-env NODE_ENV=development webpack-dev-server --mode development --hot --config webpack/config.renderer.dev.babel.js",
     "publish-mac": "yarn build && build --mac --publish always",
     "publish-linux": "yarn build && build --linux --publish always",
     "publish-win": "yarn build && build --win --x64 --publish always",

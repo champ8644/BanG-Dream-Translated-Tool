@@ -4,12 +4,17 @@ import * as actions from './actions';
 
 import React, { Component } from 'react';
 import {
+  makeCancelWork,
+  makeCompleteWork,
   makeCurrentFrame,
   makeDialogData,
+  makeDisplayNumProcess,
+  makeNumProcess,
   makeOverlayMode,
   makePercentLinear,
   makeProgress,
   makeProgressBar,
+  makeReadyToWork,
   makeSlider,
   makeSliderObj,
   makeStatusData,
@@ -36,14 +41,17 @@ import { Helmet } from 'react-helmet';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import { IS_DEV } from '../../constants/env';
 import IconButton from '@material-ui/core/IconButton';
-// import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import InputLabel from '@material-ui/core/InputLabel';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import MenuItem from '@material-ui/core/MenuItem';
+import { NUM_MAX_PROCESS } from './constants';
 import Paper from '@material-ui/core/Paper';
 import PieChartIcon from '@material-ui/icons/PieChart';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import Select from '@material-ui/core/Select';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import Slider from '@material-ui/core/Slider';
@@ -68,16 +76,39 @@ import { withStyles } from '@material-ui/core/styles';
 const { ipcRenderer } = electron;
 
 const CustomLinearProgress = withStyles({
-  root: props => ({
-    height: 10,
-    backgroundColor: props.background || '#FFB1A8'
-  }),
-  bar: props => ({
-    borderRadius: 20,
-    backgroundColor: '#FF6C5C',
-    transition: `transform ${props.delay}ms linear`
-  })
+  root: props => {
+    let backgroundColor = '#FFB1A8';
+    if (props.iscomplete) backgroundColor = '#8FFFC3';
+    if (props.iserror) backgroundColor = '#FF8F87';
+    return {
+      height: 10,
+      backgroundColor
+    };
+  },
+  bar: props => {
+    const borderRad = { L: '0px', R: '20px' };
+    if (props.isfirst) borderRad.L = '20px';
+    if (!props.islast && props.value === 100) borderRad.R = '0px';
+    let backgroundColor = '#FF6C5C';
+    if (props.iscomplete) backgroundColor = '#1DB364';
+    if (props.iserror) backgroundColor = '#FF2819';
+    return {
+      backgroundColor,
+      transition: `transform ${props.delay}ms linear`,
+      borderRadius: `${borderRad.L} ${borderRad.R} ${borderRad.R} ${
+        borderRad.L
+      }`
+    };
+  }
 })(LinearProgress);
+
+/* eslint-disable react/no-array-index-key */
+const ProcessMenuItem = Array.from(Array(NUM_MAX_PROCESS)).map((_, x) => (
+  <MenuItem value={x + 1} key={x + 1}>
+    {x + 1}
+  </MenuItem>
+));
+/* eslint-enable react/no-array-index-key */
 
 const mapStateToProps = (state, props) => {
   return {
@@ -92,7 +123,12 @@ const mapStateToProps = (state, props) => {
     willUpdateNextFrame: makeWillUpdateNextFrame(state),
     overlayMode: makeOverlayMode(state),
     sliderObj: makeSliderObj(state),
-    percentLinear: makePercentLinear(state)
+    percentLinear: makePercentLinear(state),
+    readyToWork: makeReadyToWork(state),
+    cancelWork: makeCancelWork(state),
+    completeWork: makeCompleteWork(state),
+    NUM_PROCESS: makeNumProcess(state),
+    displayNumProcess: makeDisplayNumProcess(state)
   };
 };
 
@@ -155,15 +191,28 @@ class Lounge extends Component {
   }
 
   componentDidMount() {
-    const { sendCanvas, updateLinear } = this.props;
+    const {
+      sendCanvas,
+      updateLinear,
+      beginLinear,
+      finishLinear,
+      cancelLinear
+    } = this.props;
     sendCanvas(this.canvas);
     ipcRenderer.on('message-from-worker', (e, arg) => {
       const { command, payload } = arg;
       switch (command) {
+        case 'begin-progress':
+          beginLinear(payload);
+          break;
         case 'update-progress':
-        case 'finish-progress':
-        case 'cancel-progress':
           updateLinear(payload);
+          break;
+        case 'finish-progress':
+          finishLinear();
+          break;
+        case 'cancel-progress':
+          cancelLinear();
           break;
         default:
       }
@@ -209,9 +258,14 @@ class Lounge extends Component {
       handleCommittedSlider,
       sliderObj,
       commitOnChange,
-      mainEventBtn,
       sendMessage,
-      percentLinear
+      percentLinear,
+      readyToWork,
+      completeWork,
+      cancelWork,
+      NUM_PROCESS,
+      handleNumProcess,
+      displayNumProcess
     } = this.props;
 
     return (
@@ -235,6 +289,16 @@ class Lounge extends Component {
         <Button className={classes.btn} onClick={openFile}>
           Open file
         </Button>
+        <FormControl className={classes.formControlInput}>
+          <InputLabel id='input-label-num-process'>Process</InputLabel>
+          <Select
+            id='select-num-process'
+            value={displayNumProcess}
+            onChange={handleNumProcess}
+          >
+            {ProcessMenuItem}
+          </Select>
+        </FormControl>
         {vCap && (
           <>
             <Paper elevation={2} className={classes.paper}>
@@ -289,13 +353,26 @@ class Lounge extends Component {
               label={`${formatNumber(percent)} / 100 %`}
               variant='outlined'
             />
-            {percentLinear !== null && (
+            {readyToWork && (
               <Paper className={classes.paperLinear}>
-                <CustomLinearProgress
-                  delay={percentLinear.delay}
-                  variant='determinate'
-                  value={percentLinear.percent}
-                />
+                <Grid container>
+                  {Array.from(Array(NUM_PROCESS).keys()).map(
+                    index =>
+                      percentLinear.bar[index] !== null && (
+                        <Grid item xs key={index}>
+                          <CustomLinearProgress
+                            delay={percentLinear.bar[index].delay}
+                            variant='determinate'
+                            value={percentLinear.bar[index].percent}
+                            isfirst={index === 0 ? 1 : 0}
+                            islast={index === NUM_PROCESS - 1 ? 1 : 0}
+                            iscomplete={completeWork ? 1 : 0}
+                            iserror={cancelWork ? 1 : 0}
+                          />
+                        </Grid>
+                      )
+                  )}
+                </Grid>
                 <Chip
                   className={classes.chip}
                   icon={<DonutLargeIcon />}
@@ -362,31 +439,25 @@ class Lounge extends Component {
                       >
                         Import
                       </Button>
-                      <Button
-                        className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={mainEventBtn}
-                      >
-                        Main Event
-                      </Button>
                     </>
                   )}
                   {IS_DEV && (
                     <>
                       <Button
                         className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={() => sendMessage(-1)}
+                        onClick={() => sendMessage({ test: true })}
                       >
-                        Start Main Jobs
+                        Start Testing
                       </Button>
                       <Button
                         className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={() => sendMessage(1000)}
+                        onClick={() => sendMessage({ end: 1000 })}
                       >
                         Start Until 1000 frames
                       </Button>
                       <Button
                         className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={() => sendMessage(10000)}
+                        onClick={() => sendMessage({ end: 10000 })}
                       >
                         Start Until 10000 frames
                       </Button>
@@ -398,14 +469,6 @@ class Lounge extends Component {
                   >
                     Start Converting
                   </Button>
-                  {/* <Button
-                    className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={() => sendMessage(100)}
-                  >
-                    Start Until 100 frames
-                  </Button>
-                  
-                  */}
                 </div>
                 {sliderObj && (
                   <Paper className={classes.PaperSlider}>

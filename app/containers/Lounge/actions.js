@@ -2,6 +2,7 @@
 
 /* eslint-disable no-console */
 
+import { endFrameTest, startFrameTest } from './constants/config';
 import { gapConst, maxMinDist } from './constants';
 import mainEvent, { devalidLoop } from './mainFunctions/mainEvent';
 
@@ -18,6 +19,7 @@ const { dialog } = remote;
 
 const prefix = '@@Lounge';
 const actionTypesList = [
+  'SEND_MESSAGE',
   'SELECT_NEW_VIDEO',
   'UPDATE_FRAME',
   'SEND_CANVAS',
@@ -37,26 +39,63 @@ const actionTypesList = [
   'IMPORTING',
   'HANDLE_RADIO_SELECT',
   'HANDLE_COMMITTED_SLIDER',
-  'UPDATE_LINEAR'
+  'UPDATE_LINEAR',
+  'BEGIN_LINEAR',
+  'FINISH_LINEAR',
+  'CANCEL_LINEAR',
+  'HANDLE_NUM_PROCESS'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
 
-export function sendMessage(timeLimit) {
+export function sendMessage(payload = {}) {
   return (dispatch, getState) => {
-    const { videoFilePath } = getState().Lounge;
-    message2Worker('start-events', { videoFilePath, timeLimit });
+    const { videoFilePath, vCap, displayNumProcess } = getState().Lounge;
+    const { start: _start, end: _end, test } = payload;
+    let start = _start;
+    let end = _end;
+    if (start === undefined) start = 0;
+    if (end === undefined) end = vCap.length;
+    if (test) {
+      start = startFrameTest;
+      end = endFrameTest;
+    }
+    dispatch({
+      type: actionTypes.SEND_MESSAGE,
+      payload: displayNumProcess
+    });
+    message2Worker('start-events', {
+      videoFilePath,
+      start,
+      end,
+      process: displayNumProcess
+    });
   };
 }
 
 export function updateLinear(payload) {
-  return (dispatch, getState) => {
-    // const { vCap } = getState().Lounge;
-    // vCap.show(payload.frame);
-    dispatch({
-      type: actionTypes.UPDATE_LINEAR,
-      payload
-    });
+  return {
+    type: actionTypes.UPDATE_LINEAR,
+    payload
+  };
+}
+
+export function beginLinear(payload) {
+  return {
+    type: actionTypes.BEGIN_LINEAR,
+    payload
+  };
+}
+
+export function cancelLinear() {
+  return {
+    type: actionTypes.CANCEL_LINEAR
+  };
+}
+
+export function finishLinear() {
+  return {
+    type: actionTypes.FINISH_LINEAR
   };
 }
 
@@ -64,6 +103,13 @@ export function sendCanvas(canvasRef) {
   return {
     type: actionTypes.SEND_CANVAS,
     payload: canvasRef
+  };
+}
+
+export function handleNumProcess(e, value) {
+  return {
+    type: actionTypes.HANDLE_NUM_PROCESS,
+    payload: value.key
   };
 }
 
