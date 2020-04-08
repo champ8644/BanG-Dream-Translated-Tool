@@ -27,6 +27,8 @@ ipcRenderer.on('start-events', async (e, arg) => {
 });
 
 ipcRenderer.on('sum-events', (e, payload) => {
-  writeAss(mergeData(payload));
-  message2UI('finish-progress');
+  if (payload[0].finished) {
+    writeAss(mergeData(payload));
+    message2UI('finish-progress');
+  } else message2UI('cancel-progress');
 });

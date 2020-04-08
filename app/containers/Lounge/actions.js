@@ -6,7 +6,6 @@ import { endFrameTest, startFrameTest } from './constants/config';
 import { gapConst, maxMinDist } from './constants';
 import mainEvent, { devalidLoop } from './mainFunctions/mainEvent';
 
-import { NUM_WORKER_PROCESS } from '../../constants';
 import Queue from '../../classes/Queue';
 import VideoCapture from './VideoCapture';
 import XLSX from 'xlsx';
@@ -20,6 +19,7 @@ const { dialog } = remote;
 
 const prefix = '@@Lounge';
 const actionTypesList = [
+  'SEND_MESSAGE',
   'SELECT_NEW_VIDEO',
   'UPDATE_FRAME',
   'SEND_CANVAS',
@@ -42,14 +42,15 @@ const actionTypesList = [
   'UPDATE_LINEAR',
   'BEGIN_LINEAR',
   'FINISH_LINEAR',
-  'CANCEL_LINEAR'
+  'CANCEL_LINEAR',
+  'HANDLE_NUM_PROCESS'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
 
 export function sendMessage(payload = {}) {
   return (dispatch, getState) => {
-    const { videoFilePath, vCap } = getState().Lounge;
+    const { videoFilePath, vCap, displayNumProcess } = getState().Lounge;
     const { start: _start, end: _end, test } = payload;
     let start = _start;
     let end = _end;
@@ -59,11 +60,15 @@ export function sendMessage(payload = {}) {
       start = startFrameTest;
       end = endFrameTest;
     }
+    dispatch({
+      type: actionTypes.SEND_MESSAGE,
+      payload: displayNumProcess
+    });
     message2Worker('start-events', {
       videoFilePath,
       start,
       end,
-      process: NUM_WORKER_PROCESS
+      process: displayNumProcess
     });
   };
 }
@@ -98,6 +103,13 @@ export function sendCanvas(canvasRef) {
   return {
     type: actionTypes.SEND_CANVAS,
     payload: canvasRef
+  };
+}
+
+export function handleNumProcess(e, value) {
+  return {
+    type: actionTypes.HANDLE_NUM_PROCESS,
+    payload: value.key
   };
 }
 

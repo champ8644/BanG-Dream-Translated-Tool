@@ -111,16 +111,10 @@ function nonBlockingLoop({
       }
     }
     // const frame = i > endFrame ? endFrame : i;
-    if (gracefulFinish || i >= limitVCap) {
-      message2UI('update-progress', { index, frame: i, beginFrame, endFrame });
-      finished.call(null);
-    } else if (!isLoopValid) {
-      message2UI('cancel-progress', { index, frame: i, beginFrame, endFrame });
-      finished.call(null);
-    } else {
-      message2UI('update-progress', { index, frame: i, beginFrame, endFrame });
-      setTimeout(chunk, 0);
-    }
+    message2UI('update-progress', { index, frame: i, beginFrame, endFrame });
+    if (gracefulFinish || i >= limitVCap) finished.call(null, true);
+    else if (!isLoopValid) finished.call(null, false);
+    else setTimeout(chunk, 0);
   })();
 }
 
@@ -296,7 +290,7 @@ export default function mainEvent({ vCap, start, end, index }) {
         }
         return activeWorking;
       },
-      finished: () => {
+      finished: finished => {
         tmp
           .dir({ unsafeCleanup: true })
           .then(({ path }) => {
@@ -309,6 +303,7 @@ export default function mainEvent({ vCap, start, end, index }) {
             resolve({
               data,
               nameActor,
+              finished,
               info: {
                 limitVCap: vCap.length,
                 path: vCap.path,

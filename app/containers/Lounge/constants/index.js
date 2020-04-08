@@ -143,3 +143,4 @@ export const correctPlaceFadeBlack = 6;
 export const thickness = 3;
 
 export const intersectCompensate = 30;
+export const NUM_MAX_PROCESS = 8;

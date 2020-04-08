@@ -14,5 +14,3 @@ export const AUTO_UPDATE_CHECK_FIREUP_DELAY = 1000; // in ms
 export const DONATE_PAYPAL_URL = `https://paypal.me/`;
 
 export const DEFAULT_AUTO_UPDATE_CHECK = true;
-
-export const NUM_WORKER_PROCESS = 4;

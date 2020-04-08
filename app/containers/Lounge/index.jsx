@@ -8,6 +8,8 @@ import {
   makeCompleteWork,
   makeCurrentFrame,
   makeDialogData,
+  makeDisplayNumProcess,
+  makeNumProcess,
   makeOverlayMode,
   makePercentLinear,
   makeProgress,
@@ -39,15 +41,17 @@ import { Helmet } from 'react-helmet';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import { IS_DEV } from '../../constants/env';
 import IconButton from '@material-ui/core/IconButton';
-// import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import InputLabel from '@material-ui/core/InputLabel';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { NUM_WORKER_PROCESS } from '../../constants/index';
+import MenuItem from '@material-ui/core/MenuItem';
+import { NUM_MAX_PROCESS } from './constants';
 import Paper from '@material-ui/core/Paper';
 import PieChartIcon from '@material-ui/icons/PieChart';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import Select from '@material-ui/core/Select';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import Slider from '@material-ui/core/Slider';
@@ -71,8 +75,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 const { ipcRenderer } = electron;
 
-const rangeWorkerProcess = Array.from(Array(NUM_WORKER_PROCESS).keys());
-
 const CustomLinearProgress = withStyles({
   root: props => {
     let backgroundColor = '#FFB1A8';
@@ -84,9 +86,9 @@ const CustomLinearProgress = withStyles({
     };
   },
   bar: props => {
-    const borderRad = { L: '0px', R: '0px' };
+    const borderRad = { L: '0px', R: '20px' };
     if (props.isfirst) borderRad.L = '20px';
-    if (props.islast) borderRad.R = '20px';
+    if (!props.islast && props.value === 100) borderRad.R = '0px';
     let backgroundColor = '#FF6C5C';
     if (props.iscomplete) backgroundColor = '#1DB364';
     if (props.iserror) backgroundColor = '#FF2819';
@@ -99,6 +101,14 @@ const CustomLinearProgress = withStyles({
     };
   }
 })(LinearProgress);
+
+/* eslint-disable react/no-array-index-key */
+const ProcessMenuItem = Array.from(Array(NUM_MAX_PROCESS)).map((_, x) => (
+  <MenuItem value={x + 1} key={x + 1}>
+    {x + 1}
+  </MenuItem>
+));
+/* eslint-enable react/no-array-index-key */
 
 const mapStateToProps = (state, props) => {
   return {
@@ -116,7 +126,9 @@ const mapStateToProps = (state, props) => {
     percentLinear: makePercentLinear(state),
     readyToWork: makeReadyToWork(state),
     cancelWork: makeCancelWork(state),
-    completeWork: makeCompleteWork(state)
+    completeWork: makeCompleteWork(state),
+    NUM_PROCESS: makeNumProcess(state),
+    displayNumProcess: makeDisplayNumProcess(state)
   };
 };
 
@@ -250,7 +262,10 @@ class Lounge extends Component {
       percentLinear,
       readyToWork,
       completeWork,
-      cancelWork
+      cancelWork,
+      NUM_PROCESS,
+      handleNumProcess,
+      displayNumProcess
     } = this.props;
 
     return (
@@ -274,6 +289,16 @@ class Lounge extends Component {
         <Button className={classes.btn} onClick={openFile}>
           Open file
         </Button>
+        <FormControl className={classes.formControlInput}>
+          <InputLabel id='input-label-num-process'>Process</InputLabel>
+          <Select
+            id='select-num-process'
+            value={displayNumProcess}
+            onChange={handleNumProcess}
+          >
+            {ProcessMenuItem}
+          </Select>
+        </FormControl>
         {vCap && (
           <>
             <Paper elevation={2} className={classes.paper}>
@@ -331,7 +356,7 @@ class Lounge extends Component {
             {readyToWork && (
               <Paper className={classes.paperLinear}>
                 <Grid container>
-                  {rangeWorkerProcess.map(
+                  {Array.from(Array(NUM_PROCESS).keys()).map(
                     index =>
                       percentLinear.bar[index] !== null && (
                         <Grid item xs key={index}>
@@ -340,7 +365,7 @@ class Lounge extends Component {
                             variant='determinate'
                             value={percentLinear.bar[index].percent}
                             isfirst={index === 0 ? 1 : 0}
-                            islast={index === NUM_WORKER_PROCESS - 1 ? 1 : 0}
+                            islast={index === NUM_PROCESS - 1 ? 1 : 0}
                             iscomplete={completeWork ? 1 : 0}
                             iserror={cancelWork ? 1 : 0}
                           />

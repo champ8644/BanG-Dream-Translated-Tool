@@ -120,6 +120,7 @@ function bakeShake(item) {
   shakeTree[0] = { x: 0, y: 0 };
   if (max < end && !(shakeTree[max].x === 0 && shakeTree[max].y === 0))
     shakeTree[max + 1] = { x: 0, y: 0 };
+  shakeTree[end - begin] = { x: 0, y: 0 };
   const shakeOut = Object.keys(shakeTree).map(key => ({
     frame: Number(key),
     ...shakeTree[key]

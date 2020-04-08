@@ -1,6 +1,5 @@
 'use strict';
 
-import { NUM_WORKER_PROCESS } from '../../constants/index';
 import { actionTypes } from './actions';
 import moment from 'moment';
 import { sliderObjSelector } from './constants/config';
@@ -38,6 +37,15 @@ export const initialState = {
   willUpdateNextFrame: false,
   progressFromWorker: null,
   overlayMode: 'none',
+  readyToWork: false,
+  completeWork: false,
+  cancelWork: false,
+  numProcess: 1,
+  displayNumProcess: 1
+};
+
+const initialConverter = {
+  progressFromWorker: null,
   readyToWork: false,
   completeWork: false,
   cancelWork: false
@@ -106,7 +114,13 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.STOP_PROGRES:
       return { ...state, progressFull: null, progress: null };
     case actionTypes.START_PROGRESS:
-      return { ...state, progressFull: payload, progress: 0 };
+      return {
+        ...state,
+        progressFull: payload,
+        progress: 0
+      };
+    case actionTypes.SEND_MESSAGE:
+      return { ...state, ...initialConverter, numProcess: payload };
     case actionTypes.ADD_PROGRESS:
       return { ...state, progress: state.progress + payload };
     case actionTypes.IMPORTING:
@@ -129,26 +143,21 @@ export default function Lounge(state = initialState, action) {
       };
     }
     case actionTypes.CANCEL_LINEAR: {
-      const {
-        progressFromWorker: { beginTime }
-      } = state;
-      const timePassed = new Date().getTime() - beginTime;
       return {
         ...state,
         completeWork: false,
         cancelWork: true,
         progressFromWorker: {
           ...state.progressFromWorker,
-          timePassed: showTime(moment.duration(timePassed)),
-          timeLeft: 'Job cancelled',
-          timeAll: showTime(moment.duration(timePassed))
+          timeLeft: 'Job cancelled'
         }
       };
     }
     case actionTypes.BEGIN_LINEAR: {
       let { progressFromWorker } = state;
+      const { numProcess } = state;
       if (!progressFromWorker) {
-        progressFromWorker = { bar: Array(NUM_WORKER_PROCESS).fill(null) };
+        progressFromWorker = { bar: Array(numProcess).fill(null) };
       }
       const { bar } = progressFromWorker;
       const { index, beginFrame, endFrame } = payload;
@@ -190,7 +199,7 @@ export default function Lounge(state = initialState, action) {
       info.timeLeft = 'determining...';
       info.timeAll = 'determining...';
 
-      const readyToWork = activeProcess === NUM_WORKER_PROCESS;
+      const readyToWork = activeProcess === numProcess;
       if (readyToWork) info.beginTime = new Date().getTime();
 
       return {
@@ -251,11 +260,13 @@ export default function Lounge(state = initialState, action) {
       info.FPS = (info.progress / timePassed) * 1000;
       info.beginTime = beginTime;
 
-      let timeLeft = ((info.endFrame - info.progress) / info.FPS) * 1000;
+      let timeLeft =
+        ((info.endFrame - info.progress - info.beginFrame) / info.FPS) * 1000;
       if (timeLeft < 0) timeLeft = 0;
 
       info.timePassed = showTime(moment.duration(timePassed));
-      info.timeLeft = showTime(moment.duration(timeLeft));
+      if (timeLeft === 0) info.timeLeft = 'finalizing...';
+      else info.timeLeft = showTime(moment.duration(timeLeft));
       info.timeAll = showTime(moment.duration(timeLeft + timePassed));
 
       return {
@@ -263,6 +274,8 @@ export default function Lounge(state = initialState, action) {
         progressFromWorker: info
       };
     }
+    case actionTypes.HANDLE_NUM_PROCESS:
+      return { ...state, displayNumProcess: Number(payload) };
     default:
       return state;
   }

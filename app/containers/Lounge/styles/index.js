@@ -13,6 +13,9 @@ export const styles = theme => {
     },
     marginLeft: { marginLeft: '1em' },
     marginDivider: { margin: '1em' },
+    formControlInput: {
+      marginLeft: theme.spacing(3)
+    },
     paperTop: {
       height: '100px',
       display: 'flex',
