@@ -4,7 +4,8 @@ import {
   purple,
   red,
   subtitlePartialCrop,
-  thickness
+  thickness,
+  yellow
 } from '../constants';
 
 import cv from 'opencv4nodejs';
@@ -25,27 +26,56 @@ const subtitleRect = new cv.Rect(
   rectX[1] - rectX[0],
   rectY[1] - rectY[0]
 );
+const prevSubtitleRect = new cv.Rect(
+  rectX[0],
+  rectY[0] - 200,
+  rectX[1] - rectX[0],
+  rectY[1] - rectY[0]
+);
+const diffSubtitleRect = new cv.Rect(
+  rectX[0],
+  rectY[0] - 400,
+  rectX[1] - rectX[0],
+  rectY[1] - rectY[0]
+);
+const diffSubtitleRect2 = new cv.Rect(
+  rectX[0],
+  rectY[0] - 600,
+  rectX[1] - rectX[0],
+  rectY[1] - rectY[0]
+);
+function paintMat(mat, draw, rect, color) {
+  draw.cvtColor(cv.COLOR_GRAY2BGR).copyTo(mat.getRegion(rect));
+  mat.drawRectangle(rect, color, thickness);
+  mat.putText(
+    `${draw.countNonZero()}`,
+    new cv.Point2(rect.x + rect.width + 50, rect.y + 50),
+    cv.FONT_HERSHEY_COMPLEX,
+    2,
+    color,
+    cv.LINE_4,
+    1
+  );
+}
 
-export default function nameLabelGenerator(mat) {
+export default function nameLabelGenerator(mat, vCap) {
   const { status, actor, percentDiff } = makeNameLabel(mat);
   // eslint-disable-next-line no-console
   console.log('percentDiff: ', percentDiff);
   if (status) {
-    const dialogMat = subtitleFinder(mat);
+    const dialogMat = subtitleFinder(mat, vCap); // matSubtitle, prevMatSubtitle
     // eslint-disable-next-line no-console
-    console.log({ dialog: dialogMat.countNonZero(), actor });
+    console.log({ dialog: dialogMat.matSubtitle.countNonZero(), actor });
     mat.drawRectangle(rectOuterNameLabel, blue, thickness);
-    dialogMat.cvtColor(cv.COLOR_GRAY2BGR).copyTo(mat.getRegion(subtitleRect));
-    mat.drawRectangle(subtitleRect, red, thickness);
-    mat.putText(
-      `${dialogMat.countNonZero()}`,
-      new cv.Point2(rectX[0] + 1450, rectY[0] + 180),
-      cv.FONT_HERSHEY_COMPLEX,
-      2,
-      purple,
-      cv.LINE_4,
-      1
-    );
+    paintMat(mat, dialogMat.matSubtitle, subtitleRect, red);
+    if (dialogMat.prevMatSubtitle) {
+      paintMat(mat, dialogMat.prevMatSubtitle, prevSubtitleRect, yellow);
+      const sub = dialogMat.prevMatSubtitle.sub(dialogMat.matSubtitle);
+      paintMat(mat, sub, diffSubtitleRect, blue);
+      const revSub = dialogMat.matSubtitle.sub(dialogMat.prevMatSubtitle);
+      paintMat(mat, revSub, diffSubtitleRect2, purple);
+    }
+
     return mat;
   }
   return mat;

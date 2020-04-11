@@ -23,6 +23,7 @@ export default class VideoCapture {
     this.dWidth = this.width * this.ratio;
     this.dHeight = this.height * this.ratio;
     this.path = path;
+    this.prevMat = new cv.Mat();
     if (canvas) this.canvas = canvas;
     if (updateFrame) this.updateFrame = updateFrame;
     if (colorSlider) this.colorSlider = colorSlider;
@@ -107,10 +108,12 @@ export default class VideoCapture {
   }
 
   read(frame, mode = 'frame') {
-    let mat = this.getMat(frame, mode);
+    const rawMat = this.getMat(frame, mode);
+    let mat = rawMat.copy();
     if (mat.empty) return;
     if (this.postProcessor) mat = this.postProcessor(mat, this);
     this.showMatInCanvas(mat);
+    this.prevMat = rawMat;
   }
 
   getRaw(frame, mode = 'frame') {
@@ -164,14 +167,11 @@ export default class VideoCapture {
   }
 
   locatedClicked(x, y) {
-    const prevFrame = this.getFrame();
-    let mat = this.getMat();
+    const mat = this.prevMat.copy();
     if (mat.empty) return;
     const matAtRaw = mat.atRaw(y, x);
-    if (this.postProcessor) mat = this.postProcessor(mat, this);
     mat.drawCircle(new cv.Point(x, y), 5, green, 10, cv.FILLED);
     this.showMatInCanvas(mat);
-    this.setFrame(prevFrame);
     return matAtRaw;
   }
 

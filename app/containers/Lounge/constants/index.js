@@ -42,6 +42,7 @@ export const subtitleThreshold = {
 export const rows = 1440;
 export const cols = 1920;
 export const dialogThreshold = 200;
+export const dialogDiffThreshold = 100;
 export const threshPercentDiff = 3;
 export const threshStarMatching = 0.8;
 export const threshPlacePercentDiff = 5;
@@ -114,7 +115,7 @@ export const subtitleCrop = {
   rectY: [Math.round(1200 * rx), Math.round(1400 * rx)]
 };
 export const subtitlePartialCrop = {
-  rectX: [Math.round(180 * rx), Math.round(400 * rx)],
+  rectX: [Math.round(120 * rx), Math.round(400 * rx)],
   rectY: [Math.round(1200 * rx), Math.round(1260 * rx)]
 };
 export const placeLabelCrop = {
