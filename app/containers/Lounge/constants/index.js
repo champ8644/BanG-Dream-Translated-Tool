@@ -115,9 +115,14 @@ export const subtitleCrop = {
   rectY: [Math.round(1200 * rx), Math.round(1400 * rx)]
 };
 export const subtitlePartialCrop = {
-  rectX: [Math.round(120 * rx), Math.round(400 * rx)],
+  rectX: [Math.round(120 * rx), Math.round(600 * rx)],
   rectY: [Math.round(1200 * rx), Math.round(1260 * rx)]
 };
+export const subtitleFifthCrop = {
+  rectX: [Math.round(340 * rx), Math.round(440 * rx)],
+  rectY: [Math.round(1200 * rx), Math.round(1260 * rx)]
+};
+export const fifthThreshold = 150;
 export const placeLabelCrop = {
   innerX: [Math.round(447 * rx), Math.round(1464 * rx)],
   innerY: [Math.round(695 * rx), Math.round(745 * rx)],
