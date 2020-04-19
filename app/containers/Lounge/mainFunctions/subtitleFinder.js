@@ -1,8 +1,4 @@
-import {
-  subtitlePartialCrop,
-  subtitleThreshold,
-  threshSubSubtitle
-} from '../constants';
+import { subtitlePartialCrop, subtitleThreshold } from '../constants';
 
 import cv from 'opencv4nodejs';
 
@@ -18,8 +14,7 @@ export default function subtitleFinder(mat) {
   const { blue, green, red } = subtitleThreshold;
   const lowerColorBounds = new cv.Vec(blue[0], green[0], red[0]);
   const upperColorBounds = new cv.Vec(blue[1], green[1], red[1]);
-  const matSubtitle = mat
+  return mat
     .getRegion(subtitleRect)
     .inRange(lowerColorBounds, upperColorBounds);
-  return matSubtitle.countNonZero() < threshSubSubtitle;
 }

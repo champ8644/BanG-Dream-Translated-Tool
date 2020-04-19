@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default class WorkerClass {
   constructor() {
-    this.waiting = [];
     this.workerWindows = [this.openNewWindow(0)];
   }
 
@@ -38,6 +37,7 @@ export default class WorkerClass {
 
   async startEvents(payload) {
     const { videoFilePath, start, end, process } = payload;
+    const waiting = [];
     const invokeWindows = [];
     for (let i = 0; i < process; i++)
       invokeWindows[i] = this.workerWindows[i]
@@ -54,13 +54,13 @@ export default class WorkerClass {
         uuid,
         index
       });
-      this.waiting[index] = new Promise(resolve => {
+      waiting[index] = new Promise(resolve => {
         ipcMain.once(uuid, (e, arg) => resolve(arg));
       });
     });
     this.workerWindows[0].webContents.send(
       'sum-events',
-      await Promise.all(this.waiting)
+      await Promise.all(waiting)
     );
     for (let i = 1; i < process; i++) this.workerWindows[i].close();
   }

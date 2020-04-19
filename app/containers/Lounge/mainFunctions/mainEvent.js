@@ -3,6 +3,7 @@ import { fadeThreshold, intersectCompensate } from '../constants';
 
 import cv from 'opencv4nodejs';
 import findActorID from './findActorID';
+import isNewDialog from './isNewDialog';
 import makeNameLabel from './makeNameLabel';
 import makePlaceLabel from './makePlaceLabel';
 import makeTitleLabel from './makeTitleLabel';
@@ -199,7 +200,7 @@ export default function mainEvent({ vCap, start, end, index }) {
               actor: findActorID(nameObj.actor, frame, nameActor)
             });
             currentActor = nameObj.actorStar;
-          } else if (nameObj.dialog && !prevDialog) {
+          } else if (isNewDialog(nameObj.dialog, prevDialog)) {
             data.name[data.name.length - 1].end = frame;
             data.name.push({
               begin: frame,
@@ -233,7 +234,7 @@ export default function mainEvent({ vCap, start, end, index }) {
             //     actor: findActorID(nameObj.actor, frame, nameActor)
             //   });
             // }
-            prevDialog = nameObj.dialog;
+            // prevDialog = nameObj.dialog;
           } else {
             data.name[data.name.length - 1].end = frame;
             prevDialog = null;

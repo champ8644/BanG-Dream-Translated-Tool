@@ -68,7 +68,7 @@ export default function makeNameLabel(mat, starMove) {
   const percentDiff = (masked.countNonZero() / countNameLabel) * 100;
   let actor;
   let actorStar;
-  let dialog;
+  let dialog = null;
   if (percentDiff < threshPercentDiff) {
     actor = threshMat.getRegion(rectNameLabel);
     actorStar = threshMat.getRegion(rectNameLabelStarCropRelative);
