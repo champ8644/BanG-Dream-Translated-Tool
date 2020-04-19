@@ -96,11 +96,27 @@
     ],
     "mac": {
       "type": "distribution",
+      "hardenedRuntime": true,
       "category": "public.app-category.productivity",
       "icon": "build/icons/mac/icon.icns",
       "target": [
         "dmg",
         "zip"
+      ],
+      "files": [
+        "!node_modules/opencv-build/opencv/opencv/",
+        "!node_modules/opencv-build/opencv/opencv_contrib/",
+        "!node_modules/opencv-build/opencv/build/3rdparty/",
+        "!node_modules/opencv-build/opencv/build/CMakeFiles/",
+        "!node_modules/opencv-build/opencv/build/data/",
+        "!node_modules/opencv-build/opencv/build/doc/",
+        "!node_modules/opencv-build/opencv/build/downloads/",
+        "!node_modules/opencv-build/opencv/build/include/",
+        "!node_modules/opencv-build/opencv/build/junk/",
+        "!node_modules/opencv-build/opencv/build/modules/",
+        "!node_modules/opencv-build/opencv/build/opencv2/",
+        "!node_modules/opencv-build/opencv/build/share/",
+        "!node_modules/opencv-build/opencv/build/unix-install/"
       ]
     },
     "mas": {
@@ -137,6 +153,25 @@
           "to": "../",
           "filter": "*"
         }
+      ],
+      "files": [
+        "!node_modules/opencv-build/opencv/opencv/",
+        "!node_modules/opencv-build/opencv/opencv_contrib/",
+        "!node_modules/opencv-build/opencv/build/3rdparty/",
+        "!node_modules/opencv-build/opencv/build/CMakeFiles/",
+        "!node_modules/opencv-build/opencv/build/data/",
+        "!node_modules/opencv-build/opencv/build/doc/",
+        "!node_modules/opencv-build/opencv/build/downloads/",
+        "!node_modules/opencv-build/opencv/build/etc/",
+        "!node_modules/opencv-build/opencv/build/include/",
+        "!node_modules/opencv-build/opencv/build/junk/",
+        "!node_modules/opencv-build/opencv/build/lib/",
+        "!node_modules/opencv-build/opencv/build/modules/",
+        "!node_modules/opencv-build/opencv/build/opencv2/",
+        "!node_modules/opencv-build/opencv/build/testdata/",
+        "!node_modules/opencv-build/opencv/build/win-install/",
+        "!node_modules/opencv-build/opencv/build/x64/",
+        "!node_modules/opencv-build/opencv/build/bin/Debug/"
       ]
     },
     "linux": {
