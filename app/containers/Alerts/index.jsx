@@ -1,12 +1,13 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { withReducer } from '../../store/reducers/withReducer';
-import reducers from './reducers';
-import { clearAlert } from './actions';
+
 import Snackbars from '../../components/Snackbars';
+import { bindActionCreators } from 'redux';
+import { clearAlert } from './actions';
+import { connect } from 'react-redux';
+import reducers from './reducers';
+import { withReducer } from '../../store/reducers/withReducer';
 
 class Alerts extends Component {
   handleClose = () => {
@@ -16,7 +17,7 @@ class Alerts extends Component {
 
   render() {
     const { Alerts } = this.props;
-    const { message, variant, autoHideDuration } = Alerts;
+    const { message, variant, autoHideDuration, vertical, horizontal } = Alerts;
     return (
       message && (
         <Snackbars
@@ -24,6 +25,7 @@ class Alerts extends Component {
           message={message}
           variant={variant}
           autoHideDuration={autoHideDuration}
+          anchorOrigin={{ vertical, horizontal }}
         />
       )
     );

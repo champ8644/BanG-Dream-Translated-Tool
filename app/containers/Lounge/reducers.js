@@ -35,13 +35,11 @@ export const initialState = {
   progressFull: null,
   importedFile: null,
   willUpdateNextFrame: false,
-  progressFromWorker: null,
   overlayMode: 'none',
-  readyToWork: false,
-  completeWork: false,
-  cancelWork: false,
   numProcess: 1,
-  displayNumProcess: 1
+  displayNumProcess: 1,
+  queue: [],
+  videoDatas: {}
 };
 
 const initialConverter = {
@@ -49,6 +47,14 @@ const initialConverter = {
   readyToWork: false,
   completeWork: false,
   cancelWork: false
+};
+
+export const initialVideoDatas = {
+  vCap: null,
+  progressFromWorker: null,
+  completeWork: false,
+  cancelWork: false,
+  readyToWork: false
 };
 
 function showTime(dur) {
@@ -70,6 +76,22 @@ export default function Lounge(state = initialState, action) {
         frame: payload.vCap.getFrame(),
         willUpdateNextFrame: true
       };
+    case actionTypes.ADD_QUEUE: {
+      const paths = [];
+      const payloadDatas = {};
+      payload.forEach(vCap => {
+        paths.push(vCap.path);
+        payloadDatas[vCap.path] = {
+          ...initialVideoDatas,
+          vCap
+        };
+      });
+      return {
+        ...state,
+        queue: [...state.queue, ...paths],
+        videoDatas: { ...state.videoDatas, ...payloadDatas }
+      };
+    }
     case actionTypes.UPDATE_FRAME:
       return {
         ...state,
@@ -126,41 +148,56 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.IMPORTING:
       return { ...state, importedFile: payload };
     case actionTypes.FINISH_LINEAR: {
+      const { path } = payload;
+      const { videoDatas } = state;
       const {
         progressFromWorker: { beginTime }
-      } = state;
+      } = videoDatas[path];
       const timePassed = new Date().getTime() - beginTime;
       return {
         ...state,
-        completeWork: true,
-        cancelWork: false,
-        progressFromWorker: {
-          ...state.progressFromWorker,
-          timePassed: showTime(moment.duration(timePassed)),
-          timeLeft: 'Job finished',
-          timeAll: showTime(moment.duration(timePassed))
+        videoDatas: {
+          ...state.videoDatas,
+          [path]: {
+            completeWork: true,
+            cancelWork: false,
+            progressFromWorker: {
+              ...state.progressFromWorker,
+              timePassed: showTime(moment.duration(timePassed)),
+              timeLeft: 'Job finished',
+              timeAll: showTime(moment.duration(timePassed))
+            }
+          }
         }
       };
     }
     case actionTypes.CANCEL_LINEAR: {
+      const { path } = payload;
       return {
         ...state,
-        completeWork: false,
-        cancelWork: true,
-        progressFromWorker: {
-          ...state.progressFromWorker,
-          timeLeft: 'Job cancelled'
+        videoDatas: {
+          ...state.videoDatas,
+          [path]: {
+            completeWork: false,
+            cancelWork: true,
+            progressFromWorker: {
+              ...state.progressFromWorker,
+              timeLeft: 'Job cancelled'
+            }
+          }
         }
       };
     }
     case actionTypes.BEGIN_LINEAR: {
-      let { progressFromWorker } = state;
-      const { numProcess } = state;
+      const { videoDatas, numProcess } = state;
+      const { path, index, beginFrame, endFrame } = payload;
+      let { progressFromWorker } = videoDatas[path];
+
       if (!progressFromWorker) {
         progressFromWorker = { bar: Array(numProcess).fill(null) };
       }
+
       const { bar } = progressFromWorker;
-      const { index, beginFrame, endFrame } = payload;
 
       const substituteBar = {
         progress: 0,
@@ -204,19 +241,26 @@ export default function Lounge(state = initialState, action) {
 
       return {
         ...state,
-        readyToWork,
-        completeWork: false,
-        cancelWork: false,
-        progressFromWorker: info
+        videoDatas: {
+          ...state.videoDatas,
+          [path]: {
+            ...state.videoDatas[path],
+            readyToWork,
+            completeWork: false,
+            cancelWork: false,
+            progressFromWorker: info
+          }
+        }
       };
     }
     case actionTypes.UPDATE_LINEAR: {
-      const { readyToWork } = state;
+      const { videoDatas } = state;
+      const { path, index, frame, ...other } = payload;
+      const { readyToWork } = videoDatas[path];
       if (!readyToWork) return state;
       const {
         progressFromWorker: { bar, beginTime }
-      } = state;
-      const { index, frame, ...other } = payload;
+      } = videoDatas[path];
 
       const now = new Date().getTime();
       const timePassed = now - beginTime;
@@ -271,7 +315,13 @@ export default function Lounge(state = initialState, action) {
 
       return {
         ...state,
-        progressFromWorker: info
+        videoDatas: {
+          ...state.videoDatas,
+          [path]: {
+            ...state.videoDatas.path,
+            progressFromWorker: info
+          }
+        }
       };
     }
     case actionTypes.HANDLE_NUM_PROCESS:

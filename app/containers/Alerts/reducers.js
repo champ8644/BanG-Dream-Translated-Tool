@@ -5,7 +5,9 @@ import { actionTypes } from './actions';
 export const initialState = {
   message: null,
   autoHideDuration: 6000,
-  variant: `error`
+  variant: `error`,
+  vertical: 'bottom',
+  horizontal: 'right'
 };
 
 export default function Alerts(state = initialState, action) {

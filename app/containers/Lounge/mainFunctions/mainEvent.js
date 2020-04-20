@@ -82,6 +82,7 @@ function nonBlockingLoop({
   beginFrame = 0,
   endFrame = 1e9,
   limitVCap,
+  path,
   chunksize,
   callback,
   finished,
@@ -99,7 +100,7 @@ function nonBlockingLoop({
   let i = beginFrame;
   let gracefulFinish = false;
   isLoopValid = true;
-  message2UI('begin-progress', { index, beginFrame, endFrame });
+  message2UI('begin-progress', { path, index, beginFrame, endFrame });
   (function chunk() {
     const end = Math.min(i + chunksize, limitVCap);
     let activeWorking;
@@ -112,7 +113,13 @@ function nonBlockingLoop({
       }
     }
     // const frame = i > endFrame ? endFrame : i;
-    message2UI('update-progress', { index, frame: i, beginFrame, endFrame });
+    message2UI('update-progress', {
+      path,
+      index,
+      frame: i,
+      beginFrame,
+      endFrame
+    });
     if (gracefulFinish || i >= limitVCap) finished.call(null, true);
     else if (!isLoopValid) finished.call(null, false);
     else setTimeout(chunk, 0);
@@ -146,6 +153,7 @@ export default function mainEvent({ vCap, start, end, index }) {
       beginFrame: start,
       endFrame: end,
       limitVCap: vCap.length,
+      path: vCap.path,
       chunksize: chunkCount,
       callback: i => {
         const frame = i;

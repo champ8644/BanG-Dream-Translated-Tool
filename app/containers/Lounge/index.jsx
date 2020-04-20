@@ -4,17 +4,14 @@ import * as actions from './actions';
 
 import React, { Component } from 'react';
 import {
-  makeCancelWork,
-  makeCompleteWork,
   makeCurrentFrame,
   makeDialogData,
   makeDisplayNumProcess,
   makeNumProcess,
   makeOverlayMode,
-  makePercentLinear,
   makeProgress,
   makeProgressBar,
-  makeReadyToWork,
+  makeQueue,
   makeSlider,
   makeSliderObj,
   makeStatusData,
@@ -24,13 +21,11 @@ import {
 } from './selectors';
 
 import { APP_TITLE } from '../../constants/meta';
-import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DonutLargeIcon from '@material-ui/icons/DonutLarge';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
 import FormControl from '@material-ui/core/FormControl';
@@ -38,12 +33,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import { Helmet } from 'react-helmet';
-import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import { IS_DEV } from '../../constants/env';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import ListVCap from './components/ListVCap';
 import MenuItem from '@material-ui/core/MenuItem';
 import { NUM_MAX_PROCESS } from './constants';
 import Paper from '@material-ui/core/Paper';
@@ -55,7 +50,6 @@ import Select from '@material-ui/core/Select';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import Slider from '@material-ui/core/Slider';
-import SpeedIcon from '@material-ui/icons/Speed';
 import StopIcon from '@material-ui/icons/Stop';
 import TextField from '@material-ui/core/TextField';
 import TheatersIcon from '@material-ui/icons/Theaters';
@@ -74,33 +68,6 @@ import { withReducer } from '../../store/reducers/withReducer';
 import { withStyles } from '@material-ui/core/styles';
 
 const { ipcRenderer } = electron;
-
-const CustomLinearProgress = withStyles({
-  root: props => {
-    let backgroundColor = '#FFB1A8';
-    if (props.iscomplete) backgroundColor = '#8FFFC3';
-    if (props.iserror) backgroundColor = '#FF8F87';
-    return {
-      height: 10,
-      backgroundColor
-    };
-  },
-  bar: props => {
-    const borderRad = { L: '0px', R: '20px' };
-    if (props.isfirst) borderRad.L = '20px';
-    if (!props.islast && props.value === 100) borderRad.R = '0px';
-    let backgroundColor = '#FF6C5C';
-    if (props.iscomplete) backgroundColor = '#1DB364';
-    if (props.iserror) backgroundColor = '#FF2819';
-    return {
-      backgroundColor,
-      transition: `transform ${props.delay}ms linear`,
-      borderRadius: `${borderRad.L} ${borderRad.R} ${borderRad.R} ${
-        borderRad.L
-      }`
-    };
-  }
-})(LinearProgress);
 
 /* eslint-disable react/no-array-index-key */
 const ProcessMenuItem = Array.from(Array(NUM_MAX_PROCESS)).map((_, x) => (
@@ -123,12 +90,9 @@ const mapStateToProps = (state, props) => {
     willUpdateNextFrame: makeWillUpdateNextFrame(state),
     overlayMode: makeOverlayMode(state),
     sliderObj: makeSliderObj(state),
-    percentLinear: makePercentLinear(state),
-    readyToWork: makeReadyToWork(state),
-    cancelWork: makeCancelWork(state),
-    completeWork: makeCompleteWork(state),
     NUM_PROCESS: makeNumProcess(state),
-    displayNumProcess: makeDisplayNumProcess(state)
+    displayNumProcess: makeDisplayNumProcess(state),
+    queue: makeQueue(state)
   };
 };
 
@@ -209,10 +173,10 @@ class Lounge extends Component {
           updateLinear(payload);
           break;
         case 'finish-progress':
-          finishLinear();
+          finishLinear(payload);
           break;
         case 'cancel-progress':
-          cancelLinear();
+          cancelLinear(payload);
           break;
         default:
       }
@@ -259,13 +223,10 @@ class Lounge extends Component {
       sliderObj,
       commitOnChange,
       sendMessage,
-      percentLinear,
-      readyToWork,
-      completeWork,
-      cancelWork,
-      NUM_PROCESS,
       handleNumProcess,
-      displayNumProcess
+      displayNumProcess,
+      addQueue,
+      queue
     } = this.props;
 
     return (
@@ -286,6 +247,9 @@ class Lounge extends Component {
             )}
           </Grid>
         </Grid>
+        <Button className={classes.btn} onClick={addQueue}>
+          Add queue
+        </Button>
         <Button className={classes.btn} onClick={openFile}>
           Open file
         </Button>
@@ -299,6 +263,9 @@ class Lounge extends Component {
             {ProcessMenuItem}
           </Select>
         </FormControl>
+        {queue.map(path => (
+          <ListVCap path={path} key={path} classes={classes} />
+        ))}
         {vCap && (
           <>
             <Paper elevation={2} className={classes.paper}>
@@ -353,57 +320,17 @@ class Lounge extends Component {
               label={`${formatNumber(percent)} / 100 %`}
               variant='outlined'
             />
-            {readyToWork && (
-              <Paper className={classes.paperLinear}>
-                <Grid container>
-                  {Array.from(Array(NUM_PROCESS).keys()).map(
-                    index =>
-                      percentLinear.bar[index] !== null && (
-                        <Grid item xs key={index}>
-                          <CustomLinearProgress
-                            delay={percentLinear.bar[index].delay}
-                            variant='determinate'
-                            value={percentLinear.bar[index].percent}
-                            isfirst={index === 0 ? 1 : 0}
-                            islast={index === NUM_PROCESS - 1 ? 1 : 0}
-                            iscomplete={completeWork ? 1 : 0}
-                            iserror={cancelWork ? 1 : 0}
-                          />
-                        </Grid>
-                      )
-                  )}
-                </Grid>
-                <Chip
-                  className={classes.chip}
-                  icon={<DonutLargeIcon />}
-                  label={`${formatNumber(percentLinear.percent)} / 100 %`}
-                  variant='outlined'
-                />
-                <Chip
-                  className={classes.chip}
-                  icon={<SpeedIcon />}
-                  color='primary'
-                  label={`FPS: ${formatNumber(percentLinear.FPS)}`}
-                  variant='outlined'
-                />
-                <Chip
-                  className={classes.chip}
-                  icon={<AccessAlarmIcon />}
-                  color='secondary'
-                  label={`Estimated time left: ${percentLinear.timeLeft}`}
-                  variant='outlined'
-                />
-                <Chip
-                  className={classes.chip}
-                  icon={<HourglassEmptyIcon />}
-                  color='secondary'
-                  label={`Time Elapsed: ${percentLinear.timePassed} / ${
-                    percentLinear.timeAll
-                  }`}
-                  variant='outlined'
-                />
-              </Paper>
-            )}
+            {/* {readyToWork && (
+              <ListVCap
+                vCap={{
+                  percentLinear,
+                  NUM_PROCESS,
+                  completeWork,
+                  cancelWork
+                }}
+                classes={classes}
+              />
+            )} */}
             <Grid container>
               {radioObj.length > 0 && (
                 <Grid item>

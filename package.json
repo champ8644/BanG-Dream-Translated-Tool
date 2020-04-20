@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",

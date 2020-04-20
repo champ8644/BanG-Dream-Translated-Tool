@@ -43,7 +43,7 @@ Comment: 1,0:00:00.00,0:00:00.00,ฉากดำ,,0,0,0,template notext line,!re
 Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,code line,_, _,fadeIn,fadeOut = string.find(line.actor, "([%d.]*)%p*([%d.]*)");
 Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\an5\\bord0\\shad0\\c&FFFFFF&\\fade(!fadeIn!,!fadeOut!)}m 0 0 l 1920 0 l 1920 1440 l 0 1440
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,name = {}
-Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,colorBackground = "fdfdfd"
+Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,colorBackground = "f8f8f8"
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an7\\bord0\\shad0\\p1\\c&H733CFF&\\fscx150\\fscy500\\clip(106,1115,554,1181)\\pos(366.845,1050)}m -200 5 l 200 5 200 32 -200 32
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an7\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx800\\fscy3500\\pos(957.2,957)\\clip(90,1198,1820,1407)}m -156 -15 l 120 -15 120 13 -156 13
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template line,

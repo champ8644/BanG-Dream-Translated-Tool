@@ -14,6 +14,7 @@ import cv from 'opencv4nodejs';
 import { message2Worker } from './utils';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
+import { throwAlert } from '../Alerts/actions';
 
 const { dialog } = remote;
 
@@ -43,7 +44,8 @@ const actionTypesList = [
   'BEGIN_LINEAR',
   'FINISH_LINEAR',
   'CANCEL_LINEAR',
-  'HANDLE_NUM_PROCESS'
+  'HANDLE_NUM_PROCESS',
+  'ADD_QUEUE'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -87,15 +89,17 @@ export function beginLinear(payload) {
   };
 }
 
-export function cancelLinear() {
+export function cancelLinear(payload) {
   return {
-    type: actionTypes.CANCEL_LINEAR
+    type: actionTypes.CANCEL_LINEAR,
+    payload
   };
 }
 
-export function finishLinear() {
+export function finishLinear(payload) {
   return {
-    type: actionTypes.FINISH_LINEAR
+    type: actionTypes.FINISH_LINEAR,
+    payload
   };
 }
 
@@ -113,6 +117,58 @@ export function handleNumProcess(e, value) {
   };
 }
 
+export function addQueue() {
+  return async (dispatch, getState) => {
+    const { canvasRef, valueSlider, overlayMode, queue } = getState().Lounge;
+    const { filePaths, canceled } = await dialog.showOpenDialog({
+      properties: ['openFile', 'multiSelections'],
+      filters: [
+        {
+          name: 'Video files',
+          extensions: ['mkv', 'avi', 'mp4', 'mov', 'flv', 'wmv']
+        }
+      ]
+    });
+    if (canceled) return;
+    try {
+      const uniqueFilePaths = filePaths.filter(filepath => {
+        let isUnique = true;
+        queue.forEach(path => {
+          if (path === filepath) isUnique = false;
+        });
+        return isUnique;
+      });
+      if (uniqueFilePaths.length !== filePaths.length)
+        dispatch(throwAlert({ message: 'There is duplicate file(s)' }));
+      dispatch({
+        type: actionTypes.ADD_QUEUE,
+        payload: uniqueFilePaths
+          .map(path => {
+            let vCap = null;
+            try {
+              vCap = new VideoCapture({
+                path,
+                canvas: canvasRef,
+                updateFrame: async () => dispatch(updateFrame()),
+                colorSlider: valueSlider,
+                modePostProcessor: overlayMode
+              });
+            } catch (err) {
+              dispatch(throwAlert({ message: err }));
+              vCap = null;
+            }
+            return vCap;
+          })
+          .filter(item => item)
+      });
+    } catch (err) {
+      if (typeof err === 'object' && err !== null)
+        dispatch(throwAlert({ message: err.message }));
+      else dispatch(throwAlert({ message: err }));
+    }
+  };
+}
+
 export function openFile() {
   return async (dispatch, getState) => {
     const { canvasRef, valueSlider, overlayMode } = getState().Lounge;
@@ -126,20 +182,24 @@ export function openFile() {
       ]
     });
     if (canceled) return;
-    const vCap = new VideoCapture({
-      path: filePaths[0],
-      canvas: canvasRef,
-      updateFrame: async () => dispatch(updateFrame()),
-      colorSlider: valueSlider,
-      modePostProcessor: overlayMode
-    });
-    dispatch({
-      type: actionTypes.SELECT_NEW_VIDEO,
-      payload: {
-        videoFilePath: filePaths[0],
-        vCap
-      }
-    });
+    try {
+      const vCap = new VideoCapture({
+        path: filePaths[0],
+        canvas: canvasRef,
+        updateFrame: async () => dispatch(updateFrame()),
+        colorSlider: valueSlider,
+        modePostProcessor: overlayMode
+      });
+      dispatch({
+        type: actionTypes.SELECT_NEW_VIDEO,
+        payload: {
+          videoFilePath: filePaths[0],
+          vCap
+        }
+      });
+    } catch (err) {
+      dispatch(throwAlert({ message: err }));
+    }
   };
 }
 
