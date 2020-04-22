@@ -18,10 +18,7 @@ import Grid from '@material-ui/core/Grid';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import React from 'react';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import SpeedIcon from '@material-ui/icons/Speed';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -96,16 +93,18 @@ function ListVCap(props) {
   }, []);
   return (
     <Card className={classes.root}>
-      <canvas
-        className={classes.cover}
-        ref={canvasRef}
-        width={vCap.dWidth}
-        height={vCap.dHeight}
-        // onMouseDown={handleCanvasClick}
-      />
       {isLoading && (
         <CircularProgress className={classes.loader} disableShrink />
       )}
+      <div className={classes.flex}>
+        <canvas
+          className={classes.cover}
+          ref={canvasRef}
+          width={vCap.dWidth}
+          height={vCap.dHeight}
+          // onMouseDown={handleCanvasClick}
+        />
+      </div>
       <div className={classes.details}>
         <div className={classes.row}>
           <div className={classes.column}>
@@ -118,7 +117,7 @@ function ListVCap(props) {
               </Typography>
             </CardContent>
             <div className={classes.grow} />
-            <div className={classes.controls}>
+            {/* <div className={classes.controls}>
               <IconButton aria-label='previous'>
                 <SkipPreviousIcon />
               </IconButton>
@@ -128,8 +127,8 @@ function ListVCap(props) {
               <IconButton aria-label='next'>
                 <SkipNextIcon />
               </IconButton>
-            </div>
-            <div className={classes.progressBar}>
+            </div> */}
+            <div className={classes.chipBar}>
               {readyToWork && (
                 <>
                   <Chip

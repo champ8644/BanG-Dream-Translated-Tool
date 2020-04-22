@@ -41,12 +41,15 @@ export const styles = theme => ({
     display: 'flex',
     flexGrow: 1
   },
-  item: {
+  flex: {
     display: 'flex'
   },
   playIcon: {
     height: 38,
     width: 38
+  },
+  chipBar: {
+    paddingBottom: theme.spacing(1)
   },
   loader: props => ({
     position: 'absolute',
