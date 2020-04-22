@@ -3,14 +3,16 @@ import { videoListMaxWidth } from '../constants/index';
 export const styles = theme => ({
   root: {
     display: 'flex',
-    marginTop: theme.spacing(1)
+    margin: theme.spacing(1, 0, 0, 4)
   },
   details: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    flexGrow: 1
   },
   content: {
-    flex: '1 0 auto'
+    flex: '1 0 auto',
+    display: 'grid'
   },
   cover: {
     width: videoListMaxWidth
@@ -29,5 +31,8 @@ export const styles = theme => ({
     position: 'absolute',
     marginLeft: '76px',
     marginTop: '52px'
+  },
+  closeIcon: {
+    height: '2em'
   }
 });

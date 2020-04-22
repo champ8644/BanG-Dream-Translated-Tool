@@ -247,10 +247,15 @@ class Lounge extends Component {
             )}
           </Grid>
         </Grid>
-        <Button className={classes.btn} onClick={addQueue}>
-          Add queue
-        </Button>
-        <Button className={classes.btn} onClick={openFile}>
+        <Tooltip title='Add new video(s)' arrow>
+          <Button className={classes.btn} onClick={addQueue}>
+            Add queue
+          </Button>
+        </Tooltip>
+        <Button
+          className={clsx(classes.btn, classes.marginLeft)}
+          onClick={openFile}
+        >
           Open file
         </Button>
         <FormControl className={classes.formControlInput}>
@@ -265,60 +270,49 @@ class Lounge extends Component {
         </FormControl>
 
         {vCap && (
-          <>
-            <Paper elevation={2} className={classes.paper}>
-              <IconButton onClick={rewindFrame}>
-                <FastRewindIcon />
-              </IconButton>
-              <IconButton onClick={previousFrame}>
-                <SkipPreviousIcon />
-              </IconButton>
-              <IconButton onClick={startVideo}>
-                <PlayArrowIcon />
-              </IconButton>
-              <IconButton onClick={stopVideo}>
-                <StopIcon />
-              </IconButton>
-              <IconButton onClick={nextFrame}>
-                <SkipNextIcon />
-              </IconButton>
-              <IconButton onClick={skipFrame}>
-                <FastForwardIcon />
-              </IconButton>
-            </Paper>
-            <Tooltip title='Go To selected frame' arrow>
-              <Chip
-                className={classes.chip}
-                icon={<TheatersIcon />}
-                label={`Frame: ${formatNumber(frame)} / ${formatNumber(
-                  vCap.length
-                )}`}
-                color='secondary'
-                variant='outlined'
-                clickable
-                onClick={() => handleOpenDialog('frame')}
-              />
-            </Tooltip>
-            <Tooltip title='Go To selected time' arrow>
-              <Chip
-                className={classes.chip}
-                icon={<TimerIcon />}
-                label={`Time: ${formatNumber(ms)} / ${formatNumber(
-                  (vCap.length * 1000) / vCap.FPS
-                )} ms`}
-                variant='outlined'
-                color='primary'
-                clickable
-                onClick={() => handleOpenDialog('ms')}
-              />
-            </Tooltip>
-            <Chip
-              className={classes.chip}
-              icon={<PieChartIcon />}
-              label={`${formatNumber(percent)} / 100 %`}
-              variant='outlined'
-            />
-          </>
+          <div className={classes.buttonSliderContainer}>
+            {radioObj.length > 0 && (
+              <>
+                <Button className={classes.btn} onClick={exporting}>
+                  Export
+                </Button>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={importing}
+                >
+                  Import
+                </Button>
+              </>
+            )}
+            {IS_DEV && (
+              <>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={() => sendMessage({ test: true })}
+                >
+                  Start Testing
+                </Button>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={() => sendMessage({ end: 1000 })}
+                >
+                  Start Until 1000 frames
+                </Button>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={() => sendMessage({ end: 10000 })}
+                >
+                  Start Until 10000 frames
+                </Button>
+              </>
+            )}
+            <Button
+              className={clsx(classes.btn, classes.marginLeft)}
+              onClick={() => sendMessage()}
+            >
+              Start Converting
+            </Button>
+          </div>
         )}
         <div className={classes.marginTop}>
           {queue.map(path => (
@@ -362,47 +356,58 @@ class Lounge extends Component {
               )}
               <Grid item>
                 <div className={classes.buttonSliderContainer}>
-                  {radioObj.length > 0 && (
-                    <>
-                      <Button className={classes.btn} onClick={exporting}>
-                        Export
-                      </Button>
-                      <Button
-                        className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={importing}
-                      >
-                        Import
-                      </Button>
-                    </>
-                  )}
-                  {IS_DEV && (
-                    <>
-                      <Button
-                        className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={() => sendMessage({ test: true })}
-                      >
-                        Start Testing
-                      </Button>
-                      <Button
-                        className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={() => sendMessage({ end: 1000 })}
-                      >
-                        Start Until 1000 frames
-                      </Button>
-                      <Button
-                        className={clsx(classes.btn, classes.marginLeft)}
-                        onClick={() => sendMessage({ end: 10000 })}
-                      >
-                        Start Until 10000 frames
-                      </Button>
-                    </>
-                  )}
-                  <Button
-                    className={clsx(classes.btn, classes.marginLeft)}
-                    onClick={() => sendMessage()}
-                  >
-                    Start Converting
-                  </Button>
+                  <Paper elevation={2} className={classes.paper}>
+                    <IconButton onClick={rewindFrame}>
+                      <FastRewindIcon />
+                    </IconButton>
+                    <IconButton onClick={previousFrame}>
+                      <SkipPreviousIcon />
+                    </IconButton>
+                    <IconButton onClick={startVideo}>
+                      <PlayArrowIcon />
+                    </IconButton>
+                    <IconButton onClick={stopVideo}>
+                      <StopIcon />
+                    </IconButton>
+                    <IconButton onClick={nextFrame}>
+                      <SkipNextIcon />
+                    </IconButton>
+                    <IconButton onClick={skipFrame}>
+                      <FastForwardIcon />
+                    </IconButton>
+                  </Paper>
+                  <Tooltip title='Go To selected frame' arrow>
+                    <Chip
+                      className={classes.chip}
+                      icon={<TheatersIcon />}
+                      label={`Frame: ${formatNumber(frame)} / ${formatNumber(
+                        vCap.length
+                      )}`}
+                      color='secondary'
+                      variant='outlined'
+                      clickable
+                      onClick={() => handleOpenDialog('frame')}
+                    />
+                  </Tooltip>
+                  <Tooltip title='Go To selected time' arrow>
+                    <Chip
+                      className={classes.chip}
+                      icon={<TimerIcon />}
+                      label={`Time: ${formatNumber(ms)} / ${formatNumber(
+                        (vCap.length * 1000) / vCap.FPS
+                      )} ms`}
+                      variant='outlined'
+                      color='primary'
+                      clickable
+                      onClick={() => handleOpenDialog('ms')}
+                    />
+                  </Tooltip>
+                  <Chip
+                    className={classes.chip}
+                    icon={<PieChartIcon />}
+                    label={`${formatNumber(percent)} / 100 %`}
+                    variant='outlined'
+                  />
                 </div>
                 {sliderObj && (
                   <Paper className={classes.PaperSlider}>

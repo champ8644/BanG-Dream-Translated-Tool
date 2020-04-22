@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import {
   makeCancelWork,
   makeCompleteWork,
@@ -15,7 +13,9 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import CloseIcon from '@material-ui/icons/Close';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
+import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import IconButton from '@material-ui/core/IconButton';
@@ -27,6 +27,7 @@ import SkipNextIcon from '@material-ui/icons/SkipNext';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import SpeedIcon from '@material-ui/icons/Speed';
 import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import cv from 'opencv4nodejs';
@@ -93,9 +94,9 @@ function ListVCap(props) {
     ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     setTimeout(() => {
       vCap
-        .asyncRead(Math.round(vCap.length / 2))
+        .asyncRead(Math.round(vCap.length / 4))
         .then(() => setLoading(false))
-        .catch(() => {});
+        .catch(() => setLoading(false));
     }, 0);
   }, []);
   return (
@@ -112,10 +113,10 @@ function ListVCap(props) {
       )}
       <div className={classes.details}>
         <CardContent className={classes.content}>
-          <Typography component='h5' variant='h5'>
+          <Typography component='h5' variant='h5' noWrap>
             {path.basename(videoFilePath)}
           </Typography>
-          <Typography variant='subtitle1' color='textSecondary'>
+          <Typography variant='subtitle1' color='textSecondary' noWrap>
             {path.dirname(videoFilePath)}
           </Typography>
         </CardContent>
@@ -131,77 +132,64 @@ function ListVCap(props) {
           </IconButton>
         </div>
       </div>
+      {readyToWork && (
+        <>
+          <Grid container>
+            {Array.from(Array(NUM_PROCESS).keys()).map(
+              index =>
+                percentLinear.bar[index] !== null && (
+                  <Grid item xs key={index}>
+                    <CustomLinearProgress
+                      delay={percentLinear.bar[index].delay}
+                      variant='determinate'
+                      value={percentLinear.bar[index].percent}
+                      isfirst={index === 0 ? 1 : 0}
+                      islast={index === NUM_PROCESS - 1 ? 1 : 0}
+                      iscomplete={completeWork ? 1 : 0}
+                      iserror={cancelWork ? 1 : 0}
+                    />
+                  </Grid>
+                )
+            )}
+          </Grid>
+          <Chip
+            className={classes.chip}
+            icon={<DonutLargeIcon />}
+            label={`${formatNumber(percentLinear.percent)} / 100 %`}
+            variant='outlined'
+          />
+          <Chip
+            className={classes.chip}
+            icon={<SpeedIcon />}
+            color='primary'
+            label={`FPS: ${formatNumber(percentLinear.FPS)}`}
+            variant='outlined'
+          />
+          <Chip
+            className={classes.chip}
+            icon={<AccessAlarmIcon />}
+            color='secondary'
+            label={`Estimated time left: ${percentLinear.timeLeft}`}
+            variant='outlined'
+          />
+          <Chip
+            className={classes.chip}
+            icon={<HourglassEmptyIcon />}
+            color='secondary'
+            label={`Time Elapsed: ${percentLinear.timePassed} / ${
+              percentLinear.timeAll
+            }`}
+            variant='outlined'
+          />
+        </>
+      )}
+      <Tooltip title='Close this video' arrow>
+        <IconButton color='secondary' className={classes.closeIcon}>
+          <CloseIcon />
+        </IconButton>
+      </Tooltip>
     </Card>
   );
-  // return (
-  //   <Paper className={classes.paperLinear}>
-  //     <Typography
-  //       variant='h6'
-  //       className={classes.videoEachHeader}
-  //       display='inline'
-  //     >
-  //       File name:
-  //     </Typography>{' '}
-  //     <Typography
-  //       variant='body1'
-  //       className={classes.videoEachPath}
-  //       display='inline'
-  //     >
-  //       {path.basename(videoFilePath)}
-  //     </Typography>
-  //     {readyToWork && (
-  //       <>
-  //         <Grid container>
-  //           {Array.from(Array(NUM_PROCESS).keys()).map(
-  //             index =>
-  //               percentLinear.bar[index] !== null && (
-  //                 <Grid item xs key={index}>
-  //                   <CustomLinearProgress
-  //                     delay={percentLinear.bar[index].delay}
-  //                     variant='determinate'
-  //                     value={percentLinear.bar[index].percent}
-  //                     isfirst={index === 0 ? 1 : 0}
-  //                     islast={index === NUM_PROCESS - 1 ? 1 : 0}
-  //                     iscomplete={completeWork ? 1 : 0}
-  //                     iserror={cancelWork ? 1 : 0}
-  //                   />
-  //                 </Grid>
-  //               )
-  //           )}
-  //         </Grid>
-  //         <Chip
-  //           className={classes.chip}
-  //           icon={<DonutLargeIcon />}
-  //           label={`${formatNumber(percentLinear.percent)} / 100 %`}
-  //           variant='outlined'
-  //         />
-  //         <Chip
-  //           className={classes.chip}
-  //           icon={<SpeedIcon />}
-  //           color='primary'
-  //           label={`FPS: ${formatNumber(percentLinear.FPS)}`}
-  //           variant='outlined'
-  //         />
-  //         <Chip
-  //           className={classes.chip}
-  //           icon={<AccessAlarmIcon />}
-  //           color='secondary'
-  //           label={`Estimated time left: ${percentLinear.timeLeft}`}
-  //           variant='outlined'
-  //         />
-  //         <Chip
-  //           className={classes.chip}
-  //           icon={<HourglassEmptyIcon />}
-  //           color='secondary'
-  //           label={`Time Elapsed: ${percentLinear.timePassed} / ${
-  //             percentLinear.timeAll
-  //           }`}
-  //           variant='outlined'
-  //         />
-  //       </>
-  //     )}
-  //   </Paper>
-  // );
 }
 
 export default connect(makeMapStateToProps)(withStyles(styles)(ListVCap));
