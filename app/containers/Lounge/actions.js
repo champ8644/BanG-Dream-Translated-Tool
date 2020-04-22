@@ -50,7 +50,8 @@ const actionTypesList = [
   'FINISH_LINEAR',
   'CANCEL_LINEAR',
   'HANDLE_NUM_PROCESS',
-  'ADD_QUEUE'
+  'ADD_QUEUE',
+  'START_QUEUE'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -122,21 +123,20 @@ export function handleNumProcess(e, value) {
   };
 }
 
-function sendMessageEach(item, displayNumProcess) {
-  console.log(item);
-  const { vCap } = item;
-  message2Worker('start-events', {
-    videoFilePath: vCap.path,
-    start: 0,
-    end: vCap.length,
-    process: displayNumProcess
-  });
-}
-
 export function startQueue() {
   return async (dispatch, getState) => {
     const { queue, videoDatas, displayNumProcess } = getState().Lounge;
-    sendMessageEach(videoDatas[queue[0]], displayNumProcess);
+    const { vCap } = videoDatas[queue[0]];
+    dispatch({
+      type: actionTypes.START_QUEUE,
+      payload: { displayNumProcess, path: queue[0] }
+    });
+    message2Worker('start-events', {
+      videoFilePath: vCap.path,
+      start: 0,
+      end: vCap.length,
+      process: displayNumProcess
+    });
   };
 }
 

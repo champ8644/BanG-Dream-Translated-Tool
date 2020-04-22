@@ -173,22 +173,20 @@ function ListVCap(props) {
         </div>
         {readyToWork && (
           <Grid container>
-            {Array.from(Array(NUM_PROCESS).keys()).map(
-              index =>
-                percentLinear.bar[index] !== null && (
-                  <Grid item xs key={index}>
-                    <CustomLinearProgress
-                      delay={percentLinear.bar[index].delay}
-                      variant='determinate'
-                      value={percentLinear.bar[index].percent}
-                      isfirst={index === 0 ? 1 : 0}
-                      islast={index === NUM_PROCESS - 1 ? 1 : 0}
-                      iscomplete={completeWork ? 1 : 0}
-                      iserror={cancelWork ? 1 : 0}
-                    />
-                  </Grid>
-                )
-            )}
+            {percentLinear.bar.map((bar, idx) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <Grid item xs key={idx}>
+                <CustomLinearProgress
+                  delay={bar.delay}
+                  variant='determinate'
+                  value={bar.percent}
+                  isfirst={idx === 0 ? 1 : 0}
+                  islast={idx === NUM_PROCESS - 1 ? 1 : 0}
+                  iscomplete={completeWork ? 1 : 0}
+                  iserror={cancelWork ? 1 : 0}
+                />
+              </Grid>
+            ))}
           </Grid>
         )}
       </div>
