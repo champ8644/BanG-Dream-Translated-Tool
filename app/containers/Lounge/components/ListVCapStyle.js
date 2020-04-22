@@ -15,7 +15,8 @@ export const styles = theme => ({
     display: 'grid'
   },
   content: {
-    flex: '1 0 auto'
+    flex: '1 0 auto',
+    display: 'flex'
   },
   cover: {
     width: videoListMaxWidth
@@ -25,6 +26,23 @@ export const styles = theme => ({
     alignItems: 'center',
     paddingLeft: theme.spacing(1),
     paddingBottom: theme.spacing(1)
+  },
+  grow: {
+    flexGrow: 1,
+    display: 'flex'
+  },
+  column: {
+    flexDirection: 'column',
+    display: 'flex',
+    flexGrow: 1
+  },
+  row: {
+    flexDirection: 'row',
+    display: 'flex',
+    flexGrow: 1
+  },
+  item: {
+    display: 'flex'
   },
   playIcon: {
     height: 38,
@@ -37,6 +55,5 @@ export const styles = theme => ({
   }),
   closeIcon: {
     height: '2em'
-  },
-  middle: { display: 'flex' }
+  }
 });

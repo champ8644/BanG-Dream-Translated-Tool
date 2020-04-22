@@ -122,9 +122,34 @@ export function handleNumProcess(e, value) {
   };
 }
 
+function sendMessageEach(item, displayNumProcess) {
+  console.log(item);
+  const { vCap } = item;
+  message2Worker('start-events', {
+    videoFilePath: vCap.path,
+    start: 0,
+    end: vCap.length,
+    process: displayNumProcess
+  });
+}
+
+export function startQueue() {
+  return async (dispatch, getState) => {
+    const { queue, videoDatas, displayNumProcess } = getState().Lounge;
+    sendMessageEach(videoDatas[queue[0]], displayNumProcess);
+  };
+}
+
+export function stopQueue() {
+  return async (dispatch, getState) => {
+    devalidLoop();
+    message2Worker('stop-events');
+  };
+}
+
 export function addQueue() {
   return async (dispatch, getState) => {
-    const { canvasRef, valueSlider, overlayMode, queue } = getState().Lounge;
+    const { queue } = getState().Lounge;
     const { filePaths, canceled } = await dialog.showOpenDialog({
       properties: ['openFile', 'multiSelections'],
       filters: [
@@ -153,10 +178,6 @@ export function addQueue() {
             try {
               vCap = new VideoCapture({
                 path,
-                canvas: canvasRef,
-                updateFrame: async () => dispatch(updateFrame()),
-                colorSlider: valueSlider,
-                modePostProcessor: overlayMode,
                 maxWidth: videoListMaxWidth,
                 maxHeight: videoListMaxHeight
               });

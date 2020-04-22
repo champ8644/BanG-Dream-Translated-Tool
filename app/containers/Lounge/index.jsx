@@ -226,7 +226,9 @@ class Lounge extends Component {
       handleNumProcess,
       displayNumProcess,
       addQueue,
-      queue
+      queue,
+      startQueue,
+      stopQueue
     } = this.props;
 
     return (
@@ -268,6 +270,22 @@ class Lounge extends Component {
             {ProcessMenuItem}
           </Select>
         </FormControl>
+        {queue.length > 0 && (
+          <>
+            <Button
+              className={clsx(classes.btn, classes.marginLeft)}
+              onClick={startQueue}
+            >
+              Start queue
+            </Button>
+            <Button
+              className={clsx(classes.btn, classes.marginLeft)}
+              onClick={stopQueue}
+            >
+              Stop queue
+            </Button>
+          </>
+        )}
 
         {vCap && (
           <div className={classes.buttonSliderContainer}>

@@ -160,10 +160,11 @@ export default function Lounge(state = initialState, action) {
         videoDatas: {
           ...state.videoDatas,
           [path]: {
+            ...state.videoDatas[path],
             completeWork: true,
             cancelWork: false,
             progressFromWorker: {
-              ...state.progressFromWorker,
+              ...state.videoDatas[path].progressFromWorker,
               timePassed: showTime(moment.duration(timePassed)),
               timeLeft: 'Job finished',
               timeAll: showTime(moment.duration(timePassed))
@@ -179,10 +180,11 @@ export default function Lounge(state = initialState, action) {
         videoDatas: {
           ...state.videoDatas,
           [path]: {
+            ...state.videoDatas[path],
             completeWork: false,
             cancelWork: true,
             progressFromWorker: {
-              ...state.progressFromWorker,
+              ...state.videoDatas[path].progressFromWorker,
               timeLeft: 'Job cancelled'
             }
           }
@@ -319,7 +321,7 @@ export default function Lounge(state = initialState, action) {
         videoDatas: {
           ...state.videoDatas,
           [path]: {
-            ...state.videoDatas.path,
+            ...state.videoDatas[path],
             progressFromWorker: info
           }
         }
