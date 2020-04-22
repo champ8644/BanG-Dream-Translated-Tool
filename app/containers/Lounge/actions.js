@@ -3,7 +3,12 @@
 /* eslint-disable no-console */
 
 import { endFrameTest, startFrameTest } from './constants/config';
-import { gapConst, maxMinDist } from './constants';
+import {
+  gapConst,
+  maxMinDist,
+  videoListMaxHeight,
+  videoListMaxWidth
+} from './constants';
 import mainEvent, { devalidLoop } from './mainFunctions/mainEvent';
 
 import Queue from '../../classes/Queue';
@@ -151,7 +156,9 @@ export function addQueue() {
                 canvas: canvasRef,
                 updateFrame: async () => dispatch(updateFrame()),
                 colorSlider: valueSlider,
-                modePostProcessor: overlayMode
+                modePostProcessor: overlayMode,
+                maxWidth: videoListMaxWidth,
+                maxHeight: videoListMaxHeight
               });
             } catch (err) {
               dispatch(throwAlert({ message: err }));

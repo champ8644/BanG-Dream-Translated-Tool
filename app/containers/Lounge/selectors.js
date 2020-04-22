@@ -129,3 +129,9 @@ export const makeCancelWork = () =>
     videoData =>
       videoData ? videoData.cancelWork : initialVideoDatas.cancelWork
   );
+
+export const makeVideoCaptureEach = () =>
+  createSelector(
+    getVideoDatas,
+    videoData => (videoData ? videoData.vCap : initialVideoDatas.vCap)
+  );

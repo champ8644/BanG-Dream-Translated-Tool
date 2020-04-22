@@ -39,7 +39,8 @@ export const initialState = {
   numProcess: 1,
   displayNumProcess: 1,
   queue: [],
-  videoDatas: {}
+  videoDatas: {},
+  canvasRefEach: {}
 };
 
 const initialConverter = {

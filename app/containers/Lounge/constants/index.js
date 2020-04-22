@@ -151,3 +151,7 @@ export const thickness = 3;
 
 export const intersectCompensate = 30;
 export const NUM_MAX_PROCESS = 8;
+
+export const videoListRatio = 10;
+export const videoListMaxWidth = 1920 / videoListRatio;
+export const videoListMaxHeight = 1440 / videoListRatio;

@@ -263,9 +263,7 @@ class Lounge extends Component {
             {ProcessMenuItem}
           </Select>
         </FormControl>
-        {queue.map(path => (
-          <ListVCap path={path} key={path} classes={classes} />
-        ))}
+
         {vCap && (
           <>
             <Paper elevation={2} className={classes.paper}>
@@ -320,6 +318,15 @@ class Lounge extends Component {
               label={`${formatNumber(percent)} / 100 %`}
               variant='outlined'
             />
+          </>
+        )}
+        <div className={classes.marginTop}>
+          {queue.map(path => (
+            <ListVCap path={path} key={path} />
+          ))}
+        </div>
+        {vCap && (
+          <>
             {/* {readyToWork && (
               <ListVCap
                 vCap={{
