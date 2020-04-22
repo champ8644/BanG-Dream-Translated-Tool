@@ -10,9 +10,12 @@ export const styles = theme => ({
     flexDirection: 'column',
     flexGrow: 1
   },
-  content: {
-    flex: '1 0 auto',
+  header: {
+    height: '8em',
     display: 'grid'
+  },
+  content: {
+    flex: '1 0 auto'
   },
   cover: {
     width: videoListMaxWidth
@@ -27,12 +30,13 @@ export const styles = theme => ({
     height: 38,
     width: 38
   },
-  loader: {
+  loader: props => ({
     position: 'absolute',
-    marginLeft: '76px',
-    marginTop: '52px'
-  },
+    marginLeft: `${props.vCap.dWidth / 2 - 20}px`,
+    marginTop: `${props.vCap.dHeight / 2 - 20}px`
+  }),
   closeIcon: {
     height: '2em'
-  }
+  },
+  middle: { display: 'flex' }
 });

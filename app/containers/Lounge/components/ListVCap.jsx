@@ -107,7 +107,7 @@ function ListVCap(props) {
         <CircularProgress className={classes.loader} disableShrink />
       )}
       <div className={classes.details}>
-        <CardContent className={classes.content}>
+        <CardContent className={classes.header}>
           <Typography component='h5' variant='h5' noWrap>
             {path.basename(videoFilePath)}
           </Typography>
@@ -115,6 +115,61 @@ function ListVCap(props) {
             {path.dirname(videoFilePath)}
           </Typography>
         </CardContent>
+        <div className={classes.content}>
+          <div className={classes.progressBar}>
+            {readyToWork && (
+              <>
+                <Grid container>
+                  {Array.from(Array(NUM_PROCESS).keys()).map(
+                    index =>
+                      percentLinear.bar[index] !== null && (
+                        <Grid item xs key={index}>
+                          <CustomLinearProgress
+                            delay={percentLinear.bar[index].delay}
+                            variant='determinate'
+                            value={percentLinear.bar[index].percent}
+                            isfirst={index === 0 ? 1 : 0}
+                            islast={index === NUM_PROCESS - 1 ? 1 : 0}
+                            iscomplete={completeWork ? 1 : 0}
+                            iserror={cancelWork ? 1 : 0}
+                          />
+                        </Grid>
+                      )
+                  )}
+                </Grid>
+                <Chip
+                  className={classes.chip}
+                  icon={<DonutLargeIcon />}
+                  label={`${formatNumber(percentLinear.percent)} / 100 %`}
+                  variant='outlined'
+                />
+                <Chip
+                  className={classes.chip}
+                  icon={<SpeedIcon />}
+                  color='primary'
+                  label={`FPS: ${formatNumber(percentLinear.FPS)}`}
+                  variant='outlined'
+                />
+                <Chip
+                  className={classes.chip}
+                  icon={<AccessAlarmIcon />}
+                  color='secondary'
+                  label={`Estimated time left: ${percentLinear.timeLeft}`}
+                  variant='outlined'
+                />
+                <Chip
+                  className={classes.chip}
+                  icon={<HourglassEmptyIcon />}
+                  color='secondary'
+                  label={`Time Elapsed: ${percentLinear.timePassed} / ${
+                    percentLinear.timeAll
+                  }`}
+                  variant='outlined'
+                />
+              </>
+            )}
+          </div>
+        </div>
         <div className={classes.controls}>
           <IconButton aria-label='previous'>
             <SkipPreviousIcon />
@@ -127,57 +182,6 @@ function ListVCap(props) {
           </IconButton>
         </div>
       </div>
-      {readyToWork && (
-        <>
-          <Grid container>
-            {Array.from(Array(NUM_PROCESS).keys()).map(
-              index =>
-                percentLinear.bar[index] !== null && (
-                  <Grid item xs key={index}>
-                    <CustomLinearProgress
-                      delay={percentLinear.bar[index].delay}
-                      variant='determinate'
-                      value={percentLinear.bar[index].percent}
-                      isfirst={index === 0 ? 1 : 0}
-                      islast={index === NUM_PROCESS - 1 ? 1 : 0}
-                      iscomplete={completeWork ? 1 : 0}
-                      iserror={cancelWork ? 1 : 0}
-                    />
-                  </Grid>
-                )
-            )}
-          </Grid>
-          <Chip
-            className={classes.chip}
-            icon={<DonutLargeIcon />}
-            label={`${formatNumber(percentLinear.percent)} / 100 %`}
-            variant='outlined'
-          />
-          <Chip
-            className={classes.chip}
-            icon={<SpeedIcon />}
-            color='primary'
-            label={`FPS: ${formatNumber(percentLinear.FPS)}`}
-            variant='outlined'
-          />
-          <Chip
-            className={classes.chip}
-            icon={<AccessAlarmIcon />}
-            color='secondary'
-            label={`Estimated time left: ${percentLinear.timeLeft}`}
-            variant='outlined'
-          />
-          <Chip
-            className={classes.chip}
-            icon={<HourglassEmptyIcon />}
-            color='secondary'
-            label={`Time Elapsed: ${percentLinear.timePassed} / ${
-              percentLinear.timeAll
-            }`}
-            variant='outlined'
-          />
-        </>
-      )}
       <Tooltip title='Close this video' arrow>
         <IconButton color='secondary' className={classes.closeIcon}>
           <CloseIcon />
