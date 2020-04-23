@@ -5,14 +5,17 @@ export const styles = theme => ({
     display: 'flex',
     margin: theme.spacing(1, 0, 0, 4)
   },
-  details: props => ({
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
-    backgroundColor: props.cancelWork
-      ? '#fff7f6'
-      : theme.palette.background.default
-  }),
+  details: props => {
+    let backgroundColor = theme.palette.background.default;
+    if (props.cancelWork) backgroundColor = '#fff7f6';
+    else if (props.readyToWork) backgroundColor = '#dceffd';
+    return {
+      display: 'flex',
+      flexDirection: 'column',
+      flexGrow: 1,
+      backgroundColor
+    };
+  },
   header: {
     height: '8em',
     display: 'grid',
@@ -79,19 +82,13 @@ export const styles = theme => ({
     position: 'absolute'
   },
   buttonCanvas: props => ({
-    '&:hover, &$focusVisible': {
+    '&:hover': {
       zIndex: 1,
       '& $imageBackdrop': {
         opacity: props.cancelWork ? 0.15 : 0
       },
       '& $imageButtonFAB': {
         opacity: props.cancelWork ? 1 : 0
-      },
-      '& $imageMarked': {
-        opacity: 0
-      },
-      '& $imageTitle': {
-        border: '4px solid currentColor'
       }
     }
   }),

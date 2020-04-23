@@ -51,11 +51,15 @@ const actionTypesList = [
   'CANCEL_LINEAR',
   'HANDLE_NUM_PROCESS',
   'ADD_QUEUE',
-  'START_QUEUE',
+  'TICK_QUEUE',
+  'ACTIVATING_QUEUE',
   'INACTIVATING_QUEUE',
   'ON_CLOSE_VCAP_LIST',
   'ON_CANCEL_VCAP_LIST',
-  'ON_REFRESH_VCAP_LIST'
+  'ON_REFRESH_VCAP_LIST',
+  'CANCEL_CLOSE_CONVERTING_DIALOG',
+  'CONFIRMING_CLOSE_CONVERTING_DIALOG',
+  'CONFIRMED_CLOSE_CONVERTING_DIALOG'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -101,11 +105,19 @@ export function beginLinear(payload) {
 
 export function cancelLinear(payload) {
   return (dispatch, getState) => {
+    const {
+      closeConvertingDialog: { path }
+    } = getState().Lounge;
     dispatch({
       type: actionTypes.CANCEL_LINEAR,
       payload
     });
-    dispatch(startQueue());
+    if (path)
+      dispatch({
+        type: actionTypes.ON_CLOSE_VCAP_LIST,
+        payload: path
+      });
+    dispatch(tickQueue());
   };
 }
 
@@ -115,19 +127,45 @@ export function finishLinear(payload) {
       type: actionTypes.FINISH_LINEAR,
       payload
     });
-    dispatch(startQueue());
+    dispatch(tickQueue());
+  };
+}
+
+export function handleCancelCloseConvertingDialog() {
+  return {
+    type: actionTypes.CANCEL_CLOSE_CONVERTING_DIALOG
+  };
+}
+
+export function handleConfirmCloseConvertingDialog() {
+  return dispatch => {
+    dispatch({
+      type: actionTypes.CONFIRMED_CLOSE_CONVERTING_DIALOG
+    });
+    dispatch(stopQueue());
   };
 }
 
 export function onCloseVCapList(path) {
-  return {
-    type: actionTypes.ON_CLOSE_VCAP_LIST,
-    payload: path
+  return (dispatch, getState) => {
+    const { videoDatas } = getState().Lounge;
+    const { readyToWork } = videoDatas[path];
+    if (readyToWork)
+      dispatch({
+        type: actionTypes.CONFIRMING_CLOSE_CONVERTING_DIALOG,
+        payload: path
+      });
+    else
+      dispatch({
+        type: actionTypes.ON_CLOSE_VCAP_LIST,
+        payload: path
+      });
   };
 }
 
 export function onCancelVCapList() {
-  return () => {
+  return dispatch => {
+    dispatch({ type: actionTypes.ON_CANCEL_VCAP_LIST });
     devalidLoop();
     message2Worker('stop-events');
   };
@@ -154,9 +192,15 @@ export function handleNumProcess(e, value) {
   };
 }
 
-export function startQueue() {
+export function tickQueue() {
   return async (dispatch, getState) => {
-    const { queue, videoDatas, displayNumProcess } = getState().Lounge;
+    const {
+      queue,
+      videoDatas,
+      displayNumProcess,
+      isActivate
+    } = getState().Lounge;
+    if (!isActivate) return;
     let nextQueue = null;
     let vCapLength;
     for (let i = 0; i < queue.length; i++) {
@@ -170,7 +214,7 @@ export function startQueue() {
     }
     if (!nextQueue) return;
     dispatch({
-      type: actionTypes.START_QUEUE,
+      type: actionTypes.TICK_QUEUE,
       payload: { displayNumProcess, path: nextQueue }
     });
     message2Worker('start-events', {
@@ -182,8 +226,15 @@ export function startQueue() {
   };
 }
 
+export function startQueue() {
+  return dispatch => {
+    dispatch({ type: actionTypes.ACTIVATING_QUEUE });
+    dispatch(tickQueue());
+  };
+}
+
 export function stopQueue() {
-  return (dispatch, getState) => {
+  return dispatch => {
     dispatch({ type: actionTypes.INACTIVATING_QUEUE });
     devalidLoop();
     message2Worker('stop-events');

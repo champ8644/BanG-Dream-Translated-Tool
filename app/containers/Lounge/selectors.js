@@ -95,6 +95,16 @@ export const makeQueue = createSelector(
   state => (state ? state.queue : initialState.queue)
 );
 
+export const makeWorkingStatus = createSelector(
+  make,
+  state => (state ? state.workingStatus : initialState.workingStatus)
+);
+
+export const makeCloseConvertingDialog = createSelector(
+  make,
+  state =>
+    state ? state.closeConvertingDialog : initialState.closeConvertingDialog
+);
 const getVideoDatas = (state, props) =>
   props.path && state.Lounge && state.Lounge.videoDatas
     ? state.Lounge.videoDatas[props.path]

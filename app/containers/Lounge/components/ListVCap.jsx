@@ -180,16 +180,18 @@ function ListVCap(props) {
                       Refresh
                     </Button>
                   ) : (
-                    <Button
-                      variant='contained'
-                      size='small'
-                      color='secondary'
-                      className={classes.refreshButton}
-                      startIcon={<StopIcon />}
-                      onClick={onCancel}
-                    >
-                      Stop working
-                    </Button>
+                    readyToWork && (
+                      <Button
+                        variant='contained'
+                        size='small'
+                        color='secondary'
+                        className={classes.refreshButton}
+                        startIcon={<StopIcon />}
+                        onClick={onCancel}
+                      >
+                        Stop working
+                      </Button>
+                    )
                   )}
                 </div>
               </Grow>

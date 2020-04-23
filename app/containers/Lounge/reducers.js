@@ -43,7 +43,8 @@ export const initialState = {
   videoDatas: {},
   canvasRefEach: {},
   workingStatus: ws.idle,
-  isActivate: false
+  isActivate: false,
+  closeConvertingDialog: { open: false, path: null }
 };
 
 const initialConverter = {
@@ -79,6 +80,12 @@ export default function Lounge(state = initialState, action) {
         isPlaying: false,
         frame: payload.vCap.getFrame(),
         willUpdateNextFrame: true
+      };
+    case actionTypes.ACTIVATING_QUEUE:
+      return {
+        ...state,
+        workingStatus: ws.preconvert,
+        isActivate: true
       };
     case actionTypes.INACTIVATING_QUEUE:
       return {
@@ -160,10 +167,9 @@ export default function Lounge(state = initialState, action) {
       };
     case actionTypes.SEND_MESSAGE:
       return { ...state, ...initialConverter, numProcess: payload };
-    case actionTypes.START_QUEUE:
+    case actionTypes.TICK_QUEUE:
       return {
         ...state,
-        isActivate: true,
         workingStatus: ws.preconvert,
         videoDatas: {
           ...state.videoDatas,
@@ -382,13 +388,7 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.ON_CANCEL_VCAP_LIST:
       return {
         ...state,
-        videoDatas: {
-          ...state.videoDatas,
-          [payload]: {
-            ...state.videoDatas[payload],
-            ...initialVideoDatas
-          }
-        }
+        workingStatus: ws.precancel
       };
     case actionTypes.ON_REFRESH_VCAP_LIST:
       return {
@@ -397,8 +397,26 @@ export default function Lounge(state = initialState, action) {
           ...state.videoDatas,
           [payload]: {
             ...state.videoDatas[payload],
-            ...initialVideoDatas
+            ...initialConverter
           }
+        }
+      };
+    case actionTypes.CONFIRMED_CLOSE_CONVERTING_DIALOG:
+      return {
+        ...state,
+        closeConvertingDialog: { ...state.closeConvertingDialog, open: false }
+      };
+    case actionTypes.CANCEL_CLOSE_CONVERTING_DIALOG:
+      return {
+        ...state,
+        closeConvertingDialog: { open: false, path: null }
+      };
+    case actionTypes.CONFIRMING_CLOSE_CONVERTING_DIALOG:
+      return {
+        ...state,
+        closeConvertingDialog: {
+          open: true,
+          path: payload
         }
       };
     default:

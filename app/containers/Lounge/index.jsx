@@ -17,7 +17,9 @@ import {
   makeStatusData,
   makeVideoCapture,
   makeVideoFilePath,
-  makeWillUpdateNextFrame
+  makeWillUpdateNextFrame,
+  makeWorkingStatus,
+  makeCloseConvertingDialog
 } from './selectors';
 
 import { APP_TITLE } from '../../constants/meta';
@@ -25,6 +27,8 @@ import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogContent from '@material-ui/core/DialogContent';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
@@ -92,7 +96,9 @@ const mapStateToProps = (state, props) => {
     sliderObj: makeSliderObj(state),
     NUM_PROCESS: makeNumProcess(state),
     displayNumProcess: makeDisplayNumProcess(state),
-    queue: makeQueue(state)
+    queue: makeQueue(state),
+    workingStatus: makeWorkingStatus(state),
+    closeConvertingDialog: makeCloseConvertingDialog(state)
   };
 };
 
@@ -231,7 +237,11 @@ class Lounge extends Component {
       stopQueue,
       onCloseVCapList,
       onCancelVCapList,
-      onRefreshVCapList
+      onRefreshVCapList,
+      workingStatus,
+      handleCancelCloseConvertingDialog,
+      handleConfirmCloseConvertingDialog,
+      closeConvertingDialog
     } = this.props;
 
     return (
@@ -278,12 +288,14 @@ class Lounge extends Component {
             <Button
               className={clsx(classes.btn, classes.marginLeft)}
               onClick={startQueue}
+              disabled={workingStatus > 0}
             >
               Start queue
             </Button>
             <Button
               className={clsx(classes.btn, classes.marginLeft)}
               onClick={stopQueue}
+              disabled={workingStatus < 1 && workingStatus > 2}
             >
               Stop queue
             </Button>
@@ -524,6 +536,31 @@ class Lounge extends Component {
               Go to {dialog.type}
             </Button>
             <Button onClick={handleCancelDialog} color='primary'>
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={closeConvertingDialog.open}
+          onClose={handleCancelCloseConvertingDialog}
+        >
+          <DialogTitle>Confirm closing on going process.</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to close this process from &apos;
+              {closeConvertingDialog.path}&apos;? Any unsaved data will be
+              forever lost.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleConfirmCloseConvertingDialog}
+              color='secondary'
+            >
+              Ok, I don&apos;t need this data
+            </Button>
+            <Button onClick={handleCancelCloseConvertingDialog} color='primary'>
               Cancel
             </Button>
           </DialogActions>
