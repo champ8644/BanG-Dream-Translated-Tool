@@ -11,6 +11,9 @@ export const styles = theme => {
     chip: {
       margin: theme.spacing(0.5)
     },
+    marginTop: {
+      marginTop: theme.spacing(3)
+    },
     marginLeft: { marginLeft: '1em' },
     marginDivider: { margin: '1em' },
     formControlInput: {
@@ -32,6 +35,12 @@ export const styles = theme => {
     },
     TitleFileName: {
       margin: theme.spacing(2.5, 4)
+    },
+    videoEachHeader: {
+      margin: theme.spacing(0, 0, 0, 4)
+    },
+    videoEachPath: {
+      margin: theme.spacing(0, 0, 0, 1)
     },
     canvas: {
       marginTop: theme.spacing(3)

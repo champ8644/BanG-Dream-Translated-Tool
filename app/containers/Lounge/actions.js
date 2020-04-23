@@ -3,7 +3,12 @@
 /* eslint-disable no-console */
 
 import { endFrameTest, startFrameTest } from './constants/config';
-import { gapConst, maxMinDist } from './constants';
+import {
+  gapConst,
+  maxMinDist,
+  videoListMaxHeight,
+  videoListMaxWidth
+} from './constants';
 import mainEvent, { devalidLoop } from './mainFunctions/mainEvent';
 
 import Queue from '../../classes/Queue';
@@ -14,6 +19,7 @@ import cv from 'opencv4nodejs';
 import { message2Worker } from './utils';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
+import { throwAlert } from '../Alerts/actions';
 
 const { dialog } = remote;
 
@@ -43,7 +49,17 @@ const actionTypesList = [
   'BEGIN_LINEAR',
   'FINISH_LINEAR',
   'CANCEL_LINEAR',
-  'HANDLE_NUM_PROCESS'
+  'HANDLE_NUM_PROCESS',
+  'ADD_QUEUE',
+  'TICK_QUEUE',
+  'ACTIVATING_QUEUE',
+  'INACTIVATING_QUEUE',
+  'ON_CLOSE_VCAP_LIST',
+  'ON_CANCEL_VCAP_LIST',
+  'ON_REFRESH_VCAP_LIST',
+  'CANCEL_CLOSE_CONVERTING_DIALOG',
+  'CONFIRMING_CLOSE_CONVERTING_DIALOG',
+  'CONFIRMED_CLOSE_CONVERTING_DIALOG'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -87,15 +103,78 @@ export function beginLinear(payload) {
   };
 }
 
-export function cancelLinear() {
-  return {
-    type: actionTypes.CANCEL_LINEAR
+export function cancelLinear(payload) {
+  return (dispatch, getState) => {
+    const {
+      closeConvertingDialog: { path }
+    } = getState().Lounge;
+    dispatch({
+      type: actionTypes.CANCEL_LINEAR,
+      payload
+    });
+    if (path)
+      dispatch({
+        type: actionTypes.ON_CLOSE_VCAP_LIST,
+        payload: path
+      });
+    dispatch(tickQueue());
   };
 }
 
-export function finishLinear() {
+export function finishLinear(payload) {
+  return (dispatch, getState) => {
+    dispatch({
+      type: actionTypes.FINISH_LINEAR,
+      payload
+    });
+    dispatch(tickQueue());
+  };
+}
+
+export function handleCancelCloseConvertingDialog() {
   return {
-    type: actionTypes.FINISH_LINEAR
+    type: actionTypes.CANCEL_CLOSE_CONVERTING_DIALOG
+  };
+}
+
+export function handleConfirmCloseConvertingDialog() {
+  return dispatch => {
+    dispatch({
+      type: actionTypes.CONFIRMED_CLOSE_CONVERTING_DIALOG
+    });
+    dispatch(stopQueue());
+  };
+}
+
+export function onCloseVCapList(path) {
+  return (dispatch, getState) => {
+    const { videoDatas } = getState().Lounge;
+    const { readyToWork } = videoDatas[path];
+    if (readyToWork)
+      dispatch({
+        type: actionTypes.CONFIRMING_CLOSE_CONVERTING_DIALOG,
+        payload: path
+      });
+    else
+      dispatch({
+        type: actionTypes.ON_CLOSE_VCAP_LIST,
+        payload: path
+      });
+  };
+}
+
+export function onCancelVCapList() {
+  return dispatch => {
+    dispatch({ type: actionTypes.ON_CANCEL_VCAP_LIST });
+    devalidLoop();
+    message2Worker('stop-events');
+  };
+}
+
+export function onRefreshVCapList(path) {
+  return {
+    type: actionTypes.ON_REFRESH_VCAP_LIST,
+    payload: path
   };
 }
 
@@ -113,6 +192,110 @@ export function handleNumProcess(e, value) {
   };
 }
 
+export function tickQueue() {
+  return async (dispatch, getState) => {
+    const {
+      queue,
+      videoDatas,
+      displayNumProcess,
+      isActivate
+    } = getState().Lounge;
+    if (!isActivate) return;
+    let nextQueue = null;
+    let vCapLength;
+    for (let i = 0; i < queue.length; i++) {
+      const path = queue[i];
+      const { vCap, completeWork, cancelWork, readyToWork } = videoDatas[path];
+      if (!completeWork && !cancelWork && !readyToWork) {
+        nextQueue = path;
+        vCapLength = vCap.length;
+        break;
+      }
+    }
+    if (!nextQueue) return;
+    dispatch({
+      type: actionTypes.TICK_QUEUE,
+      payload: { displayNumProcess, path: nextQueue }
+    });
+    message2Worker('start-events', {
+      videoFilePath: nextQueue,
+      start: 0,
+      end: vCapLength,
+      process: displayNumProcess
+    });
+  };
+}
+
+export function startQueue() {
+  return dispatch => {
+    dispatch({ type: actionTypes.ACTIVATING_QUEUE });
+    dispatch(tickQueue());
+  };
+}
+
+export function stopQueue() {
+  return dispatch => {
+    dispatch({ type: actionTypes.INACTIVATING_QUEUE });
+    devalidLoop();
+    message2Worker('stop-events');
+  };
+}
+
+export function addQueue() {
+  return async (dispatch, getState) => {
+    const { queue, videoDatas } = getState().Lounge;
+    const { filePaths, canceled } = await dialog.showOpenDialog({
+      properties: ['openFile', 'multiSelections'],
+      filters: [
+        {
+          name: 'Video files',
+          extensions: ['mkv', 'avi', 'mp4', 'mov', 'flv', 'wmv']
+        }
+      ]
+    });
+    if (canceled) return;
+    try {
+      const dupFile = [];
+      const uniqueFilePaths = filePaths.filter(filepath => {
+        let isUnique = true;
+        queue.forEach(path => {
+          if (path === filepath) isUnique = false;
+        });
+        if (!isUnique) dupFile.push(filepath);
+        return isUnique;
+      });
+      if (uniqueFilePaths.length !== filePaths.length)
+        dispatch(throwAlert({ message: 'There is duplicate file(s)' }));
+      dispatch({
+        type: actionTypes.ADD_QUEUE,
+        payload: {
+          unique: uniqueFilePaths
+            .map(path => {
+              let vCap = null;
+              try {
+                vCap = new VideoCapture({
+                  path,
+                  maxWidth: videoListMaxWidth,
+                  maxHeight: videoListMaxHeight
+                });
+              } catch (err) {
+                dispatch(throwAlert({ message: err }));
+                vCap = null;
+              }
+              return vCap;
+            })
+            .filter(item => item),
+          dup: dupFile.map(path => videoDatas[path].vCap)
+        }
+      });
+    } catch (err) {
+      if (typeof err === 'object' && err !== null)
+        dispatch(throwAlert({ message: err.message }));
+      else dispatch(throwAlert({ message: err }));
+    }
+  };
+}
+
 export function openFile() {
   return async (dispatch, getState) => {
     const { canvasRef, valueSlider, overlayMode } = getState().Lounge;
@@ -126,20 +309,24 @@ export function openFile() {
       ]
     });
     if (canceled) return;
-    const vCap = new VideoCapture({
-      path: filePaths[0],
-      canvas: canvasRef,
-      updateFrame: async () => dispatch(updateFrame()),
-      colorSlider: valueSlider,
-      modePostProcessor: overlayMode
-    });
-    dispatch({
-      type: actionTypes.SELECT_NEW_VIDEO,
-      payload: {
-        videoFilePath: filePaths[0],
-        vCap
-      }
-    });
+    try {
+      const vCap = new VideoCapture({
+        path: filePaths[0],
+        canvas: canvasRef,
+        updateFrame: async () => dispatch(updateFrame()),
+        colorSlider: valueSlider,
+        modePostProcessor: overlayMode
+      });
+      dispatch({
+        type: actionTypes.SELECT_NEW_VIDEO,
+        payload: {
+          videoFilePath: filePaths[0],
+          vCap
+        }
+      });
+    } catch (err) {
+      dispatch(throwAlert({ message: err }));
+    }
   };
 }
 

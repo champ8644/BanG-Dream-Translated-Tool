@@ -1,7 +1,8 @@
 'use strict';
 
+import { initialState, initialVideoDatas } from './reducers';
+
 import { createSelector } from 'reselect';
-import { initialState } from './reducers';
 import path from 'path';
 
 const make = (state, props) => (state ? state.Lounge : {});
@@ -79,26 +80,6 @@ export const makeSliderObj = createSelector(
   state => (state ? state.sliderObj : initialState.sliderObj)
 );
 
-export const makePercentLinear = createSelector(
-  make,
-  state => (state ? state.progressFromWorker : initialState.progressFromWorker)
-);
-
-export const makeReadyToWork = createSelector(
-  make,
-  state => (state ? state.readyToWork : initialState.readyToWork)
-);
-
-export const makeCompleteWork = createSelector(
-  make,
-  state => (state ? state.completeWork : initialState.completeWork)
-);
-
-export const makeCancelWork = createSelector(
-  make,
-  state => (state ? state.cancelWork : initialState.cancelWork)
-);
-
 export const makeNumProcess = createSelector(
   make,
   state => (state ? state.numProcess : initialState.numProcess)
@@ -108,3 +89,59 @@ export const makeDisplayNumProcess = createSelector(
   make,
   state => (state ? state.displayNumProcess : initialState.displayNumProcess)
 );
+
+export const makeQueue = createSelector(
+  make,
+  state => (state ? state.queue : initialState.queue)
+);
+
+export const makeWorkingStatus = createSelector(
+  make,
+  state => (state ? state.workingStatus : initialState.workingStatus)
+);
+
+export const makeCloseConvertingDialog = createSelector(
+  make,
+  state =>
+    state ? state.closeConvertingDialog : initialState.closeConvertingDialog
+);
+const getVideoDatas = (state, props) =>
+  props.path && state.Lounge && state.Lounge.videoDatas
+    ? state.Lounge.videoDatas[props.path]
+    : initialVideoDatas;
+
+export const makePercentLinear = () =>
+  createSelector(
+    getVideoDatas,
+    videoData =>
+      videoData
+        ? videoData.progressFromWorker
+        : initialVideoDatas.progressFromWorker
+  );
+
+export const makeReadyToWork = () =>
+  createSelector(
+    getVideoDatas,
+    videoData =>
+      videoData ? videoData.readyToWork : initialVideoDatas.readyToWork
+  );
+
+export const makeCompleteWork = () =>
+  createSelector(
+    getVideoDatas,
+    videoData =>
+      videoData ? videoData.completeWork : initialVideoDatas.completeWork
+  );
+
+export const makeCancelWork = () =>
+  createSelector(
+    getVideoDatas,
+    videoData =>
+      videoData ? videoData.cancelWork : initialVideoDatas.cancelWork
+  );
+
+export const makeVideoCaptureEach = () =>
+  createSelector(
+    getVideoDatas,
+    videoData => (videoData ? videoData.vCap : initialVideoDatas.vCap)
+  );

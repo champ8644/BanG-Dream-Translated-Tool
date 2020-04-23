@@ -1,8 +1,9 @@
 'use strict';
 
+import { sliderObjSelector, ws } from './constants/config';
+
 import { actionTypes } from './actions';
 import moment from 'moment';
-import { sliderObjSelector } from './constants/config';
 
 export const initialState = {
   videoFilePath: '',
@@ -35,13 +36,15 @@ export const initialState = {
   progressFull: null,
   importedFile: null,
   willUpdateNextFrame: false,
-  progressFromWorker: null,
   overlayMode: 'none',
-  readyToWork: false,
-  completeWork: false,
-  cancelWork: false,
   numProcess: 1,
-  displayNumProcess: 1
+  displayNumProcess: 1,
+  queue: [],
+  videoDatas: {},
+  canvasRefEach: {},
+  workingStatus: ws.idle,
+  isActivate: false,
+  closeConvertingDialog: { open: false, path: null }
 };
 
 const initialConverter = {
@@ -49,6 +52,14 @@ const initialConverter = {
   readyToWork: false,
   completeWork: false,
   cancelWork: false
+};
+
+export const initialVideoDatas = {
+  vCap: null,
+  progressFromWorker: null,
+  completeWork: false,
+  cancelWork: false,
+  readyToWork: false
 };
 
 function showTime(dur) {
@@ -70,6 +81,41 @@ export default function Lounge(state = initialState, action) {
         frame: payload.vCap.getFrame(),
         willUpdateNextFrame: true
       };
+    case actionTypes.ACTIVATING_QUEUE:
+      return {
+        ...state,
+        workingStatus: ws.preconvert,
+        isActivate: true
+      };
+    case actionTypes.INACTIVATING_QUEUE:
+      return {
+        ...state,
+        workingStatus: ws.precancel,
+        isActivate: false
+      };
+    case actionTypes.ADD_QUEUE: {
+      const paths = [];
+      const payloadDatas = {};
+      const { unique, dup } = payload;
+      unique.forEach(vCap => {
+        paths.push(vCap.path);
+        payloadDatas[vCap.path] = {
+          ...initialVideoDatas,
+          vCap
+        };
+      });
+      dup.forEach(vCap => {
+        payloadDatas[vCap.path] = {
+          ...initialVideoDatas,
+          vCap
+        };
+      });
+      return {
+        ...state,
+        queue: [...state.queue, ...paths],
+        videoDatas: { ...state.videoDatas, ...payloadDatas }
+      };
+    }
     case actionTypes.UPDATE_FRAME:
       return {
         ...state,
@@ -111,7 +157,7 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.HANDLE_CHANGE_SLIDER:
     case actionTypes.HANDLE_COMMITTED_SLIDER:
       return { ...state, valueSlider: { ...state.valueSlider, ...payload } };
-    case actionTypes.STOP_PROGRES:
+    case actionTypes.STOP_PROGRESS:
       return { ...state, progressFull: null, progress: null };
     case actionTypes.START_PROGRESS:
       return {
@@ -121,53 +167,86 @@ export default function Lounge(state = initialState, action) {
       };
     case actionTypes.SEND_MESSAGE:
       return { ...state, ...initialConverter, numProcess: payload };
+    case actionTypes.TICK_QUEUE:
+      return {
+        ...state,
+        workingStatus: ws.preconvert,
+        videoDatas: {
+          ...state.videoDatas,
+          [payload.path]: {
+            ...state.videoDatas[payload.path],
+            ...initialConverter
+          }
+        },
+        numProcess: payload.displayNumProcess
+      };
     case actionTypes.ADD_PROGRESS:
       return { ...state, progress: state.progress + payload };
     case actionTypes.IMPORTING:
       return { ...state, importedFile: payload };
     case actionTypes.FINISH_LINEAR: {
+      const { path } = payload;
+      const { videoDatas } = state;
       const {
         progressFromWorker: { beginTime }
-      } = state;
+      } = videoDatas[path];
       const timePassed = new Date().getTime() - beginTime;
       return {
         ...state,
-        completeWork: true,
-        cancelWork: false,
-        progressFromWorker: {
-          ...state.progressFromWorker,
-          timePassed: showTime(moment.duration(timePassed)),
-          timeLeft: 'Job finished',
-          timeAll: showTime(moment.duration(timePassed))
+        workingStatus: ws.idle,
+        videoDatas: {
+          ...state.videoDatas,
+          [path]: {
+            ...state.videoDatas[path],
+            completeWork: true,
+            cancelWork: false,
+            progressFromWorker: {
+              ...state.videoDatas[path].progressFromWorker,
+              timePassed: showTime(moment.duration(timePassed)),
+              timeLeft: 'Job finished',
+              timeAll: showTime(moment.duration(timePassed))
+            }
+          }
         }
       };
     }
     case actionTypes.CANCEL_LINEAR: {
+      const { path } = payload;
       return {
         ...state,
-        completeWork: false,
-        cancelWork: true,
-        progressFromWorker: {
-          ...state.progressFromWorker,
-          timeLeft: 'Job cancelled'
+        workingStatus: ws.idle,
+        videoDatas: {
+          ...state.videoDatas,
+          [path]: {
+            ...state.videoDatas[path],
+            completeWork: false,
+            cancelWork: true,
+            progressFromWorker: {
+              ...state.videoDatas[path].progressFromWorker,
+              timeLeft: 'Job cancelled'
+            }
+          }
         }
       };
     }
     case actionTypes.BEGIN_LINEAR: {
-      let { progressFromWorker } = state;
-      const { numProcess } = state;
+      const { videoDatas, numProcess } = state;
+      const { path, index, beginFrame, endFrame } = payload;
+      let { progressFromWorker } = videoDatas[path];
+
       if (!progressFromWorker) {
         progressFromWorker = { bar: Array(numProcess).fill(null) };
       }
+
       const { bar } = progressFromWorker;
-      const { index, beginFrame, endFrame } = payload;
 
       const substituteBar = {
         progress: 0,
         delay: 100,
         percent: 0,
         beginFrame,
-        endFrame
+        endFrame,
+        frame: 0
       };
 
       const newBar = bar.map((val, idx) => {
@@ -194,6 +273,8 @@ export default function Lounge(state = initialState, action) {
 
       info.percent = 0;
       info.FPS = 0;
+      info.minFPS = 1e10;
+      info.maxFPS = -1;
 
       info.timePassed = showTime(moment.duration(0));
       info.timeLeft = 'determining...';
@@ -204,19 +285,27 @@ export default function Lounge(state = initialState, action) {
 
       return {
         ...state,
-        readyToWork,
-        completeWork: false,
-        cancelWork: false,
-        progressFromWorker: info
+        workingStatus: ws.converting,
+        videoDatas: {
+          ...state.videoDatas,
+          [path]: {
+            ...state.videoDatas[path],
+            readyToWork,
+            completeWork: false,
+            cancelWork: false,
+            progressFromWorker: info
+          }
+        }
       };
     }
     case actionTypes.UPDATE_LINEAR: {
-      const { readyToWork } = state;
+      const { videoDatas } = state;
+      const { path, index, frame, ...other } = payload;
+      const { readyToWork } = videoDatas[path];
       if (!readyToWork) return state;
       const {
-        progressFromWorker: { bar, beginTime }
-      } = state;
-      const { index, frame, ...other } = payload;
+        progressFromWorker: { bar, beginTime, minFPS, maxFPS }
+      } = videoDatas[path];
 
       const now = new Date().getTime();
       const timePassed = now - beginTime;
@@ -258,6 +347,10 @@ export default function Lounge(state = initialState, action) {
       info.percent = (info.progress / (info.endFrame - info.beginFrame)) * 100;
       if (info.percent > 100) info.percent = 100;
       info.FPS = (info.progress / timePassed) * 1000;
+      info.minFPS = minFPS;
+      info.maxFPS = maxFPS;
+      if (info.FPS < minFPS) info.minFPS = info.FPS;
+      if (info.FPS > maxFPS) info.maxFPS = info.FPS;
       info.beginTime = beginTime;
 
       let timeLeft =
@@ -271,11 +364,61 @@ export default function Lounge(state = initialState, action) {
 
       return {
         ...state,
-        progressFromWorker: info
+        workingStatus: ws.converting,
+        videoDatas: {
+          ...state.videoDatas,
+          [path]: {
+            ...state.videoDatas[path],
+            progressFromWorker: info
+          }
+        }
       };
     }
     case actionTypes.HANDLE_NUM_PROCESS:
       return { ...state, displayNumProcess: Number(payload) };
+    case actionTypes.ON_CLOSE_VCAP_LIST: {
+      // eslint-disable-next-line no-unused-vars
+      const { [payload]: removed, ...newVideoDatas } = state.videoDatas;
+      return {
+        ...state,
+        videoDatas: newVideoDatas,
+        queue: state.queue.filter(item => item !== payload)
+      };
+    }
+    case actionTypes.ON_CANCEL_VCAP_LIST:
+      return {
+        ...state,
+        workingStatus: ws.precancel
+      };
+    case actionTypes.ON_REFRESH_VCAP_LIST:
+      return {
+        ...state,
+        videoDatas: {
+          ...state.videoDatas,
+          [payload]: {
+            ...state.videoDatas[payload],
+            ...initialConverter
+          }
+        }
+      };
+    case actionTypes.CONFIRMED_CLOSE_CONVERTING_DIALOG:
+      return {
+        ...state,
+        closeConvertingDialog: { ...state.closeConvertingDialog, open: false }
+      };
+    case actionTypes.CANCEL_CLOSE_CONVERTING_DIALOG:
+      return {
+        ...state,
+        closeConvertingDialog: { open: false, path: null }
+      };
+    case actionTypes.CONFIRMING_CLOSE_CONVERTING_DIALOG:
+      return {
+        ...state,
+        closeConvertingDialog: {
+          open: true,
+          path: payload
+        }
+      };
     default:
       return state;
   }

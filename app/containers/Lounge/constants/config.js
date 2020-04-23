@@ -50,6 +50,13 @@ export const sliderObjSelector = {
   }
 };
 
+export const ws = {
+  idle: 0,
+  preconvert: 1,
+  converting: 2,
+  precancel: 3
+};
+
 // export const startVCap = 48300;
 // export const endVCap = 50000;
 // export const startVCap = 88250;

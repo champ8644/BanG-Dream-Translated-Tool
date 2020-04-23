@@ -5,7 +5,15 @@ import mainEvent from './mainFunctions/mainEvent';
 import matFunctions from './matFunctions';
 
 export default class VideoCapture {
-  constructor({ path, canvas, updateFrame, modePostProcessor, colorSlider }) {
+  constructor({
+    path,
+    canvas,
+    updateFrame,
+    modePostProcessor,
+    colorSlider,
+    maxWidth: _maxWidth = maxWidth,
+    maxHeight: _maxHeight = maxHeight
+  }) {
     this.vCap = new cv.VideoCapture(path);
 
     this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH) * rx;
@@ -16,7 +24,12 @@ export default class VideoCapture {
       this.height = this.width;
       this.width = t;
     } else this.rotate = false;
-    this.ratio = Math.max(maxWidth / this.width, maxHeight / this.height);
+    this.maxWidth = _maxWidth;
+    this.maxHeight = _maxHeight;
+    this.ratio = Math.max(
+      this.maxWidth / this.width,
+      this.maxHeight / this.height
+    );
     // if (this.ratio > 1) this.ratio = 1;
     this.length = this.vCap.get(cv.CAP_PROP_FRAME_COUNT) - 1;
     this.FPS = this.vCap.get(cv.CAP_PROP_FPS);
@@ -28,6 +41,10 @@ export default class VideoCapture {
     if (updateFrame) this.updateFrame = updateFrame;
     if (colorSlider) this.colorSlider = colorSlider;
     if (modePostProcessor) this.setPostProcessor(modePostProcessor);
+  }
+
+  setCanvas(canvasRef) {
+    this.canvas = canvasRef;
   }
 
   frame() {
@@ -91,6 +108,22 @@ export default class VideoCapture {
     return readFrame.rescale(rx);
   }
 
+  getImageFromFrame(frame, mode = 'frame') {
+    const rawMat = this.getMat(frame, mode);
+    if (rawMat.empty) return;
+    const mat = rawMat.rescale(this.ratio);
+    const matRGBA =
+      mat.channels === 1
+        ? mat.cvtColor(cv.COLOR_GRAY2RGBA)
+        : mat.cvtColor(cv.COLOR_BGR2RGBA);
+    const imgData = new ImageData(
+      new Uint8ClampedArray(matRGBA.getData()),
+      mat.cols,
+      mat.rows
+    );
+    return imgData;
+  }
+
   showMatInCanvas(_mat) {
     if (_mat.empty) return;
     const mat = _mat.rescale(this.ratio);
@@ -105,6 +138,15 @@ export default class VideoCapture {
     );
     this.putImageData(imgData);
     if (this.updateFrame) this.updateFrame();
+  }
+
+  async asyncRead(frame, mode = 'frame') {
+    const rawMat = this.getMat(frame, mode);
+    let mat = rawMat.copy();
+    if (mat.empty) return;
+    if (this.postProcessor) mat = this.postProcessor(mat, this);
+    this.showMatInCanvas(mat);
+    this.prevMat = rawMat;
   }
 
   read(frame, mode = 'frame') {
