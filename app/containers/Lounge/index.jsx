@@ -160,7 +160,8 @@ class Lounge extends Component {
       updateLinear,
       beginLinear,
       finishLinear,
-      cancelLinear
+      cancelLinear,
+      startQueue
     } = this.props;
     sendCanvas(this.canvas);
     ipcRenderer.on('message-from-worker', (e, arg) => {
@@ -174,6 +175,7 @@ class Lounge extends Component {
           break;
         case 'finish-progress':
           finishLinear(payload);
+          startQueue();
           break;
         case 'cancel-progress':
           cancelLinear(payload);

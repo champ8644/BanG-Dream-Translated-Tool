@@ -80,8 +80,15 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.ADD_QUEUE: {
       const paths = [];
       const payloadDatas = {};
-      payload.forEach(vCap => {
+      const { unique, dup } = payload;
+      unique.forEach(vCap => {
         paths.push(vCap.path);
+        payloadDatas[vCap.path] = {
+          ...initialVideoDatas,
+          vCap
+        };
+      });
+      dup.forEach(vCap => {
         payloadDatas[vCap.path] = {
           ...initialVideoDatas,
           vCap
@@ -219,7 +226,8 @@ export default function Lounge(state = initialState, action) {
         delay: 100,
         percent: 0,
         beginFrame,
-        endFrame
+        endFrame,
+        frame: 0
       };
 
       const newBar = bar.map((val, idx) => {
@@ -246,6 +254,8 @@ export default function Lounge(state = initialState, action) {
 
       info.percent = 0;
       info.FPS = 0;
+      info.minFPS = 1e10;
+      info.maxFPS = -1;
 
       info.timePassed = showTime(moment.duration(0));
       info.timeLeft = 'determining...';
@@ -274,7 +284,7 @@ export default function Lounge(state = initialState, action) {
       const { readyToWork } = videoDatas[path];
       if (!readyToWork) return state;
       const {
-        progressFromWorker: { bar, beginTime }
+        progressFromWorker: { bar, beginTime, minFPS, maxFPS }
       } = videoDatas[path];
 
       const now = new Date().getTime();
@@ -317,6 +327,10 @@ export default function Lounge(state = initialState, action) {
       info.percent = (info.progress / (info.endFrame - info.beginFrame)) * 100;
       if (info.percent > 100) info.percent = 100;
       info.FPS = (info.progress / timePassed) * 1000;
+      info.minFPS = minFPS;
+      info.maxFPS = maxFPS;
+      if (info.FPS < minFPS) info.minFPS = info.FPS;
+      if (info.FPS > maxFPS) info.maxFPS = info.FPS;
       info.beginTime = beginTime;
 
       let timeLeft =

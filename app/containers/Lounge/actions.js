@@ -51,7 +51,9 @@ const actionTypesList = [
   'CANCEL_LINEAR',
   'HANDLE_NUM_PROCESS',
   'ADD_QUEUE',
-  'START_QUEUE'
+  'START_QUEUE',
+  'ACTIVATING_QUEUE',
+  'INACTIVATING_QUEUE'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -126,15 +128,26 @@ export function handleNumProcess(e, value) {
 export function startQueue() {
   return async (dispatch, getState) => {
     const { queue, videoDatas, displayNumProcess } = getState().Lounge;
-    const { vCap } = videoDatas[queue[0]];
+    let nextQueue = null;
+    let vCapLength;
+    for (let i = 0; i < queue.length; i++) {
+      const path = queue[i];
+      const { vCap, completeWork, cancelWork, readyToWork } = videoDatas[path];
+      if (!completeWork && !cancelWork && !readyToWork) {
+        nextQueue = path;
+        vCapLength = vCap.length;
+        break;
+      }
+    }
+    if (!nextQueue) return;
     dispatch({
       type: actionTypes.START_QUEUE,
-      payload: { displayNumProcess, path: queue[0] }
+      payload: { displayNumProcess, path: nextQueue }
     });
     message2Worker('start-events', {
-      videoFilePath: vCap.path,
+      videoFilePath: nextQueue,
       start: 0,
-      end: vCap.length,
+      end: vCapLength,
       process: displayNumProcess
     });
   };
@@ -142,6 +155,7 @@ export function startQueue() {
 
 export function stopQueue() {
   return async (dispatch, getState) => {
+    dispatch({ type: actionTypes.INACTIVATING_QUEUE });
     devalidLoop();
     message2Worker('stop-events');
   };
@@ -149,7 +163,7 @@ export function stopQueue() {
 
 export function addQueue() {
   return async (dispatch, getState) => {
-    const { queue } = getState().Lounge;
+    const { queue, videoDatas } = getState().Lounge;
     const { filePaths, canceled } = await dialog.showOpenDialog({
       properties: ['openFile', 'multiSelections'],
       filters: [
@@ -161,33 +175,38 @@ export function addQueue() {
     });
     if (canceled) return;
     try {
+      const dupFile = [];
       const uniqueFilePaths = filePaths.filter(filepath => {
         let isUnique = true;
         queue.forEach(path => {
           if (path === filepath) isUnique = false;
         });
+        if (!isUnique) dupFile.push(filepath);
         return isUnique;
       });
       if (uniqueFilePaths.length !== filePaths.length)
         dispatch(throwAlert({ message: 'There is duplicate file(s)' }));
       dispatch({
         type: actionTypes.ADD_QUEUE,
-        payload: uniqueFilePaths
-          .map(path => {
-            let vCap = null;
-            try {
-              vCap = new VideoCapture({
-                path,
-                maxWidth: videoListMaxWidth,
-                maxHeight: videoListMaxHeight
-              });
-            } catch (err) {
-              dispatch(throwAlert({ message: err }));
-              vCap = null;
-            }
-            return vCap;
-          })
-          .filter(item => item)
+        payload: {
+          unique: uniqueFilePaths
+            .map(path => {
+              let vCap = null;
+              try {
+                vCap = new VideoCapture({
+                  path,
+                  maxWidth: videoListMaxWidth,
+                  maxHeight: videoListMaxHeight
+                });
+              } catch (err) {
+                dispatch(throwAlert({ message: err }));
+                vCap = null;
+              }
+              return vCap;
+            })
+            .filter(item => item),
+          dup: dupFile.map(path => videoDatas[path].vCap)
+        }
       });
     } catch (err) {
       if (typeof err === 'object' && err !== null)

@@ -51,6 +51,9 @@ export const styles = theme => ({
   chipBar: {
     paddingBottom: theme.spacing(1)
   },
+  chip: {
+    marginLeft: theme.spacing(1)
+  },
   loader: props => ({
     position: 'absolute',
     marginLeft: `${props.vCap.dWidth / 2 - 20}px`,
@@ -58,5 +61,13 @@ export const styles = theme => ({
   }),
   closeIcon: {
     height: '2em'
+  },
+  FPSTooltip: {
+    fontFamily: theme.typography.fontFamily,
+    fontSize: theme.typography.pxToRem(10),
+    fontWeight: theme.typography.fontWeightMedium
+  },
+  noMaxWidth: {
+    maxWidth: 'none'
   }
 });

@@ -15,7 +15,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import CloseIcon from '@material-ui/icons/Close';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
 import Grid from '@material-ui/core/Grid';
-import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
@@ -109,9 +108,16 @@ function ListVCap(props) {
         <div className={classes.row}>
           <div className={classes.column}>
             <CardContent className={classes.header}>
-              <Typography component='h5' variant='h5' noWrap>
-                {path.basename(videoFilePath)}
-              </Typography>
+              <Tooltip
+                title={videoFilePath}
+                arrow
+                placement='top-start'
+                classes={{ tooltip: classes.noMaxWidth }}
+              >
+                <Typography component='h5' variant='h5' noWrap>
+                  {path.basename(videoFilePath)}
+                </Typography>
+              </Tooltip>
               <Typography variant='subtitle1' color='textSecondary' noWrap>
                 {path.dirname(videoFilePath)}
               </Typography>
@@ -131,35 +137,72 @@ function ListVCap(props) {
             <div className={classes.chipBar}>
               {readyToWork && (
                 <>
-                  <Chip
-                    className={classes.chip}
-                    icon={<DonutLargeIcon />}
-                    label={`${formatNumber(percentLinear.percent)} / 100 %`}
-                    variant='outlined'
-                  />
-                  <Chip
-                    className={classes.chip}
-                    icon={<SpeedIcon />}
-                    color='primary'
-                    label={`FPS: ${formatNumber(percentLinear.FPS)}`}
-                    variant='outlined'
-                  />
-                  <Chip
-                    className={classes.chip}
-                    icon={<AccessAlarmIcon />}
-                    color='secondary'
-                    label={`Estimated time left: ${percentLinear.timeLeft}`}
-                    variant='outlined'
-                  />
-                  <Chip
-                    className={classes.chip}
-                    icon={<HourglassEmptyIcon />}
-                    color='secondary'
-                    label={`Time Elapsed: ${percentLinear.timePassed} / ${
+                  <Tooltip
+                    title={`frame: ${percentLinear.progress -
+                      percentLinear.beginFrame}/${percentLinear.endFrame -
+                      percentLinear.beginFrame}`}
+                    arrow
+                  >
+                    <Chip
+                      className={classes.chip}
+                      icon={<DonutLargeIcon />}
+                      label={`${formatNumber(percentLinear.percent)} / 100 %`}
+                      variant='outlined'
+                    />
+                  </Tooltip>
+                  {percentLinear.maxFPS < 0 ? (
+                    <Chip
+                      className={classes.chip}
+                      icon={<SpeedIcon />}
+                      color='primary'
+                      label={`FPS: ${formatNumber(percentLinear.FPS)}`}
+                      variant='outlined'
+                    />
+                  ) : (
+                    <Tooltip
+                      title={
+                        <>
+                          <Typography
+                            component='p'
+                            className={classes.FPSTooltip}
+                          >
+                            min FPS: {formatNumber(percentLinear.minFPS)}
+                          </Typography>
+                          <Typography
+                            component='p'
+                            className={classes.FPSTooltip}
+                          >
+                            max FPS: {formatNumber(percentLinear.maxFPS)}
+                          </Typography>
+                        </>
+                      }
+                      arrow
+                      disableFocusListener={percentLinear.maxFPS < 0}
+                      disableTouchListener={percentLinear.maxFPS < 0}
+                    >
+                      <Chip
+                        className={classes.chip}
+                        icon={<SpeedIcon />}
+                        color='primary'
+                        label={`FPS: ${formatNumber(percentLinear.FPS)}`}
+                        variant='outlined'
+                      />
+                    </Tooltip>
+                  )}
+                  <Tooltip
+                    title={`Time Elapsed: ${percentLinear.timePassed} / ${
                       percentLinear.timeAll
                     }`}
-                    variant='outlined'
-                  />
+                    arrow
+                  >
+                    <Chip
+                      className={classes.chip}
+                      icon={<AccessAlarmIcon />}
+                      color='secondary'
+                      label={`Time left: ${percentLinear.timeLeft}`}
+                      variant='outlined'
+                    />
+                  </Tooltip>
                 </>
               )}
             </div>
