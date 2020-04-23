@@ -5,21 +5,22 @@ export const styles = theme => ({
     display: 'flex',
     margin: theme.spacing(1, 0, 0, 4)
   },
-  details: {
+  details: props => ({
     display: 'flex',
     flexDirection: 'column',
-    flexGrow: 1
-  },
+    flexGrow: 1,
+    backgroundColor: props.cancelWork
+      ? '#fff7f6'
+      : theme.palette.background.default
+  }),
   header: {
     height: '8em',
-    display: 'grid'
+    display: 'grid',
+    paddingBottom: 0
   },
   content: {
     flex: '1 0 auto',
     display: 'flex'
-  },
-  cover: {
-    width: videoListMaxWidth
   },
   controls: {
     display: 'flex',
@@ -57,7 +58,8 @@ export const styles = theme => ({
   loader: props => ({
     position: 'absolute',
     marginLeft: `${props.vCap.dWidth / 2 - 20}px`,
-    marginTop: `${props.vCap.dHeight / 2 - 20}px`
+    marginTop: `${props.vCap.dHeight / 2 - 20}px`,
+    zIndex: 10
   }),
   closeIcon: {
     height: '2em'
@@ -69,5 +71,61 @@ export const styles = theme => ({
   },
   noMaxWidth: {
     maxWidth: 'none'
+  },
+  refreshButton: {
+    margin: theme.spacing(1, 0, 0, 4)
+  },
+  buttonCanvas: props => ({
+    '&:hover, &$focusVisible': {
+      zIndex: 1,
+      '& $imageBackdrop': {
+        opacity: props.cancelWork ? 0.15 : 0
+      },
+      '& $imageButtonFAB': {
+        opacity: props.cancelWork ? 1 : 0
+      },
+      '& $imageMarked': {
+        opacity: 0
+      },
+      '& $imageTitle': {
+        border: '4px solid currentColor'
+      }
+    }
+  }),
+  imageBackdrop: props => ({
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: theme.palette.common.black,
+    opacity: props.cancelWork ? 0.5 : 0,
+    transition: theme.transitions.create('opacity')
+  }),
+  imageButtonFAB: () => ({
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0,
+    transition: theme.transitions.create('opacity')
+  }),
+  cover: {
+    width: videoListMaxWidth
+  },
+  basename: props =>
+    props.cancelWork ? { color: theme.palette.error.dark } : {},
+  FAB: { marginTop: theme.spacing(1) },
+  refreshFAB: {
+    marginTop: theme.spacing(1),
+    color: theme.palette.grey[300],
+    fontWeight: theme.typography.fontWeightBold,
+    WebkitTextStroke: 'thin',
+    WebkitTextStrokeColor: 'black',
+    textShadow: '1px 1px gray'
   }
 });

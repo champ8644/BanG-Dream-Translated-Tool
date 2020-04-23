@@ -8,16 +8,21 @@ import {
 } from '../selectors';
 
 import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
+import Button from '@material-ui/core/Button';
+import ButtonBase from '@material-ui/core/ButtonBase';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CloseIcon from '@material-ui/icons/Close';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
+import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
+import Grow from '@material-ui/core/Grow';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import SpeedIcon from '@material-ui/icons/Speed';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -96,13 +101,35 @@ function ListVCap(props) {
         <CircularProgress className={classes.loader} disableShrink />
       )}
       <div className={classes.flex}>
-        <canvas
-          className={classes.cover}
-          ref={canvasRef}
-          width={vCap.dWidth}
-          height={vCap.dHeight}
-          // onMouseDown={handleCanvasClick}
-        />
+        <ButtonBase
+          focusRipple
+          className={classes.buttonCanvas}
+          focusVisibleClassName={classes.focusVisible}
+          disabled={!cancelWork}
+        >
+          <span className={classes.imageBackdrop} />
+          <span className={classes.imageButtonFAB}>
+            <div>
+              <Fab size='medium' disableRipple className={classes.FAB}>
+                <RefreshIcon />
+              </Fab>
+              <Typography
+                component='h4'
+                variant='h4'
+                className={classes.refreshFAB}
+              >
+                Refresh
+              </Typography>
+            </div>
+          </span>
+          <canvas
+            className={classes.cover}
+            ref={canvasRef}
+            width={vCap.dWidth}
+            height={vCap.dHeight}
+            // onMouseDown={handleCanvasClick}
+          />
+        </ButtonBase>
       </div>
       <div className={classes.details}>
         <div className={classes.row}>
@@ -114,26 +141,40 @@ function ListVCap(props) {
                 placement='top-start'
                 classes={{ tooltip: classes.noMaxWidth }}
               >
-                <Typography component='h5' variant='h5' noWrap>
+                <Typography
+                  component='h5'
+                  variant='h5'
+                  noWrap
+                  className={classes.basename}
+                >
                   {path.basename(videoFilePath)}
+                  {cancelWork && ' (Cancelled)'}
                 </Typography>
               </Tooltip>
-              <Typography variant='subtitle1' color='textSecondary' noWrap>
+              <Typography
+                variant='subtitle1'
+                color='textSecondary'
+                noWrap
+                gutterBottom={false}
+              >
                 {path.dirname(videoFilePath)}
               </Typography>
             </CardContent>
-            <div className={classes.grow} />
-            {/* <div className={classes.controls}>
-              <IconButton aria-label='previous'>
-                <SkipPreviousIcon />
-              </IconButton>
-              <IconButton aria-label='play/pause'>
-                <PlayArrowIcon className={classes.playIcon} />
-              </IconButton>
-              <IconButton aria-label='next'>
-                <SkipNextIcon />
-              </IconButton>
-            </div> */}
+            <div className={classes.grow}>
+              <div>
+                <Grow in={cancelWork}>
+                  <Button
+                    variant='contained'
+                    size='small'
+                    color='secondary'
+                    className={classes.refreshButton}
+                    startIcon={<RefreshIcon />}
+                  >
+                    Refresh
+                  </Button>
+                </Grow>
+              </div>
+            </div>
             <div className={classes.chipBar}>
               {readyToWork && (
                 <>
