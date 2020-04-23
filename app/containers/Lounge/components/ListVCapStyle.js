@@ -75,6 +75,9 @@ export const styles = theme => ({
   refreshButton: {
     margin: theme.spacing(1, 0, 0, 4)
   },
+  absolute: {
+    position: 'absolute'
+  },
   buttonCanvas: props => ({
     '&:hover, &$focusVisible': {
       zIndex: 1,

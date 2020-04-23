@@ -52,8 +52,10 @@ const actionTypesList = [
   'HANDLE_NUM_PROCESS',
   'ADD_QUEUE',
   'START_QUEUE',
-  'ACTIVATING_QUEUE',
-  'INACTIVATING_QUEUE'
+  'INACTIVATING_QUEUE',
+  'ON_CLOSE_VCAP_LIST',
+  'ON_CANCEL_VCAP_LIST',
+  'ON_REFRESH_VCAP_LIST'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -98,16 +100,43 @@ export function beginLinear(payload) {
 }
 
 export function cancelLinear(payload) {
-  return {
-    type: actionTypes.CANCEL_LINEAR,
-    payload
+  return (dispatch, getState) => {
+    dispatch({
+      type: actionTypes.CANCEL_LINEAR,
+      payload
+    });
+    dispatch(startQueue());
   };
 }
 
 export function finishLinear(payload) {
+  return (dispatch, getState) => {
+    dispatch({
+      type: actionTypes.FINISH_LINEAR,
+      payload
+    });
+    dispatch(startQueue());
+  };
+}
+
+export function onCloseVCapList(path) {
   return {
-    type: actionTypes.FINISH_LINEAR,
-    payload
+    type: actionTypes.ON_CLOSE_VCAP_LIST,
+    payload: path
+  };
+}
+
+export function onCancelVCapList(path) {
+  return {
+    type: actionTypes.ON_CANCEL_VCAP_LIST,
+    payload: path
+  };
+}
+
+export function onRefreshVCapList(path) {
+  return {
+    type: actionTypes.ON_REFRESH_VCAP_LIST,
+    payload: path
   };
 }
 

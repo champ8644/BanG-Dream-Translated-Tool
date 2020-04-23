@@ -1,8 +1,9 @@
 'use strict';
 
+import { sliderObjSelector, ws } from './constants/config';
+
 import { actionTypes } from './actions';
 import moment from 'moment';
-import { sliderObjSelector } from './constants/config';
 
 export const initialState = {
   videoFilePath: '',
@@ -40,7 +41,9 @@ export const initialState = {
   displayNumProcess: 1,
   queue: [],
   videoDatas: {},
-  canvasRefEach: {}
+  canvasRefEach: {},
+  workingStatus: ws.idle,
+  isActivate: false
 };
 
 const initialConverter = {
@@ -76,6 +79,12 @@ export default function Lounge(state = initialState, action) {
         isPlaying: false,
         frame: payload.vCap.getFrame(),
         willUpdateNextFrame: true
+      };
+    case actionTypes.INACTIVATING_QUEUE:
+      return {
+        ...state,
+        workingStatus: ws.precancel,
+        isActivate: false
       };
     case actionTypes.ADD_QUEUE: {
       const paths = [];
@@ -154,6 +163,8 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.START_QUEUE:
       return {
         ...state,
+        isActivate: true,
+        workingStatus: ws.preconvert,
         videoDatas: {
           ...state.videoDatas,
           [payload.path]: {
@@ -176,6 +187,7 @@ export default function Lounge(state = initialState, action) {
       const timePassed = new Date().getTime() - beginTime;
       return {
         ...state,
+        workingStatus: ws.idle,
         videoDatas: {
           ...state.videoDatas,
           [path]: {
@@ -196,6 +208,7 @@ export default function Lounge(state = initialState, action) {
       const { path } = payload;
       return {
         ...state,
+        workingStatus: ws.idle,
         videoDatas: {
           ...state.videoDatas,
           [path]: {
@@ -266,6 +279,7 @@ export default function Lounge(state = initialState, action) {
 
       return {
         ...state,
+        workingStatus: ws.converting,
         videoDatas: {
           ...state.videoDatas,
           [path]: {
@@ -344,6 +358,7 @@ export default function Lounge(state = initialState, action) {
 
       return {
         ...state,
+        workingStatus: ws.converting,
         videoDatas: {
           ...state.videoDatas,
           [path]: {
@@ -355,6 +370,12 @@ export default function Lounge(state = initialState, action) {
     }
     case actionTypes.HANDLE_NUM_PROCESS:
       return { ...state, displayNumProcess: Number(payload) };
+    case actionTypes.ON_CLOSE_VCAP_LIST:
+      return { ...state };
+    case actionTypes.ON_CANCEL_VCAP_LIST:
+      return { ...state };
+    case actionTypes.ON_REFRESH_VCAP_LIST:
+      return { ...state };
     default:
       return state;
   }

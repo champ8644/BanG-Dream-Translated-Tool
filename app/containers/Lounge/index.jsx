@@ -160,8 +160,7 @@ class Lounge extends Component {
       updateLinear,
       beginLinear,
       finishLinear,
-      cancelLinear,
-      startQueue
+      cancelLinear
     } = this.props;
     sendCanvas(this.canvas);
     ipcRenderer.on('message-from-worker', (e, arg) => {
@@ -175,7 +174,6 @@ class Lounge extends Component {
           break;
         case 'finish-progress':
           finishLinear(payload);
-          startQueue();
           break;
         case 'cancel-progress':
           cancelLinear(payload);
@@ -230,7 +228,10 @@ class Lounge extends Component {
       addQueue,
       queue,
       startQueue,
-      stopQueue
+      stopQueue,
+      onCloseVCapList,
+      onCancelVCapList,
+      onRefreshVCapList
     } = this.props;
 
     return (
@@ -336,7 +337,13 @@ class Lounge extends Component {
         )}
         <div className={classes.marginTop}>
           {queue.map(path => (
-            <ListVCap path={path} key={path} />
+            <ListVCap
+              path={path}
+              key={path}
+              onClose={onCloseVCapList.bind(this, path)}
+              onCancel={onCancelVCapList.bind(this, path)}
+              onRefresh={onRefreshVCapList.bind(this, path)}
+            />
           ))}
         </div>
         {vCap && (

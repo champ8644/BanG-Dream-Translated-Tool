@@ -24,6 +24,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SpeedIcon from '@material-ui/icons/Speed';
+import StopIcon from '@material-ui/icons/Stop';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
@@ -79,7 +80,10 @@ function ListVCap(props) {
     cancelWork,
     readyToWork,
     path: videoFilePath,
-    vCap
+    vCap,
+    onClose,
+    onCancel,
+    onRefresh
   } = props;
   const canvasRef = React.useRef();
   const [isLoading, setLoading] = React.useState(true);
@@ -106,6 +110,7 @@ function ListVCap(props) {
           className={classes.buttonCanvas}
           focusVisibleClassName={classes.focusVisible}
           disabled={!cancelWork}
+          onClick={onRefresh}
         >
           <span className={classes.imageBackdrop} />
           <span className={classes.imageButtonFAB}>
@@ -161,19 +166,33 @@ function ListVCap(props) {
               </Typography>
             </CardContent>
             <div className={classes.grow}>
-              <div>
-                <Grow in={cancelWork}>
-                  <Button
-                    variant='contained'
-                    size='small'
-                    color='secondary'
-                    className={classes.refreshButton}
-                    startIcon={<RefreshIcon />}
-                  >
-                    Refresh
-                  </Button>
-                </Grow>
-              </div>
+              <Grow in={cancelWork || readyToWork}>
+                <div>
+                  {cancelWork ? (
+                    <Button
+                      variant='contained'
+                      size='small'
+                      color='primary'
+                      className={classes.refreshButton}
+                      startIcon={<RefreshIcon />}
+                      onClick={onRefresh}
+                    >
+                      Refresh
+                    </Button>
+                  ) : (
+                    <Button
+                      variant='contained'
+                      size='small'
+                      color='secondary'
+                      className={classes.refreshButton}
+                      startIcon={<StopIcon />}
+                      onClick={onCancel}
+                    >
+                      Stop working
+                    </Button>
+                  )}
+                </div>
+              </Grow>
             </div>
             <div className={classes.chipBar}>
               {readyToWork && (
@@ -249,7 +268,11 @@ function ListVCap(props) {
             </div>
           </div>
           <Tooltip title='Close this video' arrow>
-            <IconButton color='secondary' className={classes.closeIcon}>
+            <IconButton
+              color='secondary'
+              className={classes.closeIcon}
+              onClick={onClose}
+            >
               <CloseIcon />
             </IconButton>
           </Tooltip>

@@ -39,10 +39,14 @@ export default class WorkerClass {
     const { videoFilePath, start, end, process } = payload;
     const waiting = [];
     const invokeWindows = [];
-    for (let i = 0; i < process; i++)
+    let i = 0;
+    for (; i < process; i++)
       invokeWindows[i] = this.workerWindows[i]
         ? this.workerWindows[i]
         : this.openNewWindow(i);
+    for (; i < this.workerWindows.length; i++) {
+      this.workerWindows[i].close();
+    }
     this.workerWindows = await Promise.all(invokeWindows);
     const batch = Math.round((end - start) / process);
     this.workerWindows.forEach((window, index) => {
@@ -62,7 +66,7 @@ export default class WorkerClass {
       'sum-events',
       await Promise.all(waiting)
     );
-    for (let i = 1; i < process; i++) this.workerWindows[i].close();
+    // for (let i = 1; i < process; i++) this.workerWindows[i].close();
   }
 
   sendMessage(arg) {
