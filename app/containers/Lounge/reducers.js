@@ -370,12 +370,37 @@ export default function Lounge(state = initialState, action) {
     }
     case actionTypes.HANDLE_NUM_PROCESS:
       return { ...state, displayNumProcess: Number(payload) };
-    case actionTypes.ON_CLOSE_VCAP_LIST:
-      return { ...state };
+    case actionTypes.ON_CLOSE_VCAP_LIST: {
+      // eslint-disable-next-line no-unused-vars
+      const { [payload]: removed, ...newVideoDatas } = state.videoDatas;
+      return {
+        ...state,
+        videoDatas: newVideoDatas,
+        queue: state.queue.filter(item => item !== payload)
+      };
+    }
     case actionTypes.ON_CANCEL_VCAP_LIST:
-      return { ...state };
+      return {
+        ...state,
+        videoDatas: {
+          ...state.videoDatas,
+          [payload]: {
+            ...state.videoDatas[payload],
+            ...initialVideoDatas
+          }
+        }
+      };
     case actionTypes.ON_REFRESH_VCAP_LIST:
-      return { ...state };
+      return {
+        ...state,
+        videoDatas: {
+          ...state.videoDatas,
+          [payload]: {
+            ...state.videoDatas[payload],
+            ...initialVideoDatas
+          }
+        }
+      };
     default:
       return state;
   }

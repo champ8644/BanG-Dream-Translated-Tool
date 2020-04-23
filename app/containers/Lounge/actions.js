@@ -126,10 +126,10 @@ export function onCloseVCapList(path) {
   };
 }
 
-export function onCancelVCapList(path) {
-  return {
-    type: actionTypes.ON_CANCEL_VCAP_LIST,
-    payload: path
+export function onCancelVCapList() {
+  return () => {
+    devalidLoop();
+    message2Worker('stop-events');
   };
 }
 
@@ -183,7 +183,7 @@ export function startQueue() {
 }
 
 export function stopQueue() {
-  return async (dispatch, getState) => {
+  return (dispatch, getState) => {
     dispatch({ type: actionTypes.INACTIVATING_QUEUE });
     devalidLoop();
     message2Worker('stop-events');
