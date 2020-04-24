@@ -6,14 +6,15 @@ export const styles = theme => ({
     margin: theme.spacing(1, 0, 0, 4)
   },
   details: props => {
-    let backgroundColor = theme.palette.background.default;
-    if (props.cancelWork) backgroundColor = '#fff7f6';
-    else if (props.readyToWork) backgroundColor = '#dceffd';
+    const addProps = {};
+    if (props.cancelWork) addProps.backgroundColor = '#fff7f6';
+    else if (props.completeWork) addProps.backgroundColor = '#e5f3e6';
+    else if (props.readyToWork) addProps.backgroundColor = '#dceffd';
     return {
       display: 'flex',
       flexDirection: 'column',
       flexGrow: 1,
-      backgroundColor
+      ...addProps
     };
   },
   header: {

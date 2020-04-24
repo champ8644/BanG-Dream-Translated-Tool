@@ -51,7 +51,8 @@ const initialConverter = {
   progressFromWorker: null,
   readyToWork: false,
   completeWork: false,
-  cancelWork: false
+  cancelWork: false,
+  showFPS: true
 };
 
 export const initialVideoDatas = {
@@ -59,7 +60,8 @@ export const initialVideoDatas = {
   progressFromWorker: null,
   completeWork: false,
   cancelWork: false,
-  readyToWork: false
+  readyToWork: false,
+  showFPS: true
 };
 
 function showTime(dur) {
@@ -87,12 +89,16 @@ export default function Lounge(state = initialState, action) {
         workingStatus: ws.preconvert,
         isActivate: true
       };
-    case actionTypes.INACTIVATING_QUEUE:
+    case actionTypes.INACTIVATING_QUEUE: {
+      let newWorkingStatus = {};
+      if (state.workingStatus === ws.converting)
+        newWorkingStatus = { workingStatus: ws.precancel };
       return {
         ...state,
-        workingStatus: ws.precancel,
+        ...newWorkingStatus,
         isActivate: false
       };
+    }
     case actionTypes.ADD_QUEUE: {
       const paths = [];
       const payloadDatas = {};
@@ -184,6 +190,13 @@ export default function Lounge(state = initialState, action) {
       return { ...state, progress: state.progress + payload };
     case actionTypes.IMPORTING:
       return { ...state, importedFile: payload };
+    case actionTypes.FINISHING_QUEUE: {
+      return {
+        ...state,
+        isActivate: false,
+        workingStatus: ws.idle
+      };
+    }
     case actionTypes.FINISH_LINEAR: {
       const { path } = payload;
       const { videoDatas } = state;
@@ -364,7 +377,6 @@ export default function Lounge(state = initialState, action) {
 
       return {
         ...state,
-        workingStatus: ws.converting,
         videoDatas: {
           ...state.videoDatas,
           [path]: {
@@ -385,11 +397,15 @@ export default function Lounge(state = initialState, action) {
         queue: state.queue.filter(item => item !== payload)
       };
     }
-    case actionTypes.ON_CANCEL_VCAP_LIST:
+    case actionTypes.ON_CANCEL_VCAP_LIST: {
+      let newWorkingStatus = {};
+      if (state.workingStatus === ws.converting)
+        newWorkingStatus = { workingStatus: ws.precancel };
       return {
         ...state,
-        workingStatus: ws.precancel
+        ...newWorkingStatus
       };
+    }
     case actionTypes.ON_REFRESH_VCAP_LIST:
       return {
         ...state,
@@ -398,6 +414,17 @@ export default function Lounge(state = initialState, action) {
           [payload]: {
             ...state.videoDatas[payload],
             ...initialConverter
+          }
+        }
+      };
+    case actionTypes.ON_SWITCH_FPS_VCAP_LIST:
+      return {
+        ...state,
+        videoDatas: {
+          ...state.videoDatas,
+          [payload]: {
+            ...state.videoDatas[payload],
+            showFPS: !state.videoDatas[payload].showFPS
           }
         }
       };

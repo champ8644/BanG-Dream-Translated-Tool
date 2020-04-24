@@ -4,6 +4,7 @@ import * as actions from './actions';
 
 import React, { Component } from 'react';
 import {
+  makeCloseConvertingDialog,
   makeCurrentFrame,
   makeDialogData,
   makeDisplayNumProcess,
@@ -18,18 +19,18 @@ import {
   makeVideoCapture,
   makeVideoFilePath,
   makeWillUpdateNextFrame,
-  makeWorkingStatus,
-  makeCloseConvertingDialog
+  makeWorkingStatus
 } from './selectors';
+import { radioObj, ws } from './constants/config';
 
 import { APP_TITLE } from '../../constants/meta';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
 import FormControl from '@material-ui/core/FormControl';
@@ -65,7 +66,6 @@ import clsx from 'clsx';
 import { connect } from 'react-redux';
 import electron from 'electron';
 import { formatNumber } from './constants/function';
-import { radioObj } from './constants/config';
 import reducers from './reducers';
 import { styles } from './styles';
 import { withReducer } from '../../store/reducers/withReducer';
@@ -241,7 +241,8 @@ class Lounge extends Component {
       workingStatus,
       handleCancelCloseConvertingDialog,
       handleConfirmCloseConvertingDialog,
-      closeConvertingDialog
+      closeConvertingDialog,
+      onSwitchFPSVCapList
     } = this.props;
 
     return (
@@ -288,14 +289,14 @@ class Lounge extends Component {
             <Button
               className={clsx(classes.btn, classes.marginLeft)}
               onClick={startQueue}
-              disabled={workingStatus > 0}
+              disabled={workingStatus !== ws.idle}
             >
               Start queue
             </Button>
             <Button
               className={clsx(classes.btn, classes.marginLeft)}
               onClick={stopQueue}
-              disabled={workingStatus < 1 && workingStatus > 2}
+              disabled={workingStatus !== ws.converting}
             >
               Stop queue
             </Button>
@@ -355,6 +356,7 @@ class Lounge extends Component {
               onClose={onCloseVCapList.bind(this, path)}
               onCancel={onCancelVCapList.bind(this, path)}
               onRefresh={onRefreshVCapList.bind(this, path)}
+              onSwitchFPS={onSwitchFPSVCapList.bind(this, path)}
             />
           ))}
         </div>

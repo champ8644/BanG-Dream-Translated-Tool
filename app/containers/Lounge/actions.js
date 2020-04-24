@@ -59,7 +59,9 @@ const actionTypesList = [
   'ON_REFRESH_VCAP_LIST',
   'CANCEL_CLOSE_CONVERTING_DIALOG',
   'CONFIRMING_CLOSE_CONVERTING_DIALOG',
-  'CONFIRMED_CLOSE_CONVERTING_DIALOG'
+  'CONFIRMED_CLOSE_CONVERTING_DIALOG',
+  'ON_SWITCH_FPS_VCAP_LIST',
+  'FINISHING_QUEUE'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -149,8 +151,8 @@ export function handleConfirmCloseConvertingDialog() {
 export function onCloseVCapList(path) {
   return (dispatch, getState) => {
     const { videoDatas } = getState().Lounge;
-    const { readyToWork } = videoDatas[path];
-    if (readyToWork)
+    const { readyToWork, cancelWork, completeWork } = videoDatas[path];
+    if (readyToWork && !cancelWork && !completeWork)
       dispatch({
         type: actionTypes.CONFIRMING_CLOSE_CONVERTING_DIALOG,
         payload: path
@@ -174,6 +176,13 @@ export function onCancelVCapList() {
 export function onRefreshVCapList(path) {
   return {
     type: actionTypes.ON_REFRESH_VCAP_LIST,
+    payload: path
+  };
+}
+
+export function onSwitchFPSVCapList(path) {
+  return {
+    type: actionTypes.ON_SWITCH_FPS_VCAP_LIST,
     payload: path
   };
 }
@@ -212,7 +221,7 @@ export function tickQueue() {
         break;
       }
     }
-    if (!nextQueue) return;
+    if (!nextQueue) return dispatch({ type: actionTypes.FINISHING_QUEUE });
     dispatch({
       type: actionTypes.TICK_QUEUE,
       payload: { displayNumProcess, path: nextQueue }

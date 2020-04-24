@@ -4,7 +4,9 @@ import {
   makeNumProcess,
   makePercentLinear,
   makeReadyToWork,
-  makeVideoCaptureEach
+  makeShowFPS,
+  makeVideoCaptureEach,
+  makeWorkingStatus
 } from '../selectors';
 
 import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
@@ -32,6 +34,7 @@ import { formatNumber } from '../constants/function';
 import path from 'path';
 import { styles } from './ListVCapStyle';
 import { withStyles } from '@material-ui/core/styles';
+import { ws } from '../constants/config';
 
 const makeMapStateToProps = () => {
   return (state, props) => ({
@@ -39,8 +42,10 @@ const makeMapStateToProps = () => {
     readyToWork: makeReadyToWork()(state, props),
     cancelWork: makeCancelWork()(state, props),
     completeWork: makeCompleteWork()(state, props),
+    showFPS: makeShowFPS()(state, props),
     NUM_PROCESS: makeNumProcess(state),
-    vCap: makeVideoCaptureEach()(state, props)
+    vCap: makeVideoCaptureEach()(state, props),
+    workingStatus: makeWorkingStatus(state)
   });
 };
 
@@ -83,8 +88,21 @@ function ListVCap(props) {
     vCap,
     onClose,
     onCancel,
-    onRefresh
+    onRefresh,
+    onSwitchFPS,
+    showFPS,
+    workingStatus
   } = props;
+  let fpsDiv = showFPS ? 1 : vCap.FPS;
+  let fpsText = showFPS ? 'FPS' : '';
+  let fpsTextExt = showFPS ? ': ' : '';
+  let fpsPostText = showFPS ? '' : 'x';
+  if (fpsDiv === 0) {
+    fpsText = 'FPS';
+    fpsPostText = '';
+    fpsTextExt = '';
+    fpsDiv = 1;
+  }
   const canvasRef = React.useRef();
   const [isLoading, setLoading] = React.useState(true);
   React.useEffect(() => {
@@ -166,7 +184,7 @@ function ListVCap(props) {
               </Typography>
             </CardContent>
             <div className={classes.grow}>
-              <Grow in={cancelWork || readyToWork}>
+              <Grow in={(cancelWork || readyToWork) && !completeWork}>
                 <div>
                   {cancelWork ? (
                     <Button
@@ -188,6 +206,7 @@ function ListVCap(props) {
                         className={classes.refreshButton}
                         startIcon={<StopIcon />}
                         onClick={onCancel}
+                        disabled={workingStatus !== ws.converting}
                       >
                         Stop working
                       </Button>
@@ -228,13 +247,17 @@ function ListVCap(props) {
                             component='p'
                             className={classes.FPSTooltip}
                           >
-                            min FPS: {formatNumber(percentLinear.minFPS)}
+                            {`min ${fpsText}: `}
+                            {formatNumber(percentLinear.minFPS / fpsDiv)}
+                            {fpsPostText}
                           </Typography>
                           <Typography
                             component='p'
                             className={classes.FPSTooltip}
                           >
-                            max FPS: {formatNumber(percentLinear.maxFPS)}
+                            {`max ${fpsText}: `}
+                            {formatNumber(percentLinear.maxFPS / fpsDiv)}
+                            {fpsPostText}
                           </Typography>
                         </>
                       }
@@ -246,8 +269,11 @@ function ListVCap(props) {
                         className={classes.chip}
                         icon={<SpeedIcon />}
                         color='primary'
-                        label={`FPS: ${formatNumber(percentLinear.FPS)}`}
+                        label={`${fpsText}${fpsTextExt}${formatNumber(
+                          percentLinear.FPS / fpsDiv
+                        )}${fpsPostText}`}
                         variant='outlined'
+                        onClick={onSwitchFPS}
                       />
                     </Tooltip>
                   )}
