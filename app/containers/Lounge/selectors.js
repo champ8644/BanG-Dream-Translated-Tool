@@ -140,6 +140,12 @@ export const makeCancelWork = () =>
       videoData ? videoData.cancelWork : initialVideoDatas.cancelWork
   );
 
+export const makeShowFPS = () =>
+  createSelector(
+    getVideoDatas,
+    videoData => (videoData ? videoData.showFPS : initialVideoDatas.showFPS)
+  );
+
 export const makeVideoCaptureEach = () =>
   createSelector(
     getVideoDatas,

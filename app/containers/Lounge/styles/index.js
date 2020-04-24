@@ -107,6 +107,9 @@ export const styles = theme => {
       fontSize: '1.3em',
       textDecoration: 'none !important'
     },
+    btnDisabled: {
+      background: 'gray'
+    },
     btn3: {
       background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
       border: 0,
