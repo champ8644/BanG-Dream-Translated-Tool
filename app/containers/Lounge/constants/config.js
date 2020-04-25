@@ -10,11 +10,11 @@ export const radioObj = IS_DEV
       // 'HSVFinder',
       // 'placeLabelGenerator',
       // 'placeLabelTemplater',
-      'nameLabelGenerator'
+      'nameLabelGenerator',
       // 'nameLabelTemplater'
       // 'titleLabelGenerator',
       // 'titleLabelTemplater',
-      // 'starMatching'
+      'starMatching'
     ]
   : [];
 
@@ -61,8 +61,10 @@ export const ws = {
 // export const endVCap = 50000;
 // export const startVCap = 88250;
 // export const endVCap = 89150;
+// 112405
 export const startFrameTest = 111900;
-export const endFrameTest = 112625;
+// export const startFrameTest = 112404;
+export const endFrameTest = 113000;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

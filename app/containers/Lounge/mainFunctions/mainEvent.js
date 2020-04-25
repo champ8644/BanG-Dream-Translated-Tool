@@ -144,7 +144,8 @@ export default function mainEvent({ vCap, start, end, index }) {
       place: false,
       title: false,
       fadeB: 0,
-      fadeW: 0
+      fadeW: 0,
+      star: 0
     };
     const nameActor = [];
     // eslint-disable-line no-console
@@ -200,7 +201,7 @@ export default function mainEvent({ vCap, start, end, index }) {
         }
 
         const nameObj = makeNameLabel(mat);
-        if (nameObj.status) {
+        if (nameObj.status && refractory.star === 0) {
           if (!refractory.name) {
             refractory.name = true;
             data.name.push({
@@ -222,6 +223,8 @@ export default function mainEvent({ vCap, start, end, index }) {
           // vCap.showMatInCanvas(nameObj.actorStar);
           const starMatched = starMatching(mat, currentActor);
           if (starMatched) {
+            if (starMatched.x === 0 && starMatched.y === 0) refractory.star--;
+            else refractory.star = 10;
             activeWorking = {
               ...activeWorking,
               nameObj: true,

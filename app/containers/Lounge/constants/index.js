@@ -52,7 +52,7 @@ export const threshSubSubtitle = 20;
 export const blackThreshold = 3;
 export const whiteThreshold = 252;
 export const fadeThreshold = 2;
-export const actorThreshold = 500;
+export const actorThreshold = 1000;
 export const blackMaxThreshold = 8;
 export const whiteMinThreshold = 255 - blackMaxThreshold;
 
