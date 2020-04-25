@@ -110,44 +110,126 @@ const getVideoDatas = (state, props) =>
     ? state.Lounge.videoDatas[props.path]
     : initialVideoDatas;
 
-export const makePercentLinear = () =>
-  createSelector(
-    getVideoDatas,
-    videoData =>
-      videoData
-        ? videoData.progressFromWorker
-        : initialVideoDatas.progressFromWorker
-  );
+export const makePercentLinear = createSelector(
+  getVideoDatas,
+  videoData =>
+    videoData
+      ? videoData.progressFromWorker
+      : initialVideoDatas.progressFromWorker
+);
 
-export const makeReadyToWork = () =>
-  createSelector(
-    getVideoDatas,
-    videoData =>
-      videoData ? videoData.readyToWork : initialVideoDatas.readyToWork
-  );
+export const makeReadyToWork = createSelector(
+  getVideoDatas,
+  videoData =>
+    videoData ? videoData.readyToWork : initialVideoDatas.readyToWork
+);
 
-export const makeCompleteWork = () =>
-  createSelector(
-    getVideoDatas,
-    videoData =>
-      videoData ? videoData.completeWork : initialVideoDatas.completeWork
-  );
+export const makeCompleteWork = createSelector(
+  getVideoDatas,
+  videoData =>
+    videoData ? videoData.completeWork : initialVideoDatas.completeWork
+);
 
-export const makeCancelWork = () =>
-  createSelector(
-    getVideoDatas,
-    videoData =>
-      videoData ? videoData.cancelWork : initialVideoDatas.cancelWork
-  );
+export const makeCancelWork = createSelector(
+  getVideoDatas,
+  videoData => (videoData ? videoData.cancelWork : initialVideoDatas.cancelWork)
+);
 
-export const makeShowFPS = () =>
-  createSelector(
-    getVideoDatas,
-    videoData => (videoData ? videoData.showFPS : initialVideoDatas.showFPS)
-  );
+export const makeShowFPS = createSelector(
+  getVideoDatas,
+  videoData => (videoData ? videoData.showFPS : initialVideoDatas.showFPS)
+);
 
 export const makeVideoCaptureEach = () =>
   createSelector(
     getVideoDatas,
     videoData => (videoData ? videoData.vCap : initialVideoDatas.vCap)
+  );
+
+export const makeProgressMultiBarProps = () =>
+  createSelector(
+    makePercentLinear,
+    makeReadyToWork,
+    makeCancelWork,
+    makeCompleteWork,
+    makeShowFPS,
+    makeNumProcess,
+    (
+      percentLinear,
+      readyToWork,
+      cancelWork,
+      completeWork,
+      showFPS,
+      NUM_PROCESS
+    ) => ({
+      percentLinear,
+      readyToWork,
+      cancelWork,
+      completeWork,
+      showFPS,
+      NUM_PROCESS
+    })
+  );
+
+const getMainVideoData = createSelector(
+  make,
+  state =>
+    state.vCap && state.vCap.path
+      ? state.videoDatas[state.vCap.path]
+      : initialVideoDatas
+);
+
+export const makeMainPercentLinear = createSelector(
+  getMainVideoData,
+  videoData =>
+    videoData
+      ? videoData.progressFromWorker
+      : initialVideoDatas.progressFromWorker
+);
+
+export const makeMainReadyToWork = createSelector(
+  getMainVideoData,
+  videoData =>
+    videoData ? videoData.readyToWork : initialVideoDatas.readyToWork
+);
+
+export const makeMainCompleteWork = createSelector(
+  getMainVideoData,
+  videoData =>
+    videoData ? videoData.completeWork : initialVideoDatas.completeWork
+);
+
+export const makeMainCancelWork = createSelector(
+  getMainVideoData,
+  videoData => (videoData ? videoData.cancelWork : initialVideoDatas.cancelWork)
+);
+
+export const makeMainShowFPS = createSelector(
+  getMainVideoData,
+  videoData => (videoData ? videoData.showFPS : initialVideoDatas.showFPS)
+);
+
+export const makeMainProgressMultiBarProps = () =>
+  createSelector(
+    makeMainPercentLinear,
+    makeMainReadyToWork,
+    makeMainCancelWork,
+    makeMainCompleteWork,
+    makeMainShowFPS,
+    makeNumProcess,
+    (
+      percentLinear,
+      readyToWork,
+      cancelWork,
+      completeWork,
+      showFPS,
+      NUM_PROCESS
+    ) => ({
+      percentLinear,
+      readyToWork,
+      cancelWork,
+      completeWork,
+      showFPS,
+      NUM_PROCESS
+    })
   );

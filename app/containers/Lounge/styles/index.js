@@ -11,6 +11,9 @@ export const styles = theme => {
     chip: {
       margin: theme.spacing(0.5)
     },
+    chipBar: {
+      paddingBottom: theme.spacing(2)
+    },
     marginTop: {
       marginTop: theme.spacing(3)
     },
@@ -61,7 +64,7 @@ export const styles = theme => {
       margin: theme.spacing(3, 3, 3, 0)
     },
     buttonSliderContainer: {
-      margin: theme.spacing(3, 3, 3, 0)
+      margin: theme.spacing(3, 3, 0, 0)
     },
     paper1: {
       display: 'flex',

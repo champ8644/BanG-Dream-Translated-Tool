@@ -1,36 +1,26 @@
 import {
-  makeCancelWork,
-  makeCompleteWork,
-  makeNumProcess,
-  makePercentLinear,
-  makeReadyToWork,
-  makeShowFPS,
+  makeProgressMultiBarProps,
   makeVideoCaptureEach,
   makeWorkingStatus
 } from '../selectors';
 
-import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import Button from '@material-ui/core/Button';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CloseIcon from '@material-ui/icons/Close';
-import DonutLargeIcon from '@material-ui/icons/DonutLarge';
 import Fab from '@material-ui/core/Fab';
-import Grid from '@material-ui/core/Grid';
 import Grow from '@material-ui/core/Grow';
 import IconButton from '@material-ui/core/IconButton';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import ProgressChipBar from './ProgressChipBar';
+import ProgressMultiBar from './ProgressMultiBar';
 import React from 'react';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import SpeedIcon from '@material-ui/icons/Speed';
 import StopIcon from '@material-ui/icons/Stop';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
-import { formatNumber } from '../constants/function';
 import path from 'path';
 import { styles } from './ListVCapStyle';
 import { withStyles } from '@material-ui/core/styles';
@@ -38,43 +28,11 @@ import { ws } from '../constants/config';
 
 const makeMapStateToProps = () => {
   return (state, props) => ({
-    percentLinear: makePercentLinear()(state, props),
-    readyToWork: makeReadyToWork()(state, props),
-    cancelWork: makeCancelWork()(state, props),
-    completeWork: makeCompleteWork()(state, props),
-    showFPS: makeShowFPS()(state, props),
-    NUM_PROCESS: makeNumProcess(state),
+    ...makeProgressMultiBarProps()(state, props),
     vCap: makeVideoCaptureEach()(state, props),
     workingStatus: makeWorkingStatus(state)
   });
 };
-
-const CustomLinearProgress = withStyles({
-  root: props => {
-    let backgroundColor = '#FFB1A8';
-    if (props.iscomplete) backgroundColor = '#8FFFC3';
-    if (props.iserror) backgroundColor = '#FF8F87';
-    return {
-      height: 10,
-      backgroundColor
-    };
-  },
-  bar: props => {
-    const borderRad = { L: '0px', R: '20px' };
-    if (props.isfirst) borderRad.L = '20px';
-    if (!props.islast && props.value === 100) borderRad.R = '0px';
-    let backgroundColor = '#FF6C5C';
-    if (props.iscomplete) backgroundColor = '#1DB364';
-    if (props.iserror) backgroundColor = '#FF2819';
-    return {
-      backgroundColor,
-      transition: `transform ${props.delay}ms linear`,
-      borderRadius: `${borderRad.L} ${borderRad.R} ${borderRad.R} ${
-        borderRad.L
-      }`
-    };
-  }
-})(LinearProgress);
 
 function ListVCap(props) {
   const {
@@ -89,20 +47,10 @@ function ListVCap(props) {
     onClose,
     onCancel,
     onRefresh,
-    onSwitchFPS,
+    workingStatus,
     showFPS,
-    workingStatus
+    onSwitchFPS
   } = props;
-  let fpsDiv = showFPS ? 1 : vCap.FPS;
-  let fpsText = showFPS ? 'FPS' : '';
-  let fpsTextExt = showFPS ? ': ' : '';
-  let fpsPostText = showFPS ? '' : 'x';
-  if (fpsDiv === 0) {
-    fpsText = 'FPS';
-    fpsPostText = '';
-    fpsTextExt = '';
-    fpsDiv = 1;
-  }
   const canvasRef = React.useRef();
   const [isLoading, setLoading] = React.useState(true);
   React.useEffect(() => {
@@ -216,83 +164,13 @@ function ListVCap(props) {
               </Grow>
             </div>
             <div className={classes.chipBar}>
-              {readyToWork && (
-                <>
-                  <Tooltip
-                    title={`frame: ${percentLinear.progress -
-                      percentLinear.beginFrame}/${percentLinear.endFrame -
-                      percentLinear.beginFrame}`}
-                    arrow
-                  >
-                    <Chip
-                      className={classes.chip}
-                      icon={<DonutLargeIcon />}
-                      label={`${formatNumber(percentLinear.percent)} / 100 %`}
-                      variant='outlined'
-                    />
-                  </Tooltip>
-                  {percentLinear.maxFPS < 0 ? (
-                    <Chip
-                      className={classes.chip}
-                      icon={<SpeedIcon />}
-                      color='primary'
-                      label={`FPS: ${formatNumber(percentLinear.FPS)}`}
-                      variant='outlined'
-                    />
-                  ) : (
-                    <Tooltip
-                      title={
-                        <>
-                          <Typography
-                            component='p'
-                            className={classes.FPSTooltip}
-                          >
-                            {`min ${fpsText}: `}
-                            {formatNumber(percentLinear.minFPS / fpsDiv)}
-                            {fpsPostText}
-                          </Typography>
-                          <Typography
-                            component='p'
-                            className={classes.FPSTooltip}
-                          >
-                            {`max ${fpsText}: `}
-                            {formatNumber(percentLinear.maxFPS / fpsDiv)}
-                            {fpsPostText}
-                          </Typography>
-                        </>
-                      }
-                      arrow
-                      disableFocusListener={percentLinear.maxFPS < 0}
-                      disableTouchListener={percentLinear.maxFPS < 0}
-                    >
-                      <Chip
-                        className={classes.chip}
-                        icon={<SpeedIcon />}
-                        color='primary'
-                        label={`${fpsText}${fpsTextExt}${formatNumber(
-                          percentLinear.FPS / fpsDiv
-                        )}${fpsPostText}`}
-                        variant='outlined'
-                        onClick={onSwitchFPS}
-                      />
-                    </Tooltip>
-                  )}
-                  <Tooltip
-                    title={`Time Elapsed: ${percentLinear.timePassed} / ${
-                      percentLinear.timeAll
-                    }`}
-                    arrow
-                  >
-                    <Chip
-                      className={classes.chip}
-                      icon={<AccessAlarmIcon />}
-                      color='secondary'
-                      label={`Time left: ${percentLinear.timeLeft}`}
-                      variant='outlined'
-                    />
-                  </Tooltip>
-                </>
-              )}
+              <ProgressChipBar
+                readyToWork={readyToWork}
+                percentLinear={percentLinear}
+                showFPS={showFPS}
+                onSwitchFPS={onSwitchFPS}
+                FPS={vCap.FPS}
+              />
             </div>
           </div>
           <Tooltip title='Close this video' arrow>
@@ -305,24 +183,13 @@ function ListVCap(props) {
             </IconButton>
           </Tooltip>
         </div>
-        {readyToWork && (
-          <Grid container>
-            {percentLinear.bar.map((bar, idx) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <Grid item xs key={idx}>
-                <CustomLinearProgress
-                  delay={bar.delay}
-                  variant='determinate'
-                  value={bar.percent}
-                  isfirst={idx === 0 ? 1 : 0}
-                  islast={idx === NUM_PROCESS - 1 ? 1 : 0}
-                  iscomplete={completeWork ? 1 : 0}
-                  iserror={cancelWork ? 1 : 0}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        )}
+        <ProgressMultiBar
+          readyToWork={readyToWork}
+          completeWork={completeWork}
+          cancelWork={cancelWork}
+          percentLinear={percentLinear}
+          NUM_PROCESS={NUM_PROCESS}
+        />
       </div>
     </Card>
   );

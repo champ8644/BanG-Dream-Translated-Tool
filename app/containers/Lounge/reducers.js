@@ -44,7 +44,8 @@ export const initialState = {
   canvasRefEach: {},
   workingStatus: ws.idle,
   isActivate: false,
-  closeConvertingDialog: { open: false, path: null }
+  closeConvertingDialog: { open: false, path: null },
+  mainVideoData: null
 };
 
 const initialConverter = {
@@ -171,8 +172,6 @@ export default function Lounge(state = initialState, action) {
         progressFull: payload,
         progress: 0
       };
-    case actionTypes.SEND_MESSAGE:
-      return { ...state, ...initialConverter, numProcess: payload };
     case actionTypes.TICK_QUEUE:
       return {
         ...state,
