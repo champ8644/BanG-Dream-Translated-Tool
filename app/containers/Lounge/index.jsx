@@ -8,6 +8,7 @@ import {
   makeCurrentFrame,
   makeDialogData,
   makeDisplayNumProcess,
+  makeMainProgressMultiBarProps,
   makeNumProcess,
   makeOverlayMode,
   makeProgress,
@@ -49,6 +50,8 @@ import { NUM_MAX_PROCESS } from './constants';
 import Paper from '@material-ui/core/Paper';
 import PieChartIcon from '@material-ui/icons/PieChart';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import ProgressChipbar from './components/ProgressChipBar';
+import ProgressMultiBar from './components/ProgressMultiBar';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Select from '@material-ui/core/Select';
@@ -98,7 +101,8 @@ const mapStateToProps = (state, props) => {
     displayNumProcess: makeDisplayNumProcess(state),
     queue: makeQueue(state),
     workingStatus: makeWorkingStatus(state),
-    closeConvertingDialog: makeCloseConvertingDialog(state)
+    closeConvertingDialog: makeCloseConvertingDialog(state),
+    mainProgressProps: makeMainProgressMultiBarProps()(state)
   };
 };
 
@@ -228,7 +232,7 @@ class Lounge extends Component {
       handleCommittedSlider,
       sliderObj,
       commitOnChange,
-      sendMessage,
+      devQueue,
       handleNumProcess,
       displayNumProcess,
       addQueue,
@@ -242,9 +246,16 @@ class Lounge extends Component {
       handleCancelCloseConvertingDialog,
       handleConfirmCloseConvertingDialog,
       closeConvertingDialog,
-      onSwitchFPSVCapList
+      onSwitchFPSVCapList,
+      mainProgressProps: {
+        readyToWork,
+        percentLinear,
+        NUM_PROCESS,
+        completeWork,
+        cancelWork,
+        showFPS
+      }
     } = this.props;
-
     return (
       <div className={classes.root}>
         <Helmet titleTemplate={`%s - ${APP_TITLE}`}>
@@ -302,7 +313,6 @@ class Lounge extends Component {
             </Button>
           </>
         )}
-
         {vCap && (
           <div className={classes.buttonSliderContainer}>
             {radioObj.length > 0 && (
@@ -322,19 +332,19 @@ class Lounge extends Component {
               <>
                 <Button
                   className={clsx(classes.btn, classes.marginLeft)}
-                  onClick={() => sendMessage({ test: true })}
+                  onClick={() => devQueue({ test: true })}
                 >
                   Start Testing
                 </Button>
                 <Button
                   className={clsx(classes.btn, classes.marginLeft)}
-                  onClick={() => sendMessage({ end: 1000 })}
+                  onClick={() => devQueue({ end: 1000 })}
                 >
                   Start Until 1000 frames
                 </Button>
                 <Button
                   className={clsx(classes.btn, classes.marginLeft)}
-                  onClick={() => sendMessage({ end: 10000 })}
+                  onClick={() => devQueue({ end: 10000 })}
                 >
                   Start Until 10000 frames
                 </Button>
@@ -342,24 +352,46 @@ class Lounge extends Component {
             )}
             <Button
               className={clsx(classes.btn, classes.marginLeft)}
-              onClick={() => sendMessage()}
+              onClick={() => devQueue()}
             >
               Start Converting
             </Button>
           </div>
         )}
-        <div className={classes.marginTop}>
-          {queue.map(path => (
-            <ListVCap
-              path={path}
-              key={path}
-              onClose={onCloseVCapList.bind(this, path)}
-              onCancel={onCancelVCapList.bind(this, path)}
-              onRefresh={onRefreshVCapList.bind(this, path)}
-              onSwitchFPS={onSwitchFPSVCapList.bind(this, path)}
+        {readyToWork && (
+          <Paper className={classes.paperLinear}>
+            <ProgressMultiBar
+              readyToWork={readyToWork}
+              completeWork={completeWork}
+              cancelWork={cancelWork}
+              percentLinear={percentLinear}
+              NUM_PROCESS={NUM_PROCESS}
             />
-          ))}
-        </div>
+            <div className={classes.chipBar}>
+              <ProgressChipbar
+                readyToWork={readyToWork}
+                percentLinear={percentLinear}
+                showFPS={showFPS}
+                FPS={vCap.FPS}
+                onSwitchFPS={onSwitchFPSVCapList.bind(this, vCap.path)}
+              />
+            </div>
+          </Paper>
+        )}
+        {queue.length > 0 && (
+          <div className={classes.marginTop}>
+            {queue.map(path => (
+              <ListVCap
+                path={path}
+                key={path}
+                onClose={onCloseVCapList.bind(this, path)}
+                onCancel={onCancelVCapList.bind(this, path)}
+                onRefresh={onRefreshVCapList.bind(this, path)}
+                onSwitchFPS={onSwitchFPSVCapList.bind(this, path)}
+              />
+            ))}
+          </div>
+        )}
         {vCap && (
           <>
             {/* {readyToWork && (

@@ -59,12 +59,16 @@ export const styles = theme => ({
   chip: {
     marginLeft: theme.spacing(1)
   },
-  loader: props => ({
-    position: 'absolute',
-    marginLeft: `${props.vCap.dWidth / 2 - 20}px`,
-    marginTop: `${props.vCap.dHeight / 2 - 20}px`,
-    zIndex: 10
-  }),
+  loader: props => {
+    if (props.vCap && props.vCap.dWidth && props.vCap.dHeight)
+      return {
+        position: 'absolute',
+        marginLeft: `${props.vCap.dWidth / 2 - 20}px`,
+        marginTop: `${props.vCap.dHeight / 2 - 20}px`,
+        zIndex: 10
+      };
+    return {};
+  },
   closeIcon: {
     height: '2em'
   },

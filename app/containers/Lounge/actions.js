@@ -66,7 +66,7 @@ const actionTypesList = [
 
 export const actionTypes = prefixer(prefix, actionTypesList);
 
-export function sendMessage(payload = {}) {
+export function devQueue(payload = {}) {
   return (dispatch, getState) => {
     const { videoFilePath, vCap, displayNumProcess } = getState().Lounge;
     const { start: _start, end: _end, test } = payload;
@@ -79,8 +79,8 @@ export function sendMessage(payload = {}) {
       end = endFrameTest;
     }
     dispatch({
-      type: actionTypes.SEND_MESSAGE,
-      payload: displayNumProcess
+      type: actionTypes.TICK_QUEUE,
+      payload: { displayNumProcess, path: vCap.path }
     });
     message2Worker('start-events', {
       videoFilePath,
