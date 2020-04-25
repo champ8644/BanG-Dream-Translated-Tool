@@ -279,12 +279,7 @@ class Lounge extends Component {
             Add queue
           </Button>
         </Tooltip>
-        <Button
-          className={clsx(classes.btn, classes.marginLeft)}
-          onClick={openFile}
-        >
-          Open file
-        </Button>
+
         <FormControl className={classes.formControlInput}>
           <InputLabel id='input-label-num-process'>Process</InputLabel>
           <Select
@@ -295,6 +290,14 @@ class Lounge extends Component {
             {ProcessMenuItem}
           </Select>
         </FormControl>
+        {IS_DEV && (
+          <Button
+            className={clsx(classes.btn, classes.marginLeft)}
+            onClick={openFile}
+          >
+            Open file
+          </Button>
+        )}
         {queue.length > 0 && (
           <>
             <Button
