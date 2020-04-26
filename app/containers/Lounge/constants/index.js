@@ -147,7 +147,7 @@ export const titleHeader = {
 };
 
 export const correctPlaceFadeBlack = 6;
-export const thickness = 3;
+export const thickness = 2;
 
 export const intersectCompensate = 30;
 export const NUM_MAX_PROCESS = 8;

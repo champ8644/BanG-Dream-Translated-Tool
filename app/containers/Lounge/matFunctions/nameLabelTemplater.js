@@ -1,13 +1,17 @@
 import {
   black,
+  blue,
   nameLabelCrop,
   nameLabelStarCrop,
   nameLabelThreshold,
-  qualityRatio
+  qualityRatio,
+  red
 } from '../constants';
 
 import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
+import { paintMat } from './utility';
+import thresholdOtsu from '../mainFunctions/thresholdOtsu';
 
 const { innerX, outerX, innerY, outerY } = nameLabelCrop;
 const maskRect = new cv.Mat(
@@ -50,10 +54,12 @@ export default function nameLabelTemplater(mat) {
     PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}_Temp.png`),
     masked
   );
-  const mask2 = mat.getRegion(rectNameLabelStarCrop);
+  const actor = thresholdOtsu(mat.getRegion(rectNameLabelStarCrop), null);
   cv.imwrite(
     PATHS.resourcePath(`CaptureNameLabelStar_${qualityRatio}_Temp.png`),
-    mask2
+    actor
   );
-  return mask2;
+  paintMat(mat, masked, rectOuterNameLabel, blue);
+  paintMat(mat, actor, rectNameLabelStarCrop, red);
+  return mat;
 }

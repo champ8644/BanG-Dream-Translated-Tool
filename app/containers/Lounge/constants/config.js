@@ -18,7 +18,7 @@ export const radioObj = IS_DEV
     ]
   : [];
 
-export const defaultOverlayMode = 'fullDialogGenerator';
+export const defaultOverlayMode = IS_DEV ? 'nameLabelTemplater' : 'none';
 
 export const sliderObjSelector = {
   BGRFinder: {
@@ -85,7 +85,7 @@ export const ws = {
 // export const endVCap = 89150;
 // 112405
 // export const defaultVCapBeginFrame = 115034;
-export const defaultVCapBeginFrame = 21101;
+export const defaultVCapBeginFrame = IS_DEV ? 40000 : 0;
 export const startFrameTest = 113585;
 // export const startFrameTest = 116230;
 export const endFrameTest = 117000;

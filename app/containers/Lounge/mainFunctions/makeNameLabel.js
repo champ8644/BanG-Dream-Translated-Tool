@@ -1,6 +1,7 @@
 import {
   nameLabelCrop,
   nameLabelStarCrop,
+  nameLabelThreshold,
   qualityRatio,
   rx,
   threshPercentDiff
@@ -43,9 +44,9 @@ const rectNameLabelStarCropRelative = new cv.Rect(
   rectX[1] - rectX[0],
   rectY[1] - rectY[0]
 );
-// const { val, sat, hue } = nameLabelThreshold;
-// const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
-// const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
+const { val, sat, hue } = nameLabelThreshold;
+const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
+const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
 
 export default function makeNameLabel(mat, starMove) {
   let rectOuterNameLabel;
@@ -60,14 +61,17 @@ export default function makeNameLabel(mat, starMove) {
     rectOuterNameLabel = _rectOuterNameLabel;
   }
 
-  const threshMat = thresholdOtsu(mat.getRegion(rectOuterNameLabel));
+  const threshMat = mat
+    .getRegion(rectOuterNameLabel)
+    .cvtColor(cv.COLOR_BGR2HSV)
+    .inRange(lowerColorBounds, upperColorBounds);
   const masked = threshMat.and(CaptureNameLabel).bitwiseXor(CaptureNameLabel);
   const percentDiff = (masked.countNonZero() / countNameLabel) * 100;
   let actor;
   let actorStar;
   let dialog = null;
   if (percentDiff < threshPercentDiff) {
-    actor = threshMat.getRegion(rectNameLabel);
+    actor = thresholdOtsu(threshMat.getRegion(rectNameLabel));
     actorStar = threshMat.getRegion(rectNameLabelStarCropRelative);
     dialog = subtitleFinder(mat);
   }
