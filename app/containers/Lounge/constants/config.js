@@ -13,10 +13,12 @@ export const radioObj = IS_DEV
       'nameLabelGenerator',
       // 'nameLabelTemplater'
       // 'titleLabelGenerator',
-      // 'titleLabelTemplater',
-      'starMatching'
+      // 'titleLabelTemplater'
+      'fullDialogGenerator'
     ]
   : [];
+
+export const defaultOverlayMode = 'fullDialogGenerator';
 
 export const sliderObjSelector = {
   BGRFinder: {
@@ -47,6 +49,10 @@ export const sliderObjSelector = {
       { name: 'innerY', max: 1440 }
     ],
     commit: true
+  },
+  fullDialogGenerator: {
+    slider: [{ name: 'thresh', max: 255 }],
+    commit: false
   }
 };
 
@@ -62,9 +68,10 @@ export const ws = {
 // export const startVCap = 88250;
 // export const endVCap = 89150;
 // 112405
-export const startFrameTest = 111900;
-// export const startFrameTest = 112404;
-export const endFrameTest = 113000;
+export const defaultVCapBeginFrame = 116230;
+export const startFrameTest = 113585;
+// export const startFrameTest = 116230;
+export const endFrameTest = 117000;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

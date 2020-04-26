@@ -65,7 +65,7 @@ class Meaning {
   }
 
   isOutOfWhite(frame) {
-    return this.avg(frame) - this.at(frame - this.div) < fadeThreshold;
+    return this.at(frame - this.div) - this.avg(frame) < fadeThreshold;
   }
 }
 
@@ -127,6 +127,7 @@ function nonBlockingLoop({
 }
 
 let currentActor;
+// let prevFullDialog;
 
 export default function mainEvent({ vCap, start, end, index }) {
   return new Promise(resolve => {

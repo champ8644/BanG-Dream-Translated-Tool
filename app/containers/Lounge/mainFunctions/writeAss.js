@@ -1,5 +1,6 @@
+import { correctPlaceFadeBlack, skipNonIntersectWhiteLine } from '../constants';
+
 import assTemplate from '../constants/assTemplate';
-import { correctPlaceFadeBlack } from '../constants';
 import fs from 'fs';
 
 let toMs;
@@ -222,7 +223,7 @@ export default function writeAss({ data, nameActor, info }) {
             prevNtem = ntem;
           });
         }
-      } else item.skip = true;
+      } else if (skipNonIntersectWhiteLine) item.skip = true;
     });
   });
 

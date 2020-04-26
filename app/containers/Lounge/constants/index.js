@@ -34,9 +34,9 @@ export const nameLabelThreshold = {
 };
 
 export const subtitleThreshold = {
-  blue: [0, 100],
-  green: [0, 100],
-  red: [0, 100]
+  blue: [0, 128],
+  green: [0, 128],
+  red: [0, 128]
 };
 
 export const rows = 1440;
@@ -155,3 +155,5 @@ export const NUM_MAX_PROCESS = 8;
 export const videoListRatio = 1 / 6;
 export const videoListMaxWidth = Math.round(1920 * videoListRatio);
 export const videoListMaxHeight = Math.round(1440 * videoListRatio);
+
+export const skipNonIntersectWhiteLine = false;

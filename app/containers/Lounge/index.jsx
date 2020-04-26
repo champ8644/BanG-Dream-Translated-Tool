@@ -3,6 +3,7 @@
 import * as actions from './actions';
 
 import React, { Component } from 'react';
+import { defaultVCapBeginFrame, radioObj, ws } from './constants/config';
 import {
   makeCloseConvertingDialog,
   makeCurrentFrame,
@@ -22,7 +23,6 @@ import {
   makeWillUpdateNextFrame,
   makeWorkingStatus
 } from './selectors';
-import { radioObj, ws } from './constants/config';
 
 import { APP_TITLE } from '../../constants/meta';
 import Button from '@material-ui/core/Button';
@@ -195,7 +195,7 @@ class Lounge extends Component {
 
   componentDidUpdate() {
     const { vCap, willUpdateNextFrame } = this.props;
-    if (willUpdateNextFrame) vCap.show();
+    if (willUpdateNextFrame) vCap.show(defaultVCapBeginFrame);
   }
 
   render() {

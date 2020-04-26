@@ -33,8 +33,7 @@ function ProgressChipBar(props) {
   return (
     <div>
       <Tooltip
-        title={`frame: ${percentLinear.progress -
-          percentLinear.beginFrame}/${percentLinear.endFrame -
+        title={`frame: ${percentLinear.progress}/${percentLinear.endFrame -
           percentLinear.beginFrame}`}
         arrow
       >
