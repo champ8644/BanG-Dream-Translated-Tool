@@ -2,10 +2,11 @@ import cv from 'opencv4nodejs';
 
 /**
  * Make threshold mats
- * @param {cv.Mat} mat
- * @param {bool} inv
+ * @param {mat} mat
+ * @param {booleen} inv
+ * @return {mat} threshold mat
  */
-export default function thresholdOtsu(mat, inv) {
+export default function thresholdOtsu(mat, inv = true) {
   if (mat.channels === 3)
     return mat
       .cvtColor(cv.COLOR_BGR2GRAY)

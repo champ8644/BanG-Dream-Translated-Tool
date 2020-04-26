@@ -9,11 +9,11 @@ export const radioObj = IS_DEV
       // 'BGRFinder',
       // 'HSVFinder',
       // 'placeLabelGenerator',
-      // 'placeLabelTemplater',
+      'placeLabelTemplater',
       'nameLabelGenerator',
-      // 'nameLabelTemplater'
+      'nameLabelTemplater',
       // 'titleLabelGenerator',
-      // 'titleLabelTemplater'
+      'titleLabelTemplater',
       'fullDialogGenerator'
     ]
   : [];
@@ -51,9 +51,25 @@ export const sliderObjSelector = {
     commit: true
   },
   fullDialogGenerator: {
-    slider: [{ name: 'thresh', max: 255 }],
+    slider: [{ name: 'thresh', max: 255 }, { name: 'blur', max: 10 }],
     commit: false
   }
+};
+
+export const defaultValueSlider = {
+  red: [0, 255],
+  green: [0, 255],
+  blue: [0, 255],
+  gray: [0, 255],
+  hue: [0, 255],
+  sat: [0, 255],
+  val: [0, 255],
+  outerX: [0, 1920],
+  innerX: [0, 1920],
+  outerY: [0, 1440],
+  innerY: [0, 1440],
+  thresh: [0, 255],
+  blur: 0
 };
 
 export const ws = {
@@ -68,7 +84,8 @@ export const ws = {
 // export const startVCap = 88250;
 // export const endVCap = 89150;
 // 112405
-export const defaultVCapBeginFrame = 116230;
+// export const defaultVCapBeginFrame = 115034;
+export const defaultVCapBeginFrame = 21101;
 export const startFrameTest = 113585;
 // export const startFrameTest = 116230;
 export const endFrameTest = 117000;
