@@ -61,8 +61,8 @@ export default function makeNameLabel(mat, starMove) {
     rectOuterNameLabel = _rectOuterNameLabel;
   }
 
-  const threshMat = mat
-    .getRegion(rectOuterNameLabel)
+  const scopeMat = mat.getRegion(rectOuterNameLabel);
+  const threshMat = scopeMat
     .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds);
   const masked = threshMat.and(CaptureNameLabel).bitwiseXor(CaptureNameLabel);
@@ -71,7 +71,7 @@ export default function makeNameLabel(mat, starMove) {
   let actorStar;
   let dialog = null;
   if (percentDiff < threshPercentDiff) {
-    actor = thresholdOtsu(threshMat.getRegion(rectNameLabel));
+    actor = thresholdOtsu(scopeMat.getRegion(rectNameLabel), null);
     actorStar = threshMat.getRegion(rectNameLabelStarCropRelative);
     dialog = subtitleFinder(mat);
   }

@@ -44,7 +44,7 @@ export default function nameLabelGenerator(mat, vCap) {
   const threshDialogMat = blurMat.threshold(
     thresh[0],
     thresh[1],
-    cv.THRESH_BINARY + cv.THRESH_OTSU
+    cv.THRESH_BINARY_INV + cv.THRESH_OTSU
   );
   printHist(mat, threshDialogMat, histogramRectR);
   paintMat(mat, threshDialogMat, subtitleRect, red);

@@ -1,10 +1,7 @@
-import {
-  subtitleFifthCrop,
-  subtitlePartialCrop,
-  subtitleThreshold
-} from '../constants';
+import { subtitleFifthCrop, subtitlePartialCrop } from '../constants';
 
 import cv from 'opencv4nodejs';
+import thresholdOtsu from '../mainFunctions/thresholdOtsu';
 
 const { rectX, rectY } = subtitlePartialCrop;
 const subtitleRect = new cv.Rect(
@@ -21,20 +18,14 @@ const subtitleRectFifth = new cv.Rect(
   rectYF[1] - rectYF[0]
 );
 export default function subtitleFinder(mat, vCap) {
-  const { blue, green, red } = subtitleThreshold;
-  const lowerColorBounds = new cv.Vec(blue[0], green[0], red[0]);
-  const upperColorBounds = new cv.Vec(blue[1], green[1], red[1]);
-  const matSubtitle = mat
-    .getRegion(subtitleRect)
-    .inRange(lowerColorBounds, upperColorBounds);
-  const fifthMatSubtitle = mat
-    .getRegion(subtitleRectFifth)
-    .inRange(lowerColorBounds, upperColorBounds);
+  // const { blue, green, red } = subtitleThreshold;
+  // const lowerColorBounds = new cv.Vec(blue[0], green[0], red[0]);
+  // const upperColorBounds = new cv.Vec(blue[1], green[1], red[1]);
+  const matSubtitle = thresholdOtsu(mat.getRegion(subtitleRect));
+  const fifthMatSubtitle = thresholdOtsu(mat.getRegion(subtitleRectFifth));
   let prevMatSubtitle = null;
   if (!vCap.prevMat.empty) {
-    prevMatSubtitle = vCap.prevMat
-      .getRegion(subtitleRect)
-      .inRange(lowerColorBounds, upperColorBounds);
+    prevMatSubtitle = thresholdOtsu(vCap.prevMat.getRegion(subtitleRect));
   }
   return { matSubtitle, prevMatSubtitle, fifthMatSubtitle };
 }
