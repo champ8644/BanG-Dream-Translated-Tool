@@ -203,29 +203,48 @@ export default function mainEvent({ vCap, start, end, index }) {
 
         const nameObj = makeNameLabel(mat);
         if (nameObj.status && refractory.star === 0) {
-          if (!refractory.name) {
-            refractory.name = true;
-            data.name.push({
-              begin: frame,
-              actor: findActorID(nameObj.actor, frame, nameActor)
-            });
-            currentActor = nameObj.actorStar;
-          } else if (isNewDialog(nameObj.dialog, prevDialog)) {
-            data.name[data.name.length - 1].end = frame;
+          if (isNewDialog(nameObj.dialog, prevDialog)) {
+            if (refractory.name) data.name[data.name.length - 1].end = frame;
+            else
+              activeWorking = {
+                ...activeWorking,
+                nameObj: true,
+                notEmpty: true
+              };
             data.name.push({
               begin: frame,
               actor: findActorID(nameObj.actor, frame, nameActor)
             });
             currentActor = nameObj.actorStar;
           } else
-            activeWorking = { ...activeWorking, nameObj: true, notEmpty: true };
+            activeWorking = {
+              ...activeWorking,
+              nameObj: true,
+              notEmpty: true
+            };
+          refractory.name = true;
           prevDialog = nameObj.dialog;
         } else if (refractory.name) {
           // vCap.showMatInCanvas(nameObj.actorStar);
           const starMatched = starMatching(mat, currentActor);
           if (starMatched) {
-            if (starMatched.x === 0 && starMatched.y === 0) refractory.star--;
-            else refractory.star = 10;
+            if (
+              starMatched.x === 0 &&
+              starMatched.y === 0 &&
+              refractory.star > 0
+            ) {
+              if (!nameObj.status) refractory.star--;
+              else if (isNewDialog(nameObj.dialog, prevDialog)) {
+                data.name[data.name.length - 1].end = frame;
+                data.name.push({
+                  begin: frame,
+                  actor: findActorID(nameObj.actor, frame, nameActor)
+                });
+                currentActor = nameObj.actorStar;
+                refractory.star = 0;
+                prevDialog = nameObj.dialog;
+              } else refractory.star--;
+            } else refractory.star = 10;
             activeWorking = {
               ...activeWorking,
               nameObj: true,
@@ -239,6 +258,7 @@ export default function mainEvent({ vCap, start, end, index }) {
               frame: frame - data.name[data.name.length - 1].begin,
               ...starMatched
             });
+
             // if (nameObj.dialog && !prevDialog) {
             //   data.name[data.name.length - 1].end = frame;
             //   data.name.push({
@@ -249,8 +269,10 @@ export default function mainEvent({ vCap, start, end, index }) {
             // prevDialog = nameObj.dialog;
           } else {
             data.name[data.name.length - 1].end = frame;
-            prevDialog = null;
+            // prevDialog = null;
+            //
             refractory.name = false;
+            refractory.star = 0;
           }
         }
 

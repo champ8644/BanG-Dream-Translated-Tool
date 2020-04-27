@@ -82,10 +82,12 @@ export const ws = {
 // export const endVCap = 89150;
 // 112405
 // export const defaultVCapBeginFrame = 115034;
-export const defaultVCapBeginFrame = IS_DEV ? 115340 : 0;
-export const startFrameTest = 113585;
+export const defaultVCapBeginFrame = IS_DEV ? 114900 : 0;
+export const startFrameTest = 114900;
 // export const startFrameTest = 116230;
-export const endFrameTest = 117000;
+export const endFrameTest = 115300;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
+
+export const enabledSnapToFade = false;
