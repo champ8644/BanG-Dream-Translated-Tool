@@ -1,19 +1,19 @@
 // import { blue, placeLabelCrop, placeLabelThreshold, red } from '../constants';
 
+import { color, placeLabelCrop } from '../constants';
+
 import cv from 'opencv4nodejs';
 import makePlaceLabel from '../mainFunctions/makePlaceLabel';
-import { placeLabelThreshold } from '../constants';
+import { paintMat } from '../utils/utilityCv';
+import { thresholdOtsu } from '../utils/thresholdCv';
 
-// import { paintMat } from '../utils/utilityCv';
-// import { thresholdOtsu } from '../utils/thresholdCv';
-
-// const { outerX, outerY, innerX, innerY } = placeLabelCrop;
-// const rectOuterPlaceLabel = new cv.Rect(
-//   outerX[0],
-//   outerY[0],
-//   outerX[1] - outerX[0],
-//   outerY[1] - outerY[0]
-// );
+const { outerY } = placeLabelCrop;
+const rectOuterPlaceLabel = new cv.Rect(
+  0,
+  outerY[0],
+  1920,
+  outerY[1] - outerY[0]
+);
 // const rectPlaceLabel = new cv.Rect(
 //   innerX[0],
 //   innerY[0],
@@ -21,52 +21,56 @@ import { placeLabelThreshold } from '../constants';
 //   innerY[1] - innerY[0]
 // );
 
-function findingContour(mat) {
-  const contours = mat
-    // .threshold(240, 255, cv.THRESH_BINARY)
-    .findContours(cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+function findingContour(frame) {
+  const contours = frame.findContours(cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
+  const mat = frame.cvtColor(cv.COLOR_GRAY2BGR);
   contours.sort((a, b) => a.area - b.area);
   // eslint-disable-next-line no-console
-  console.log('contours: ', contours);
-  // const outObj = [];
-  // contours.forEach(item => {
-  //   // if (item.area > 5000) {
-  //   const peri = item.arcLength(true);
-  //   const approx = item.approxPolyDP(0.04 * peri, true);
-  //   if (approx.length === 4) {
-  //     const approxContour = new cv.Contour(approx);
-  //     if (isFinalContour(approxContour)) {
-  //       const finalRect = approxContour.boundingRect();
-  //       outObj.push(finalRect);
-  //       frame.drawContours([approx], -1, blue, 1);
-  //       frame.drawContours([item.getPoints()], -1, green, 1);
-  //       frame.drawRectangle(item.boundingRect(), green, 1);
-  //       frame.drawRectangle(finalRect, red, 3);
-  //       frame.drawCircle(
-  //         new cv.Point(
-  //           finalRect.x + finalRect.width / 2,
-  //           finalRect.y + finalRect.height / 2
-  //         ),
-  //         5,
-  //         red,
-  //         10,
-  //         cv.FILLED
-  //       );
-  //     }
-  //     // }
-  //   }
+  // console.log('contours: ', contours);
+  const outObj = [];
+  contours.forEach(item => {
+    if (item.area > 50000 && item.area < 150000) {
+      const peri = item.arcLength(true);
+      const approx = item.approxPolyDP(0.02 * peri, true);
+      // if (approx.length === 4) {
+      // const approxContour = new cv.Contour(approx);
+      // if (isFinalContour(approxContour)) {
+      const finalRect = item.boundingRect();
+      outObj.push(item);
+      mat.drawContours([approx], -1, color.blue, 1);
+      mat.drawContours([item.getPoints()], -1, color.green, 1);
+      mat.drawRectangle(item.boundingRect(), color.green, 1);
+      mat.drawRectangle(finalRect, color.red, 3);
+      mat.drawCircle(
+        new cv.Point(
+          finalRect.x + finalRect.width / 2,
+          finalRect.y + finalRect.height / 2
+        ),
+        5,
+        color.red,
+        10,
+        cv.FILLED
+      );
+    }
+  });
+
   // });
+  // console.log('contour: ', outObj);
+  return mat;
 }
 
 export default function placeLabelGenerator(mat, vCap) {
-  const { val, sat, hue } = placeLabelThreshold;
-  const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
-  const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
+  // const { val, sat, hue } = placeLabelThreshold;
+  // const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
+  // const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
   const { percentDiff, status, placeName } = makePlaceLabel(mat);
-  const _mat = mat
-    .cvtColor(cv.COLOR_BGR2HSV)
-    .inRange(lowerColorBounds, upperColorBounds);
-  findingContour(_mat);
+  // const chans = mat.getRegion(rectOuterPlaceLabel).splitChannels();
+  // const _mat = thresholdOtsu(chan[0].cvtColor(cv.COLOR_BGR));
+  const thresh = thresholdOtsu(mat.getRegion(rectOuterPlaceLabel));
+  paintMat(mat, findingContour(thresh), rectOuterPlaceLabel, color.black);
+  // .cvtColor(cv.COLOR_BGR2HSV)
+  // .inRange(lowerColorBounds, upperColorBounds);
+  // findingContour(_mat);
   // eslint-disable-next-line no-console
   console.log('percentDiff: ', percentDiff);
   if (status) {
@@ -80,5 +84,5 @@ export default function placeLabelGenerator(mat, vCap) {
       frame: vCap.getFrame()
     });
   }
-  return _mat;
+  return mat;
 }
