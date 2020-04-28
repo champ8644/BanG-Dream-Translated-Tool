@@ -83,8 +83,8 @@ export const ws = {
 // 112405
 // export const defaultVCapBeginFrame = 115034;
 // export const startFrameTest = 116230;
-export const startFrameTest = 114971;
-export const endFrameTest = 115227;
+export const startFrameTest = 47268;
+export const endFrameTest = 47416;
 export const defaultVCapBeginFrame = IS_DEV ? startFrameTest : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
