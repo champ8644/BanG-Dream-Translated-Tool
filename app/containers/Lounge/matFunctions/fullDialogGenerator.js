@@ -5,7 +5,7 @@ import {
   subtitleCrop,
   thickness
 } from '../constants';
-import { paintMat, printHist } from './utility';
+import { paintMat, printHist } from '../utils/utilityCv';
 
 import cv from 'opencv4nodejs';
 import makeNameLabel from '../mainFunctions/makeNameLabel';
@@ -37,14 +37,21 @@ export default function nameLabelGenerator(mat, vCap) {
   if (status) mat.drawRectangle(rectOuterNameLabel, blue, thickness);
   const dialogMat = mat.getRegion(subtitleRect).cvtColor(cv.COLOR_BGR2GRAY);
   printHist(mat, dialogMat, histogramRectL);
-  const blurMat =
-    blur > 0
-      ? dialogMat.gaussianBlur(new cv.Size(blur * 2 + 1, blur * 2 + 1), 0)
-      : dialogMat;
-  const threshDialogMat = blurMat.threshold(
-    thresh[0],
+  // const blurMat =
+  //   blur > 0
+  //     ? dialogMat.gaussianBlur(new cv.Size(blur * 2 + 1, blur * 2 + 1), 0)
+  //     : dialogMat;
+  // const threshDialogMat = dialogMat.threshold(
+  //   0,
+  //   255,
+  //   cv.THRESH_BINARY_INV + cv.THRESH_OTSU
+  // );
+  const threshDialogMat = dialogMat.adaptiveThreshold(
     thresh[1],
-    cv.THRESH_BINARY_INV + cv.THRESH_OTSU
+    cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv.THRESH_BINARY_INV,
+    blur * 2 + 1 > 1 ? blur * 2 + 1 : 3,
+    thresh[0]
   );
   printHist(mat, threshDialogMat, histogramRectR);
   paintMat(mat, threshDialogMat, subtitleRect, red);

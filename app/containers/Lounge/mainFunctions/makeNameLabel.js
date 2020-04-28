@@ -10,7 +10,7 @@ import {
 import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 import subtitleFinder from './subtitleFinder';
-import thresholdOtsu from './thresholdOtsu';
+import { thresholdOtsu } from '../utils/thresholdCv';
 
 let CaptureNameLabel;
 try {

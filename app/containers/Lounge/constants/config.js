@@ -48,7 +48,7 @@ export const sliderObjSelector = {
     commit: true
   },
   fullDialogGenerator: {
-    slider: [{ name: 'thresh', max: 255 }, { name: 'blur', max: 10 }],
+    slider: [{ name: 'thresh', max: 255 }, { name: 'blur', max: 30 }],
     commit: false
   }
 };
@@ -65,8 +65,8 @@ export const defaultValueSlider = {
   innerX: [0, 1920],
   outerY: [0, 1440],
   innerY: [0, 1440],
-  thresh: [0, 255],
-  blur: 0
+  thresh: [20, 255],
+  blur: 5
 };
 
 export const ws = {
@@ -82,10 +82,10 @@ export const ws = {
 // export const endVCap = 89150;
 // 112405
 // export const defaultVCapBeginFrame = 115034;
-export const defaultVCapBeginFrame = IS_DEV ? 114900 : 0;
-export const startFrameTest = 114900;
 // export const startFrameTest = 116230;
-export const endFrameTest = 115300;
+export const startFrameTest = 114971;
+export const endFrameTest = 115227;
+export const defaultVCapBeginFrame = IS_DEV ? startFrameTest : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
