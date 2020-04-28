@@ -1,6 +1,11 @@
 'use strict';
 
-import { sliderObjSelector, ws } from './constants/config';
+import {
+  defaultOverlayMode,
+  defaultValueSlider,
+  sliderObjSelector,
+  ws
+} from './constants/config';
 
 import { actionTypes } from './actions';
 import moment from 'moment';
@@ -18,25 +23,18 @@ export const initialState = {
     maxValue: null
   },
   status: {},
-  valueSlider: {
-    red: [0, 255],
-    green: [0, 255],
-    blue: [0, 255],
-    gray: [0, 255],
-    hue: [0, 255],
-    sat: [0, 255],
-    val: [0, 255],
-    outerX: [0, 1920],
-    innerX: [0, 1920],
-    outerY: [0, 1440],
-    innerY: [0, 1440]
-  },
-  sliderObj: null,
+  valueSlider: defaultValueSlider,
+  sliderObj: sliderObjSelector[defaultOverlayMode]
+    ? sliderObjSelector[defaultOverlayMode].slider
+    : null,
+  commitOnChange: sliderObjSelector[defaultOverlayMode]
+    ? sliderObjSelector[defaultOverlayMode].commit
+    : null,
   progress: null,
   progressFull: null,
   importedFile: null,
   willUpdateNextFrame: false,
-  overlayMode: 'none',
+  overlayMode: defaultOverlayMode,
   numProcess: 1,
   displayNumProcess: 1,
   queue: [],

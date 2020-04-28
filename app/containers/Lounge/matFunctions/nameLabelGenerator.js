@@ -14,12 +14,12 @@ import cv from 'opencv4nodejs';
 import makeNameLabel from '../mainFunctions/makeNameLabel';
 import subtitleFinder from './subtitleFinder';
 
-const { outerX, outerY } = nameLabelCrop;
-const rectOuterNameLabel = new cv.Rect(
-  outerX[0],
-  outerY[0],
-  outerX[1] - outerX[0],
-  outerY[1] - outerY[0]
+const { innerX, innerY } = nameLabelCrop;
+const rectInnerNameLabel = new cv.Rect(
+  innerX[0],
+  innerY[0],
+  innerX[1] - innerX[0],
+  innerY[1] - innerY[0]
 );
 const { rectX, rectY } = subtitlePartialCrop;
 const { rectX: rectXF, rectY: rectYF } = subtitleFifthCrop;
@@ -75,7 +75,7 @@ export default function nameLabelGenerator(mat, vCap) {
     const dialogMat = subtitleFinder(mat, vCap); // matSubtitle, prevMatSubtitle
     // eslint-disable-next-line no-console
     console.log({ dialog: dialogMat.matSubtitle.countNonZero(), actor });
-    mat.drawRectangle(rectOuterNameLabel, blue, thickness);
+    paintMat(mat, actor, rectInnerNameLabel, blue);
     paintMat(mat, dialogMat.matSubtitle, subtitleRect, red);
     paintMat(mat, dialogMat.fifthMatSubtitle, subtitleRectFifth, green, 100);
     if (dialogMat.prevMatSubtitle) {

@@ -26,7 +26,8 @@ const fileNames = [
   'titleFinder.js',
   'titleLabelGenerator.js',
   'titleLabelTemplater.js',
-  'titleLineWidthFinder.js'
+  'titleLineWidthFinder.js',
+  'fullDialogGenerator.js'
 ];
 
 fileNames.forEach(file => {

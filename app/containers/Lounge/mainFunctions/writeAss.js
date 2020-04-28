@@ -1,5 +1,7 @@
+import { correctPlaceFadeBlack, skipNonIntersectWhiteLine } from '../constants';
+
 import assTemplate from '../constants/assTemplate';
-import { correctPlaceFadeBlack } from '../constants';
+import { enabledSnapToFade } from '../constants/config';
 import fs from 'fs';
 
 let toMs;
@@ -66,17 +68,35 @@ function writeNameActor({ frame, uid }) {
   `;
 }
 
-function writeWhite({ begin, end, fadeIn, fadeOut }) {
+function writeWhite({
+  begin,
+  end,
+  fadeIn,
+  fadeOut,
+  leftCompensate,
+  rightCompensate
+}) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},ฉากขาว,${timeMs(
     fadeIn - begin
-  )};${timeMs(end - fadeOut)},0,0,0,,
+  )};${timeMs(end - fadeOut)};${leftCompensate ? 1 : 0};${
+    rightCompensate ? 1 : 0
+  },0,0,0,,
   `;
 }
 
-function writeBlack({ begin, end, fadeIn, fadeOut }) {
+function writeBlack({
+  begin,
+  end,
+  fadeIn,
+  fadeOut,
+  leftCompensate,
+  rightCompensate
+}) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},ฉากดำ,${timeMs(
     fadeIn - begin
-  )};${timeMs(end - fadeOut)},0,0,0,,
+  )};${timeMs(end - fadeOut)};${leftCompensate ? 1 : 0};${
+    rightCompensate ? 1 : 0
+  },0,0,0,,
   `;
 }
 
@@ -181,6 +201,10 @@ export default function writeAss({ data, nameActor, info }) {
           const jtem = data[typeF][j];
           const status = statusOverlap(item, jtem);
           if (isIntersect(status)) {
+            if (type === 'name') {
+              if (status === -2 || status === -1) jtem.leftCompensate = true;
+              if (status === -1 || status === 2) jtem.rightCompensate = true;
+            }
             if (!jtem.overlapped) jtem.overlapped = {};
             if (!jtem.overlapped[type]) jtem.overlapped[type] = [];
             jtem.overlapped[type].push({ index: i, status });
@@ -200,29 +224,31 @@ export default function writeAss({ data, nameActor, info }) {
               data.place[ptem.index].begin -= correctPlaceFadeBlack;
           });
         }
-        if (name) {
-          name.forEach(ntem => {
-            if (ntem.status === -2) data.name[ntem.index].end = item.fadeIn;
-            else if (ntem.status === 2)
-              data.name[ntem.index].begin = item.fadeOut;
-          });
-          let prevNtem = { index: -999 };
-          name.forEach(ntem => {
-            if (prevNtem.index === ntem.index - 1) {
-              if (prevNtem.status === 2 && ntem.status === -2) {
-                if (
-                  data.name[prevNtem.index].actor ===
-                  data.name[ntem.index].actor
-                ) {
-                  data.name[prevNtem.index].end = data.name[ntem.index].end;
-                  data.name[ntem.index].skip = true;
+        if (enabledSnapToFade) {
+          if (name) {
+            name.forEach(ntem => {
+              if (ntem.status === -2) data.name[ntem.index].end = item.fadeIn;
+              else if (ntem.status === 2)
+                data.name[ntem.index].begin = item.fadeOut;
+            });
+            let prevNtem = { index: -999 };
+            name.forEach(ntem => {
+              if (prevNtem.index === ntem.index - 1) {
+                if (prevNtem.status === 2 && ntem.status === -2) {
+                  if (
+                    data.name[prevNtem.index].actor ===
+                    data.name[ntem.index].actor
+                  ) {
+                    data.name[prevNtem.index].end = data.name[ntem.index].end;
+                    data.name[ntem.index].skip = true;
+                  }
                 }
               }
-            }
-            prevNtem = ntem;
-          });
+              prevNtem = ntem;
+            });
+          }
         }
-      } else item.skip = true;
+      } else if (skipNonIntersectWhiteLine) item.skip = true;
     });
   });
 

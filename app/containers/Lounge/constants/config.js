@@ -4,19 +4,18 @@ export const radioObj = IS_DEV
   ? [
       'none',
       // 'maxFinder',
-      'scopeFinder',
-      'GRAYFinder',
+      // 'scopeFinder',
+      // 'GRAYFinder',
       // 'BGRFinder',
       // 'HSVFinder',
       // 'placeLabelGenerator',
-      // 'placeLabelTemplater',
-      'nameLabelGenerator'
-      // 'nameLabelTemplater'
+      'nameLabelGenerator',
       // 'titleLabelGenerator',
-      // 'titleLabelTemplater',
-      // 'starMatching'
+      'fullDialogGenerator'
     ]
   : [];
+
+export const defaultOverlayMode = IS_DEV ? 'nameLabelGenerator' : 'none';
 
 export const sliderObjSelector = {
   BGRFinder: {
@@ -47,7 +46,27 @@ export const sliderObjSelector = {
       { name: 'innerY', max: 1440 }
     ],
     commit: true
+  },
+  fullDialogGenerator: {
+    slider: [{ name: 'thresh', max: 255 }, { name: 'blur', max: 10 }],
+    commit: false
   }
+};
+
+export const defaultValueSlider = {
+  red: [0, 255],
+  green: [0, 255],
+  blue: [0, 255],
+  gray: [0, 255],
+  hue: [0, 255],
+  sat: [0, 255],
+  val: [0, 255],
+  outerX: [0, 1920],
+  innerX: [0, 1920],
+  outerY: [0, 1440],
+  innerY: [0, 1440],
+  thresh: [0, 255],
+  blur: 0
 };
 
 export const ws = {
@@ -61,8 +80,14 @@ export const ws = {
 // export const endVCap = 50000;
 // export const startVCap = 88250;
 // export const endVCap = 89150;
-export const startFrameTest = 111900;
-export const endFrameTest = 112625;
+// 112405
+// export const defaultVCapBeginFrame = 115034;
+export const defaultVCapBeginFrame = IS_DEV ? 114900 : 0;
+export const startFrameTest = 114900;
+// export const startFrameTest = 116230;
+export const endFrameTest = 115300;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
+
+export const enabledSnapToFade = false;

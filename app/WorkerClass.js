@@ -35,6 +35,19 @@ export default class WorkerClass {
     });
   }
 
+  closeWindows() {
+    for (let i = 1; i < this.workerWindows.length; i++) {
+      if (this.workerWindows[i]) this.workerWindows[i].close();
+    }
+  }
+
+  waitForClosing() {
+    this.isWorking = false;
+    setTimeout(() => {
+      if (!this.isWorking) this.closeWindows();
+    }, 10000);
+  }
+
   async startEvents(payload) {
     const { videoFilePath, start, end, process } = payload;
     const waiting = [];
@@ -66,14 +79,15 @@ export default class WorkerClass {
       'sum-events',
       await Promise.all(waiting)
     );
-    // for (let i = 1; i < process; i++) this.workerWindows[i].close();
   }
 
-  sendMessage(arg) {
+  async sendMessage(arg) {
     const { command, payload } = arg;
     switch (command) {
       case 'start-events': {
-        this.startEvents(payload);
+        this.isWorking = true;
+        await this.startEvents(payload);
+        this.waitForClosing();
         break;
       }
       case 'stop-events':
@@ -81,6 +95,7 @@ export default class WorkerClass {
           if (window)
             if (window.webContents) window.webContents.send('stop-events');
         });
+        this.waitForClosing();
         break;
       default:
     }

@@ -34,9 +34,9 @@ export const nameLabelThreshold = {
 };
 
 export const subtitleThreshold = {
-  blue: [0, 100],
-  green: [0, 100],
-  red: [0, 100]
+  blue: [0, 128],
+  green: [0, 128],
+  red: [0, 128]
 };
 
 export const rows = 1440;
@@ -52,7 +52,7 @@ export const threshSubSubtitle = 20;
 export const blackThreshold = 3;
 export const whiteThreshold = 252;
 export const fadeThreshold = 2;
-export const actorThreshold = 500;
+export const actorThreshold = 1000;
 export const blackMaxThreshold = 8;
 export const whiteMinThreshold = 255 - blackMaxThreshold;
 
@@ -147,7 +147,7 @@ export const titleHeader = {
 };
 
 export const correctPlaceFadeBlack = 6;
-export const thickness = 3;
+export const thickness = 2;
 
 export const intersectCompensate = 30;
 export const NUM_MAX_PROCESS = 8;
@@ -155,3 +155,5 @@ export const NUM_MAX_PROCESS = 8;
 export const videoListRatio = 1 / 6;
 export const videoListMaxWidth = Math.round(1920 * videoListRatio);
 export const videoListMaxHeight = Math.round(1440 * videoListRatio);
+
+export const skipNonIntersectWhiteLine = false;
