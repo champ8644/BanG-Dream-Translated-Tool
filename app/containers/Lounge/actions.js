@@ -305,19 +305,23 @@ export function addQueue() {
   };
 }
 
-export function openFile() {
+export function openFile(fileName) {
   return async (dispatch, getState) => {
     const { canvasRef, valueSlider, overlayMode } = getState().Lounge;
-    const { filePaths, canceled } = await dialog.showOpenDialog({
-      properties: ['openFile'],
-      filters: [
-        {
-          name: 'Video files',
-          extensions: ['mkv', 'avi', 'mp4', 'mov', 'flv', 'wmv']
-        }
-      ]
-    });
-    if (canceled) return;
+    let filePaths;
+    let canceled;
+    if (!fileName) {
+      ({ filePaths, canceled } = await dialog.showOpenDialog({
+        properties: ['openFile'],
+        filters: [
+          {
+            name: 'Video files',
+            extensions: ['mkv', 'avi', 'mp4', 'mov', 'flv', 'wmv']
+          }
+        ]
+      }));
+      if (canceled) return;
+    } else filePaths = [fileName];
     try {
       const vCap = new VideoCapture({
         path: filePaths[0],
