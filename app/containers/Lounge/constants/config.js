@@ -35,15 +35,15 @@ export const radioObj = IS_DEV
       // 'GRAYFinder',
       // 'BGRFinder',
       // 'HSVFinder',
-      'findTrueTitleSpline'
+      // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
-      // 'nameLabelGenerator',
+      'nameLabelGenerator'
       // 'titleLabelGenerator',
       // 'fullDialogGenerator'
     ]
   : [];
 
-export const defaultOverlayMode = IS_DEV ? 'findTrueTitleSpline' : 'none';
+export const defaultOverlayMode = IS_DEV ? 'nameLabelGenerator' : 'none';
 export const isAutoOpen = IS_DEV;
 export const autoOpenFileName =
   'E:\\Bandori\\Events\\EVENT_023หน้ากากแก้ว_Pastel pallet Play act [DE99576F]_2_190151.mp4';
