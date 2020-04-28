@@ -462,7 +462,9 @@ class Lounge extends Component {
                       color='secondary'
                       variant='outlined'
                       clickable
-                      onClick={() => handleOpenDialog('frame')}
+                      onClick={() =>
+                        handleOpenDialog('frame', formatNumber(frame))
+                      }
                     />
                   </Tooltip>
                   <Tooltip title='Go To selected time' arrow>
@@ -475,7 +477,7 @@ class Lounge extends Component {
                       variant='outlined'
                       color='primary'
                       clickable
-                      onClick={() => handleOpenDialog('ms')}
+                      onClick={() => handleOpenDialog('ms', formatNumber(ms))}
                     />
                   </Tooltip>
                   <Chip

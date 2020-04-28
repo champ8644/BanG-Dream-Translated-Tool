@@ -1,5 +1,32 @@
 import { IS_DEV } from '../../../constants/env';
 
+export const fileNames = [
+  'BGRFinder.js',
+  'contourFinder.js',
+  'GRAYFinder.js',
+  'HSVFinder.js',
+  'index.js',
+  'meanClass.js',
+  'meanFinder.js',
+  'maxFinder.js',
+  'nameLabelGenerator.js',
+  'nameLabelTemplater.js',
+  'placeFinder.js',
+  'placeLabelGenerator.js',
+  'placeLabelTemplater.js',
+  'placeNameFinder.js',
+  'scopeFinder.js',
+  'starMatching.js',
+  'starTemplater.js',
+  'subtitleFinder.js',
+  'titleFinder.js',
+  'titleLabelGenerator.js',
+  'titleLabelTemplater.js',
+  'titleLineWidthFinder.js',
+  'fullDialogGenerator.js',
+  'findTrueTitleSpline.js'
+];
+
 export const radioObj = IS_DEV
   ? [
       'none',
@@ -8,14 +35,15 @@ export const radioObj = IS_DEV
       // 'GRAYFinder',
       // 'BGRFinder',
       // 'HSVFinder',
+      'findTrueTitleSpline'
       // 'placeLabelGenerator',
-      'nameLabelGenerator',
+      // 'nameLabelGenerator',
       // 'titleLabelGenerator',
-      'fullDialogGenerator'
+      // 'fullDialogGenerator'
     ]
   : [];
 
-export const defaultOverlayMode = IS_DEV ? 'nameLabelGenerator' : 'none';
+export const defaultOverlayMode = IS_DEV ? 'findTrueTitleSpline' : 'none';
 
 export const sliderObjSelector = {
   BGRFinder: {
@@ -85,7 +113,7 @@ export const ws = {
 // export const startFrameTest = 116230;
 export const startFrameTest = 47268;
 export const endFrameTest = 47416;
-export const defaultVCapBeginFrame = IS_DEV ? startFrameTest : 0;
+export const defaultVCapBeginFrame = IS_DEV ? 47319 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
