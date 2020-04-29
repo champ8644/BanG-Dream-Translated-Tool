@@ -202,39 +202,78 @@ export default function mainEvent({ vCap, start, end, index }) {
         }
 
         const nameObj = makeNameLabel(mat);
+        if (frame >= 112405 && frame <= 112630) console.log(frame, nameObj);
         if (nameObj.status && refractory.star === 0) {
           if (isNewDialog(nameObj.dialog, prevDialog)) {
-            if (refractory.name) data.name[data.name.length - 1].end = frame;
-            else
+            if (refractory.name) {
+              console.log(1.1);
+              data.name[data.name.length - 1].end = frame;
+            } else {
+              console.log(1.2);
+
               activeWorking = {
                 ...activeWorking,
                 nameObj: true,
                 notEmpty: true
               };
+            }
             data.name.push({
               begin: frame,
               actor: findActorID(nameObj.actor, frame, nameActor)
             });
             currentActor = nameObj.actorStar;
-          } else
+          } else {
+            console.log(2);
             activeWorking = {
               ...activeWorking,
               nameObj: true,
               notEmpty: true
             };
+          }
           refractory.name = true;
           prevDialog = nameObj.dialog;
+          console.log('new dialog at', frame);
         } else if (refractory.name) {
           // vCap.showMatInCanvas(nameObj.actorStar);
           const starMatched = starMatching(mat, currentActor);
+          console.log('starMatched: ', starMatched);
+          console.log('refractory: ', { ...refractory });
+          console.log('nameObj: ', nameObj);
           if (starMatched) {
-            if (
-              starMatched.x === 0 &&
-              starMatched.y === 0 &&
-              refractory.star > 0
-            ) {
-              if (!nameObj.status) refractory.star--;
-              else if (isNewDialog(nameObj.dialog, prevDialog)) {
+            if (starMatched.x === 0 && starMatched.y === 0) {
+              if (refractory.star) {
+                if (!nameObj.status) {
+                  console.log(3.111, 'สั่นปลอม + เคยมีสั่น + ไม่เจอactor');
+                  refractory.star--;
+                } else if (isNewDialog(nameObj.dialog, prevDialog)) {
+                  console.log(
+                    3.112,
+                    'สั่นปลอม + เคยมีสั่น + เจอactor + เป็นรูปใหม่'
+                  );
+                  data.name[data.name.length - 1].end = frame;
+                  data.name.push({
+                    begin: frame,
+                    actor: findActorID(nameObj.actor, frame, nameActor)
+                  });
+                  currentActor = nameObj.actorStar;
+                  refractory.star = 0;
+                  prevDialog = nameObj.dialog;
+                  console.log('new dialog at', frame);
+                } else {
+                  console.log(
+                    3.113,
+                    'สั่นปลอม + เคยมีสั่น + เจอactor + เป็นรูปเก่า'
+                  );
+                  refractory.star--;
+                }
+              } else if (!nameObj.status) {
+                console.log(3.121, 'สั่นปลอม + ไม่เคยมีสั่น + ไม่เจอactor');
+                refractory.star--;
+              } else if (isNewDialog(nameObj.dialog, prevDialog)) {
+                console.log(
+                  3.122,
+                  'สั่นปลอม + ไม่เคยมีสั่น + เจอactor + เป็นรูปเก่า'
+                );
                 data.name[data.name.length - 1].end = frame;
                 data.name.push({
                   begin: frame,
@@ -243,8 +282,18 @@ export default function mainEvent({ vCap, start, end, index }) {
                 currentActor = nameObj.actorStar;
                 refractory.star = 0;
                 prevDialog = nameObj.dialog;
-              } else refractory.star--;
-            } else refractory.star = 10;
+                console.log('new dialog at', frame);
+              } else {
+                console.log(
+                  3.123,
+                  'สั่นปลอม + ไม่เคยมีสั่น + เจอactor + เป็นรูปเก่า'
+                );
+                refractory.star--;
+              }
+            } else {
+              console.log(3.2, 'สั่นจริง');
+              refractory.star = 10;
+            }
             activeWorking = {
               ...activeWorking,
               nameObj: true,
@@ -268,6 +317,7 @@ export default function mainEvent({ vCap, start, end, index }) {
             // }
             // prevDialog = nameObj.dialog;
           } else {
+            console.log(4);
             data.name[data.name.length - 1].end = frame;
             // prevDialog = null;
             //

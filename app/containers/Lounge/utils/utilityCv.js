@@ -2,6 +2,10 @@ import { black, thickness } from '../constants';
 
 import cv from 'opencv4nodejs';
 
+export function mat2Rect(x, y, mat) {
+  return new cv.Rect(x, y, mat.cols, mat.rows);
+}
+
 export function makeGray(mat) {
   if (mat.channels === 1) return mat;
   return mat.cvtColor(cv.COLOR_BGR2GRAY);
@@ -12,16 +16,28 @@ export function makeBGR(mat) {
   return mat.cvtColor(cv.COLOR_GRAY2BGR);
 }
 
-export function paintMat(mat, draw, rect, color = black, offsetY = 0) {
+export function paintMat(mat, draw, rect, color = black, offsetAll) {
+  let offsetX = 0;
+  let offsetY = 0;
+  if (Number.isInteger(offsetAll)) {
+    offsetY = offsetAll;
+  } else if (Array.isArray(offsetAll)) {
+    [offsetX, offsetY] = offsetAll;
+  }
   const exe = (frame, offset) => {
     const gray = makeGray(frame);
     const bgr = makeBGR(frame);
-    const _rect = new cv.Rect(rect.x, rect.y - offset, rect.width, rect.height);
+    const _rect = new cv.Rect(
+      rect.x + offset.x,
+      rect.y + offset.y,
+      rect.width,
+      rect.height
+    );
     bgr.copyTo(mat.getRegion(_rect));
     mat.drawRectangle(_rect, color, thickness);
     mat.putText(
       `${gray.countNonZero()}`,
-      new cv.Point2(_rect.x + 600, _rect.y - 50),
+      new cv.Point2(_rect.x + 600 + offset.x, _rect.y - 50 + offset.y),
       cv.FONT_HERSHEY_COMPLEX,
       2,
       color || black,
@@ -31,9 +47,12 @@ export function paintMat(mat, draw, rect, color = black, offsetY = 0) {
   };
   if (Array.isArray(draw))
     draw.forEach((frame, idx) =>
-      exe(frame, Math.round((idx - draw.length / 2) * rect.height) + offsetY)
+      exe(frame, {
+        x: offsetX,
+        y: Math.round((idx - draw.length / 2) * rect.height) + offsetY
+      })
     );
-  else exe(draw, offsetY);
+  else exe(draw, { x: offsetX, y: offsetY });
 }
 
 const getHistAxis = channel => [

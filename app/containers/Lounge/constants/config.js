@@ -37,14 +37,15 @@ export const radioObj = IS_DEV
       // 'HSVFinder',
       // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
-      'nameLabelGenerator'
+      'nameLabelGenerator',
+      'starMatching'
       // 'titleLabelGenerator',
       // 'fullDialogGenerator'
     ]
   : [];
 
-export const defaultOverlayMode = IS_DEV ? 'nameLabelGenerator' : 'none';
-export const isAutoOpen = false; // IS_DEV;
+export const defaultOverlayMode = IS_DEV ? 'starMatching' : 'none';
+export const isAutoOpen = IS_DEV; // IS_DEV;
 export const autoOpenFileName =
   'E:\\Bandori\\Events\\EVENT_023หน้ากากแก้ว_Pastel pallet Play act [DE99576F]_2_190151.mp4';
 
@@ -116,9 +117,9 @@ export const ws = {
 // export const startFrameTest = 116230;
 // export const startFrameTest = 106848;
 // export const endFrameTest = 106969;
-export const startFrameTest = 20649;
-export const endFrameTest = 21297;
-export const defaultVCapBeginFrame = IS_DEV ? 21000 : 0;
+export const startFrameTest = 111909;
+export const endFrameTest = 112529;
+export const defaultVCapBeginFrame = IS_DEV ? 111909 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
