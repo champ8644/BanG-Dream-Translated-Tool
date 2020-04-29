@@ -1,4 +1,3 @@
-import { adaptiveThreshold, thresholdOtsu } from '../utils/thresholdCv';
 import {
   color,
   nameLabelCrop,
@@ -11,10 +10,11 @@ import {
   threshPercentDiff,
   threshStarMatching
 } from '../constants';
-import { mat2Rect, paintMat } from '../utils/utilityCv';
+import { mat2Rect, paintMat, writeMat } from '../utils/utilityCv';
 
 import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
+import { thresholdOtsu } from '../utils/thresholdCv';
 
 const { val, sat, hue } = nameLabelThreshold;
 const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
@@ -59,11 +59,10 @@ const rectInnerNameLabel = new cv.Rect(
 );
 
 export default function starMatching(mat, vCap) {
-  let actor;
-  if (!vCap.prevMat.empty) {
-    const { prevMat } = vCap;
-    actor = thresholdOtsu(prevMat.getRegion(rectInnerNameLabel), null);
-  }
+  let prevMat;
+  if (!vCap.prevMat.empty) ({ prevMat } = vCap);
+  else prevMat = mat;
+  const actor = thresholdOtsu(prevMat.getRegion(rectInnerNameLabel), null);
 
   const threshMat = mat
     .getRegion(rectNameLabelStarCrop)
@@ -78,97 +77,91 @@ export default function starMatching(mat, vCap) {
       y: 0
     };
   }
-  const arr = [
-    cv.TM_SQDIFF,
-    cv.TM_SQDIFF_NORMED,
-    cv.TM_CCORR,
-    cv.TM_CCORR_NORMED,
-    cv.TM_CCOEFF,
-    cv.TM_CCOEFF_NORMED
-  ];
-  const arrColor = [
-    color.red,
-    color.blue,
-    color.green,
-    color.yellow,
-    color.cyan,
-    color.purple
-  ];
+  // const arr = [
+  //   cv.TM_SQDIFF,
+  //   cv.TM_SQDIFF_NORMED,
+  //   cv.TM_CCORR,
+  //   cv.TM_CCORR_NORMED,
+  //   cv.TM_CCOEFF,
+  //   cv.TM_CCOEFF_NORMED
+  // ];
+  // const arrColor = [
+  //   color.red,
+  //   color.blue,
+  //   color.green,
+  //   color.yellow,
+  //   color.cyan,
+  //   color.purple
+  // ];
   // const arrValid = [1, 1, 1, 1, 1, 1];
-  const i = 3;
+  // const i = 3;
   // for (let i = 0; i < 6; i++) {
   // if (arrValid[i]) {
   const roiRangeTest = mat
     .getRegion(nameLabelStarRegion)
     .cvtColor(cv.COLOR_BGR2HSV)
-    .inRange(lowerColorBounds, upperColorBounds);
-  const roiRangeTest2 = thresholdOtsu(mat.getRegion(nameLabelStarRegion), null);
-  const roiRangeTest3 = adaptiveThreshold(mat.getRegion(nameLabelStarRegion));
-  console.log('roiRangeTest3: ', roiRangeTest3, roiRangeTest3.type);
+    .inRange(lowerColorBounds, upperColorBounds)
+    .bitwiseNot();
+  // const roiRangeTest = thresholdOtsu(mat.getRegion(nameLabelStarRegion), null);
   // .normalize(0, 1, cv.NORM_MINMAX, -1)
-  const getMatched = roiRangeTest.matchTemplate(CaptureNameLabelStar, arr[i]);
-  console.log('getMatched: ', getMatched, getMatched.type);
+  const getMatched = roiRangeTest.matchTemplate(
+    actor,
+    cv.TM_CCORR_NORMED,
+    actor
+  );
   const normGetMatched = getMatched.convertTo(cv.CV_8UC1, 255, 0);
-  console.log('normGetMatched: ', normGetMatched, normGetMatched.type);
 
-  const { minLoc, maxLoc, maxVal, minVal } = getMatched.minMaxLoc();
+  const matchProps = getMatched.minMaxLoc();
+  const { maxLoc, maxVal } = matchProps;
 
-  const matchLoc =
-    arr[i] === cv.TM_SQDIFF || arr[i] === cv.TM_SQDIFF_NORMED ? minLoc : maxLoc;
-  const matchVal =
-    arr[i] === cv.TM_SQDIFF || arr[i] === cv.TM_SQDIFF_NORMED ? minVal : maxVal;
+  // const matchLoc =
+  //   arr[i] === cv.TM_SQDIFF || arr[i] === cv.TM_SQDIFF_NORMED ? minLoc : maxLoc;
+  // const matchVal =
+  //   arr[i] === cv.TM_SQDIFF || arr[i] === cv.TM_SQDIFF_NORMED ? minVal : maxVal;
   // matchLoc.x += roiX[0];
   // matchLoc.y += roiY[0];
-  const getStar = new cv.Rect(
-    maxLoc.x + roiX[0],
-    maxLoc.y + roiY[0],
-    CaptureNameLabelStar.cols,
-    CaptureNameLabelStar.rows
-  );
-  // const getRawStar = mat
-  //   .getRegion(getStar)
-  //   .cvtColor(cv.COLOR_BGR2HSV)
-  //   .inRange(lowerColorBounds, upperColorBounds)
-  //   .bitwiseXor(threshStar);
-  // const percentDiff2 = (getRawStar.countNonZero() / countStar) * 100;
+
   // eslint-disable-next-line no-console
   console.log('diff', {
-    // percent: percentDiff2,
-    val: matchVal
+    x: maxLoc.x + roiX[0] - innerX[0],
+    y: maxLoc.y + roiY[0] - innerY[0]
   });
-  if (matchVal > threshStarMatching) {
-    // eslint-disable-next-line no-console
-    console.log('diff', {
-      x: matchLoc.x + roiX[0] - rectX[0],
-      y: matchLoc.y + roiY[0] - rectY[0]
-    });
-    mat.drawRectangle(getStar, arrColor[i], thickness);
-    //   }
-    // }
-  }
+  // console.log('max', { x: maxLoc.x, y: maxLoc.y });
+  // mat.drawRectangle(getStar, arrColor[i], thickness);
+  //   }
+  // }
 
-  const matchRect = mat2Rect(
+  const normRect = mat2Rect(
     nameLabelStarRegion.x,
     nameLabelStarRegion.y,
     normGetMatched
   );
-  console.log('matchRect: ', matchRect);
-  paintMat(mat, normGetMatched, matchRect, color.blue, -matchRect.height);
-  paintMat(mat, roiRangeTest2, nameLabelStarRegion, color.red);
-  paintMat(mat, roiRangeTest2, nameLabelStarRegion, color.red, [
-    nameLabelStarRegion.width,
-    0
-  ]);
-  paintMat(mat, roiRangeTest3, nameLabelStarRegion, color.red, [
-    nameLabelStarRegion.width * 2,
-    0
-  ]);
-  paintMat(mat, roiRangeTest3, nameLabelStarRegion, color.red, [
-    nameLabelStarRegion.width * 2,
-    0
-  ]);
-  if (actor) {
-    paintMat(mat, actor, rectInnerNameLabel, undefined, 200);
+  paintMat(mat, roiRangeTest, nameLabelStarRegion, color.black);
+  paintMat(
+    mat,
+    normGetMatched,
+    normRect,
+    color.blue,
+    -nameLabelStarRegion.height
+  );
+  if (actor)
+    paintMat(mat, actor, rectInnerNameLabel, color.red, [
+      normRect.width * 2 - 142,
+      -nameLabelStarRegion.height - 32
+    ]);
+  if (maxVal > threshStarMatching) {
+    const diff = {
+      x: maxLoc.x + roiX[0] - innerX[0],
+      y: maxLoc.y + roiY[0] - innerY[0]
+    };
+    const matchRect = new cv.Rect(
+      rectInnerNameLabel.x + diff.x,
+      rectInnerNameLabel.y + diff.y,
+      rectInnerNameLabel.width,
+      rectInnerNameLabel.height
+    );
+    mat.drawRectangle(matchRect, color.yellow, thickness);
+    writeMat(mat, `{${diff.x},${diff.y}}`, [685, 1220], color.purple);
   }
   return mat;
 }

@@ -16,6 +16,22 @@ export function makeBGR(mat) {
   return mat.cvtColor(cv.COLOR_GRAY2BGR);
 }
 
+export function writeMat(mat, text, point, color = black) {
+  let x;
+  let y;
+  if (Array.isArray(point)) [x, y] = point;
+  else ({ x, y } = point);
+  mat.putText(
+    text,
+    new cv.Point2(x, y),
+    cv.FONT_HERSHEY_COMPLEX,
+    2,
+    color,
+    cv.LINE_4,
+    1
+  );
+}
+
 export function paintMat(mat, draw, rect, color = black, offsetAll) {
   let offsetX = 0;
   let offsetY = 0;
@@ -24,6 +40,8 @@ export function paintMat(mat, draw, rect, color = black, offsetAll) {
   } else if (Array.isArray(offsetAll)) {
     [offsetX, offsetY] = offsetAll;
   }
+  if (isNaN(offsetX)) offsetX = 0;
+  if (isNaN(offsetY)) offsetY = 0;
   const exe = (frame, offset) => {
     const gray = makeGray(frame);
     const bgr = makeBGR(frame);
