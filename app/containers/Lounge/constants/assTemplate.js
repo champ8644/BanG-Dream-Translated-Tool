@@ -22,7 +22,7 @@ Style: ข้อความ,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0
 Style: ข้อความสั่น,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,125,100,1200,1
 Style: ชื่อตอน,Layiji MaHaNiYom V1.61,54,&H00524F52,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,7,50,0,0,1
 Style: ชื่อสถานที่,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,2,0,0,673,1
-Style: แก้พื้นหลังชื่อ,Layiji MaHaNiYom V1.61,93,&H00000000,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
+Style: ปรับสีฉาก,Layiji MaHaNiYom V1.61,93,&H00000000,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
 Style: ฉากขาว,Layiji MaHaNiYom V1.61,93,&H00000000,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
 Style: ฉากดำ,Layiji MaHaNiYom V1.61,93,&H00000000,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1
 Style: Credit,Layiji MaHaNiYom V1.61,80,&H00EEDDFF,&H0006067E,&H007733FF,&H00000000,-1,-1,0,0,100,100,0,0,1,12,2,9,0,70,20,1
@@ -43,9 +43,9 @@ Comment: 1,0:00:00.00,0:00:00.00,ฉากดำ,,0,0,0,code line,_, _,fadeIn,fa
 Comment: 1,0:00:00.00,0:00:00.00,ฉากดำ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\an5\\bord0\\shad0\\c&000000&\\fade(!fadeIn!,!fadeOut!)}m 0 0 l 1920 0 l 1920 1440 l 0 1440
 Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,code line,_, _,fadeIn,fadeOut,leftCom,rightCom = string.find(line.actor, "([%d.]*)%p*([%d.]*)%p*([%d.]*)%p*([%d.]*)");
 Comment: 1,0:00:00.00,0:00:00.00,ฉากขาว,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\an5\\bord0\\shad0\\c&FFFFFF&\\fade(!fadeIn!,!fadeOut!)}m 0 0 l 1920 0 l 1920 1440 l 0 1440
-Comment: 1,0:00:00.00,0:00:00.00,แก้พื้นหลังชื่อ,,0,0,0,code line,_, _,color,dir,fade,offset = string.find(line.actor, "([B|W])%p*([%d.]*)%p*([%d.]*)%p*([%d.]*)%p*([%d.]*)"); midTime=(line.end_time+line.start_time)/2
-Comment: 1,0:00:00.00,0:00:00.00,แก้พื้นหลังชื่อ,,0,0,0,code line,function colorized () return color=='B' and '\\\\c&000000&' or '\\\\c&FFFFFF&' end function directionized () if dir=="1" then return '\\\\alpha&HFF&\\\\t(0,'..fade..',\\\\alpha&H00&)' end return '\\\\alpha&H00&\\\\t('..offset..','..fade-(offset)..',\\\\alpha&HFF&)' end function alphaFix() return colorized()..directionized() end
-Comment: 2,0:00:00.00,0:00:00.00,แก้พื้นหลังชื่อ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an7\\bord0\\shad0\\p1\\c&HFFFFFF&\\fscx150\\fscy500\\clip(106,1115,554,1181)\\pos(366.845,1050)!alphaFix()!}m -200 5 l 200 5 200 32 -200 32
+Comment: 1,0:00:00.00,0:00:00.00,ปรับสีฉาก,,0,0,0,code line,_, _,color,dir,fade,offset = string.find(line.actor, "([B|W])%p*([%d.]*)%p*([%d.]*)%p*([%d.]*)%p*([%d.]*)"); midTime=(line.end_time+line.start_time)/2
+Comment: 1,0:00:00.00,0:00:00.00,ปรับสีฉาก,,0,0,0,code line,function colorized () return color=='B' and '\\\\c&000000&' or '\\\\c&FFFFFF&' end function directionized () if dir=="1" then return '\\\\alpha&HFF&\\\\t(0,'..fade..',\\\\alpha&H00&)' end return '\\\\alpha&H00&\\\\t('..offset..','..fade-(offset)..',\\\\alpha&HFF&)' end function alphaFix() return colorized()..directionized() end
+Comment: 2,0:00:00.00,0:00:00.00,ปรับสีฉาก,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an7\\bord0\\shad0\\p1\\c&HFFFFFF&\\fscx150\\fscy500\\clip(106,1115,554,1181)\\pos(366.845,1050)!alphaFix()!}m -200 5 l 200 5 200 32 -200 32
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,name = {}
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,colorBackground = "f8f8f8"
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an7\\bord0\\shad0\\p1\\c&H733CFF&\\fscx150\\fscy500\\clip(106,1115,554,1181)\\pos(366.845,1050)!checkIfEmpty(name[$actor])!}m -200 5 l 200 5 200 32 -200 32

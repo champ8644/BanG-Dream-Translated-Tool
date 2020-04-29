@@ -158,14 +158,14 @@ function bakeShake(item) {
 }
 
 function statusOverlap(a, b) {
-  if (a.begin < b.begin) {
-    if (a.end < b.begin) return -3;
-    if (a.end < b.end) return -2;
-    return -1;
-  }
-  if (a.end < b.end) return 1;
-  if (a.begin < b.end) return 2;
-  return 3;
+  if (a.begin === b.begin && a.end === b.end) return 0;
+  if (a.end <= b.begin) return -3;
+  if (b.end <= a.begin) return 3;
+  if (a.begin < b.begin && a.end < b.end) return -2;
+  if (b.begin < a.begin && b.end < a.end) return 2;
+  if (a.begin <= b.begin && b.end <= a.end) return -1;
+  if (b.begin <= a.begin && a.end <= b.end) return 1;
+  return new Error(NaN);
 }
 
 function isIntersect(a, b) {
@@ -178,8 +178,6 @@ function isIntersect(a, b) {
 export default function writeAss({ data, nameActor, info }) {
   const { path, limitVCap, FPS } = info;
   toMs = frame => (frame * 1000) / FPS;
-  // eslint-disable-next-line no-console
-  console.log('raw data: ', data);
   const stream = fs.createWriteStream(
     `${path.substr(0, path.lastIndexOf('.'))}.ass`,
     {
@@ -212,7 +210,7 @@ export default function writeAss({ data, nameActor, info }) {
           const status = statusOverlap(item, jtem);
           if (isIntersect(status)) {
             if (type === 'name') {
-              if (status === -2 || status === -1) {
+              if (status === -2 || status === -1 || status === 0) {
                 jtem.leftCompensate = true;
                 data.fixName.push({
                   begin: jtem.begin,
@@ -223,7 +221,7 @@ export default function writeAss({ data, nameActor, info }) {
                   offset: 0
                 });
               }
-              if (status === -1 || status === 2) {
+              if (status === -1 || status === 2 || status === 0) {
                 jtem.rightCompensate = true;
                 data.fixName.push({
                   begin: Math.max(item.begin, jtem.fadeOut),
@@ -233,6 +231,33 @@ export default function writeAss({ data, nameActor, info }) {
                   fade: jtem.end - jtem.fadeOut,
                   offset: Math.max(item.begin, jtem.fadeOut) - jtem.fadeOut
                 });
+              }
+              if (status === 1) {
+                const status2 = statusOverlap(item, {
+                  begin: jtem.fadeIn,
+                  end: jtem.fadeOut
+                });
+                if (status2 < 0) {
+                  jtem.leftCompensate = true;
+                  data.fixName.push({
+                    begin: jtem.begin,
+                    end: Math.min(item.end, jtem.fadeIn),
+                    color: typeF[4],
+                    direction: 1,
+                    fade: jtem.fadeIn - jtem.begin,
+                    offset: 0
+                  });
+                } else if (status2 > 1) {
+                  jtem.rightCompensate = true;
+                  data.fixName.push({
+                    begin: Math.max(item.begin, jtem.fadeOut),
+                    end: jtem.end,
+                    color: typeF[4],
+                    direction: 2,
+                    fade: jtem.end - jtem.fadeOut,
+                    offset: Math.max(item.begin, jtem.fadeOut) - jtem.fadeOut
+                  });
+                }
               }
             }
             if (!jtem.overlapped) jtem.overlapped = {};

@@ -44,7 +44,7 @@ export const radioObj = IS_DEV
   : [];
 
 export const defaultOverlayMode = IS_DEV ? 'nameLabelGenerator' : 'none';
-export const isAutoOpen = IS_DEV;
+export const isAutoOpen = false; // IS_DEV;
 export const autoOpenFileName =
   'E:\\Bandori\\Events\\EVENT_023หน้ากากแก้ว_Pastel pallet Play act [DE99576F]_2_190151.mp4';
 
@@ -114,9 +114,11 @@ export const ws = {
 // 112405
 // export const defaultVCapBeginFrame = 115034;
 // export const startFrameTest = 116230;
-export const startFrameTest = 106848;
-export const endFrameTest = 106969;
-export const defaultVCapBeginFrame = IS_DEV ? 106874 : 0;
+// export const startFrameTest = 106848;
+// export const endFrameTest = 106969;
+export const startFrameTest = 20649;
+export const endFrameTest = 21297;
+export const defaultVCapBeginFrame = IS_DEV ? 21000 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
