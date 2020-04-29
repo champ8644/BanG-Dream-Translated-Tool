@@ -103,7 +103,7 @@ function writeBlack({
 function writeFixName({ begin, end, color, direction, fade, offset }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
-  )},ปรับสีฉาก,${color};${direction};${timeMs(fade)};${timeMs(offset)},0,0,0,,
+  )},ปรับสี,${color};${direction};${timeMs(fade)};${timeMs(offset)},0,0,0,,
   `;
 }
 
