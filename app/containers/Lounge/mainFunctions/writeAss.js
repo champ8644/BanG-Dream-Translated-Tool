@@ -100,6 +100,13 @@ function writeBlack({
   `;
 }
 
+function writeFixName({ begin, end, color, direction, fade, offset }) {
+  return `Dialogue: 0,${timestamp(begin)},${timestamp(
+    end
+  )},ปรับสี,${color};${direction};${timeMs(fade)};${timeMs(offset)},0,0,0,,
+  `;
+}
+
 function embrace(arr) {
   return `{${arr.join()}}`;
 }
@@ -149,14 +156,14 @@ function bakeShake(item) {
 }
 
 function statusOverlap(a, b) {
-  if (a.begin < b.begin) {
-    if (a.end < b.begin) return -3;
-    if (a.end < b.end) return -2;
-    return -1;
-  }
-  if (a.end < b.end) return 1;
-  if (a.begin < b.end) return 2;
-  return 3;
+  if (a.begin === b.begin && a.end === b.end) return 0;
+  if (a.end <= b.begin) return -3;
+  if (b.end <= a.begin) return 3;
+  if (a.begin < b.begin && a.end < b.end) return -2;
+  if (b.begin < a.begin && b.end < a.end) return 2;
+  if (a.begin <= b.begin && b.end <= a.end) return -1;
+  if (b.begin <= a.begin && a.end <= b.end) return 1;
+  return new Error(NaN);
 }
 
 function isIntersect(a, b) {
@@ -169,8 +176,6 @@ function isIntersect(a, b) {
 export default function writeAss({ data, nameActor, info }) {
   const { path, limitVCap, FPS } = info;
   toMs = frame => (frame * 1000) / FPS;
-  // eslint-disable-next-line no-console
-  console.log('data: ', data);
   const stream = fs.createWriteStream(
     `${path.substr(0, path.lastIndexOf('.'))}.ass`,
     {
@@ -183,6 +188,7 @@ export default function writeAss({ data, nameActor, info }) {
   const outData = [];
   const shakeArr = [];
   const keys = Object.keys(data);
+  data.fixName = [];
 
   keys.forEach(type => {
     if (data[type]) {
@@ -202,8 +208,55 @@ export default function writeAss({ data, nameActor, info }) {
           const status = statusOverlap(item, jtem);
           if (isIntersect(status)) {
             if (type === 'name') {
-              if (status === -2 || status === -1) jtem.leftCompensate = true;
-              if (status === -1 || status === 2) jtem.rightCompensate = true;
+              if (status === -2 || status === -1 || status === 0) {
+                jtem.leftCompensate = true;
+                data.fixName.push({
+                  begin: jtem.begin,
+                  end: Math.min(item.end, jtem.fadeIn),
+                  color: typeF[4],
+                  direction: 1,
+                  fade: jtem.fadeIn - jtem.begin,
+                  offset: 0
+                });
+              }
+              if (status === -1 || status === 2 || status === 0) {
+                jtem.rightCompensate = true;
+                data.fixName.push({
+                  begin: Math.max(item.begin, jtem.fadeOut),
+                  end: jtem.end,
+                  color: typeF[4],
+                  direction: 2,
+                  fade: jtem.end - jtem.fadeOut,
+                  offset: Math.max(item.begin, jtem.fadeOut) - jtem.fadeOut
+                });
+              }
+              if (status === 1) {
+                const status2 = statusOverlap(item, {
+                  begin: jtem.fadeIn,
+                  end: jtem.fadeOut
+                });
+                if (status2 < 0) {
+                  jtem.leftCompensate = true;
+                  data.fixName.push({
+                    begin: jtem.begin,
+                    end: Math.min(item.end, jtem.fadeIn),
+                    color: typeF[4],
+                    direction: 1,
+                    fade: jtem.fadeIn - jtem.begin,
+                    offset: 0
+                  });
+                } else if (status2 > 1) {
+                  jtem.rightCompensate = true;
+                  data.fixName.push({
+                    begin: Math.max(item.begin, jtem.fadeOut),
+                    end: jtem.end,
+                    color: typeF[4],
+                    direction: 2,
+                    fade: jtem.end - jtem.fadeOut,
+                    offset: Math.max(item.begin, jtem.fadeOut) - jtem.fadeOut
+                  });
+                }
+              }
             }
             if (!jtem.overlapped) jtem.overlapped = {};
             if (!jtem.overlapped[type]) jtem.overlapped[type] = [];
@@ -252,7 +305,9 @@ export default function writeAss({ data, nameActor, info }) {
     });
   });
 
-  keys.forEach(type => {
+  // eslint-disable-next-line no-console
+  console.log('data: ', data);
+  Object.keys(data).forEach(type => {
     for (let j = 0; j < data[type].length; j++) {
       if (!data[type][j].skip) {
         if (type === 'name' && data[type][j].shake) {
@@ -273,10 +328,12 @@ export default function writeAss({ data, nameActor, info }) {
     }
   });
 
+  const isInferiorType = type =>
+    type === 'fadeB' || type === 'fadeW' || type === 'fixName';
+
   outData.sort(
     (a, b) =>
-      (a.type === 'fadeB' || a.type === 'fadeW') -
-        (b.type === 'fadeB' || b.type === 'fadeW') || a.begin - b.begin
+      isInferiorType(a.type) - isInferiorType(b.type) || a.begin - b.begin
   );
   // eslint-disable-next-line no-console
   console.log('outData: ', outData);
@@ -304,6 +361,9 @@ export default function writeAss({ data, nameActor, info }) {
           break;
         case 'fadeW':
           stream.write(writeWhite(item));
+          break;
+        case 'fixName':
+          stream.write(writeFixName(item));
           break;
         default:
       }

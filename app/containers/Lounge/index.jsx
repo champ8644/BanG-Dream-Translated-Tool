@@ -3,7 +3,13 @@
 import * as actions from './actions';
 
 import React, { Component } from 'react';
-import { defaultVCapBeginFrame, radioObj, ws } from './constants/config';
+import {
+  autoOpenFileName,
+  defaultVCapBeginFrame,
+  isAutoOpen,
+  radioObj,
+  ws
+} from './constants/config';
 import {
   makeCloseConvertingDialog,
   makeCurrentFrame,
@@ -170,7 +176,8 @@ class Lounge extends Component {
       updateLinear,
       beginLinear,
       finishLinear,
-      cancelLinear
+      cancelLinear,
+      openFile
     } = this.props;
     sendCanvas(this.canvas);
     ipcRenderer.on('message-from-worker', (e, arg) => {
@@ -191,11 +198,14 @@ class Lounge extends Component {
         default:
       }
     });
+    if (isAutoOpen) openFile(autoOpenFileName);
   }
 
   componentDidUpdate() {
     const { vCap, willUpdateNextFrame } = this.props;
-    if (willUpdateNextFrame) vCap.show(defaultVCapBeginFrame);
+    if (willUpdateNextFrame) {
+      vCap.show(defaultVCapBeginFrame);
+    }
   }
 
   render() {
@@ -293,7 +303,7 @@ class Lounge extends Component {
         {IS_DEV && (
           <Button
             className={clsx(classes.btn, classes.marginLeft)}
-            onClick={openFile}
+            onClick={() => openFile()}
           >
             Open file
           </Button>
@@ -462,7 +472,9 @@ class Lounge extends Component {
                       color='secondary'
                       variant='outlined'
                       clickable
-                      onClick={() => handleOpenDialog('frame')}
+                      onClick={() =>
+                        handleOpenDialog('frame', formatNumber(frame))
+                      }
                     />
                   </Tooltip>
                   <Tooltip title='Go To selected time' arrow>
@@ -475,7 +487,7 @@ class Lounge extends Component {
                       variant='outlined'
                       color='primary'
                       clickable
-                      onClick={() => handleOpenDialog('ms')}
+                      onClick={() => handleOpenDialog('ms', formatNumber(ms))}
                     />
                   </Tooltip>
                   <Chip

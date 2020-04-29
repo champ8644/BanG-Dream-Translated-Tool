@@ -1,5 +1,32 @@
 import { IS_DEV } from '../../../constants/env';
 
+export const fileNames = [
+  'BGRFinder.js',
+  'contourFinder.js',
+  'GRAYFinder.js',
+  'HSVFinder.js',
+  'index.js',
+  'meanClass.js',
+  'meanFinder.js',
+  'maxFinder.js',
+  'nameLabelGenerator.js',
+  'nameLabelTemplater.js',
+  'placeFinder.js',
+  'placeLabelGenerator.js',
+  'placeLabelTemplater.js',
+  'placeNameFinder.js',
+  'scopeFinder.js',
+  'starMatching.js',
+  'starTemplater.js',
+  'subtitleFinder.js',
+  'titleFinder.js',
+  'titleLabelGenerator.js',
+  'titleLabelTemplater.js',
+  'titleLineWidthFinder.js',
+  'fullDialogGenerator.js',
+  'findTrueTitleSpline.js'
+];
+
 export const radioObj = IS_DEV
   ? [
       'none',
@@ -8,14 +35,19 @@ export const radioObj = IS_DEV
       // 'GRAYFinder',
       // 'BGRFinder',
       // 'HSVFinder',
+      // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
       'nameLabelGenerator',
+      'starMatching'
       // 'titleLabelGenerator',
-      'fullDialogGenerator'
+      // 'fullDialogGenerator'
     ]
   : [];
 
-export const defaultOverlayMode = IS_DEV ? 'nameLabelGenerator' : 'none';
+export const defaultOverlayMode = IS_DEV ? 'starMatching' : 'none';
+export const isAutoOpen = IS_DEV; // IS_DEV;
+export const autoOpenFileName =
+  'E:\\Bandori\\Events\\EVENT_023หน้ากากแก้ว_Pastel pallet Play act [DE99576F]_2_190151.mp4';
 
 export const sliderObjSelector = {
   BGRFinder: {
@@ -48,7 +80,7 @@ export const sliderObjSelector = {
     commit: true
   },
   fullDialogGenerator: {
-    slider: [{ name: 'thresh', max: 255 }, { name: 'blur', max: 10 }],
+    slider: [{ name: 'thresh', max: 255 }, { name: 'blur', max: 30 }],
     commit: false
   }
 };
@@ -65,8 +97,8 @@ export const defaultValueSlider = {
   innerX: [0, 1920],
   outerY: [0, 1440],
   innerY: [0, 1440],
-  thresh: [0, 255],
-  blur: 0
+  thresh: [20, 255],
+  blur: 5
 };
 
 export const ws = {
@@ -82,10 +114,12 @@ export const ws = {
 // export const endVCap = 89150;
 // 112405
 // export const defaultVCapBeginFrame = 115034;
-export const defaultVCapBeginFrame = IS_DEV ? 114900 : 0;
-export const startFrameTest = 114900;
 // export const startFrameTest = 116230;
-export const endFrameTest = 115300;
+// export const startFrameTest = 106848;
+// export const endFrameTest = 106969;
+export const startFrameTest = 111909;
+export const endFrameTest = 112529;
+export const defaultVCapBeginFrame = IS_DEV ? 111909 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

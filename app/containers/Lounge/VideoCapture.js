@@ -209,8 +209,10 @@ export default class VideoCapture {
   }
 
   locatedClicked(x, y) {
-    const mat = this.prevMat.copy();
+    let mat = this.prevMat.copy();
     if (mat.empty) return;
+    if (this.postProcessor) mat = this.postProcessor(mat, this);
+    if (mat.channels === 1) mat = mat.cvtColor(cv.COLOR_GRAY2BGR);
     const matAtRaw = mat.atRaw(y, x);
     mat.drawCircle(new cv.Point(x, y), 5, green, 10, cv.FILLED);
     this.showMatInCanvas(mat);

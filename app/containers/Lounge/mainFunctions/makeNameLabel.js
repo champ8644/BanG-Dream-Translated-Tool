@@ -10,7 +10,7 @@ import {
 import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 import subtitleFinder from './subtitleFinder';
-import thresholdOtsu from './thresholdOtsu';
+import { thresholdOtsu } from '../utils/thresholdCv';
 
 let CaptureNameLabel;
 try {
@@ -31,7 +31,7 @@ const _rectOuterNameLabel = new cv.Rect(
   outerX[1] - outerX[0],
   outerY[1] - outerY[0]
 );
-const rectNameLabel = new cv.Rect(
+const rectInnerNameLabel = new cv.Rect(
   innerX[0] - outerX[0],
   innerY[0] - outerY[0],
   innerX[1] - innerX[0],
@@ -50,17 +50,14 @@ const upperColorBounds = new cv.Vec(hue[1], sat[1], val[1]);
 
 export default function makeNameLabel(mat, starMove) {
   let rectOuterNameLabel;
-  if (starMove) {
+  if (starMove)
     rectOuterNameLabel = new cv.Rect(
       _rectOuterNameLabel.x + starMove.x,
       _rectOuterNameLabel.y + starMove.y,
       _rectOuterNameLabel.width,
       _rectOuterNameLabel.height
     );
-  } else {
-    rectOuterNameLabel = _rectOuterNameLabel;
-  }
-
+  else rectOuterNameLabel = _rectOuterNameLabel;
   const scopeMat = mat.getRegion(rectOuterNameLabel);
   const threshMat = scopeMat
     .cvtColor(cv.COLOR_BGR2HSV)
@@ -71,15 +68,14 @@ export default function makeNameLabel(mat, starMove) {
   let actorStar;
   let dialog = null;
   if (percentDiff < threshPercentDiff) {
-    actor = thresholdOtsu(scopeMat.getRegion(rectNameLabel), null);
+    actor = thresholdOtsu(scopeMat.getRegion(rectInnerNameLabel), null);
     actorStar = threshMat.getRegion(rectNameLabelStarCropRelative);
     dialog = subtitleFinder(mat);
   }
   return {
     percentDiff,
     status: percentDiff < threshPercentDiff,
-    actor,
-    actorStar,
+    currentActor: { actor, actorStar },
     dialog,
     threshMat,
     masked

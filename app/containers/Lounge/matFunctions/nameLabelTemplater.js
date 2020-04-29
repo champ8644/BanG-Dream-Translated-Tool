@@ -10,8 +10,8 @@ import {
 
 import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
-import { paintMat } from './utility';
-import thresholdOtsu from '../mainFunctions/thresholdOtsu';
+import { paintMat } from '../utils/utilityCv';
+import { thresholdOtsu } from '../utils/thresholdCv';
 
 const { innerX, outerX, innerY, outerY } = nameLabelCrop;
 const maskRect = new cv.Mat(
