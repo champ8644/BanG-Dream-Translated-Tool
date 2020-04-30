@@ -14,6 +14,7 @@ import { mat2Rect, paintMat, writeMat } from '../utils/utilityCv';
 
 import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
+import { formatNumber } from '../constants/function';
 import { thresholdOtsu } from '../utils/thresholdCv';
 
 const { val, sat, hue } = nameLabelThreshold;
@@ -102,10 +103,12 @@ export default function starMatching(mat, vCap) {
     .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds)
     .bitwiseNot();
+  const roiEdges = roiRangeTest.canny(0, 255, 7);
+  const actorEdges = actor.canny(0, 255, 7);
   // const roiRangeTest = thresholdOtsu(mat.getRegion(nameLabelStarRegion), null);
   // .normalize(0, 1, cv.NORM_MINMAX, -1)
-  const getMatched = roiRangeTest.matchTemplate(
-    actor,
+  const getMatched = roiEdges.matchTemplate(
+    actorEdges,
     cv.TM_CCORR_NORMED,
     actor
   );
@@ -136,7 +139,7 @@ export default function starMatching(mat, vCap) {
     nameLabelStarRegion.y,
     normGetMatched
   );
-  paintMat(mat, roiRangeTest, nameLabelStarRegion, color.black);
+  paintMat(mat, roiEdges, nameLabelStarRegion, color.black);
   paintMat(
     mat,
     normGetMatched,
@@ -149,6 +152,8 @@ export default function starMatching(mat, vCap) {
       normRect.width * 2 - 142,
       -nameLabelStarRegion.height - 32
     ]);
+  // eslint-disable-next-line no-console
+  console.log({ maxVal, maxLoc, threshStarMatching });
   if (maxVal > threshStarMatching) {
     const diff = {
       x: maxLoc.x + roiX[0] - innerX[0],
@@ -162,6 +167,7 @@ export default function starMatching(mat, vCap) {
     );
     mat.drawRectangle(matchRect, color.yellow, thickness);
     writeMat(mat, `{${diff.x},${diff.y}}`, [685, 1220], color.purple);
+    writeMat(mat, `{${formatNumber(maxVal)}}`, [994, 1203], color.blue);
   }
   return mat;
 }

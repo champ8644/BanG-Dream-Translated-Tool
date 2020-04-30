@@ -50,6 +50,10 @@ export const autoOpenFileName =
   'E:\\Bandori\\Events\\EVENT_023หน้ากากแก้ว_Pastel pallet Play act [DE99576F]_2_190151.mp4';
 
 export const sliderObjSelector = {
+  starMatching: {
+    slider: [{ name: 'aperture', max: 99 }],
+    commit: false
+  },
   BGRFinder: {
     slider: [
       { name: 'red', max: 255 },
@@ -98,6 +102,7 @@ export const defaultValueSlider = {
   outerY: [0, 1440],
   innerY: [0, 1440],
   thresh: [20, 255],
+  aperture: 3,
   blur: 5
 };
 
@@ -118,7 +123,7 @@ export const ws = {
 // export const startFrameTest = 106848;
 // export const endFrameTest = 106969;
 export const startFrameTest = 111909;
-export const endFrameTest = 112529;
+export const endFrameTest = 113269;
 export const defaultVCapBeginFrame = IS_DEV ? 111909 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
