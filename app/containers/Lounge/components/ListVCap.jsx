@@ -60,7 +60,7 @@ function ListVCap(props) {
     ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     setTimeout(() => {
       vCap
-        .asyncRead(Math.round(vCap.length / 4))
+        .asyncNonWhiteRead(Math.round(vCap.length / 4))
         .then(() => setLoading(false))
         .catch(() => setLoading(false));
     }, 0);

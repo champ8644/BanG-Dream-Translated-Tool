@@ -148,7 +148,7 @@ export default function starMatching(mat, vCap) {
     -nameLabelStarRegion.height
   );
   if (actor)
-    paintMat(mat, actor, rectInnerNameLabel, color.red, [
+    paintMat(mat, actorEdges, rectInnerNameLabel, color.red, [
       normRect.width * 2 - 142,
       -nameLabelStarRegion.height - 32
     ]);
@@ -167,7 +167,7 @@ export default function starMatching(mat, vCap) {
     );
     mat.drawRectangle(matchRect, color.yellow, thickness);
     writeMat(mat, `{${diff.x},${diff.y}}`, [685, 1220], color.purple);
-    writeMat(mat, `{${formatNumber(maxVal)}}`, [994, 1203], color.blue);
+    writeMat(mat, `[${formatNumber(maxVal)}]`, [994, 1220], color.blue);
   }
   return mat;
 }

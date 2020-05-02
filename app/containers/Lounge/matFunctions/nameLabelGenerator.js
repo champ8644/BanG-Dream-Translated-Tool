@@ -6,12 +6,12 @@ import {
   red,
   subtitleFifthCrop,
   subtitlePartialCrop,
-  thickness,
   yellow
 } from '../constants';
 
 import cv from 'opencv4nodejs';
 import makeNameLabel from '../mainFunctions/makeNameLabel';
+import { paintMat } from '../utils/utilityCv';
 import subtitleFinder from './subtitleFinder';
 
 const { innerX, innerY } = nameLabelCrop;
@@ -53,22 +53,13 @@ const diffSubtitleRect2 = new cv.Rect(
   rectX[1] - rectX[0],
   rectY[1] - rectY[0]
 );
-function paintMat(mat, draw, rect, color, offsetY = 0) {
-  draw.cvtColor(cv.COLOR_GRAY2BGR).copyTo(mat.getRegion(rect));
-  mat.drawRectangle(rect, color, thickness);
-  mat.putText(
-    `${draw.countNonZero()}`,
-    new cv.Point2(rect.x + rect.width + 50, rect.y + 50 + offsetY),
-    cv.FONT_HERSHEY_COMPLEX,
-    2,
-    color,
-    cv.LINE_4,
-    1
-  );
-}
 
 export default function nameLabelGenerator(mat, vCap) {
-  const { status, actor, percentDiff } = makeNameLabel(mat);
+  const {
+    status,
+    currentActor: { actor },
+    percentDiff
+  } = makeNameLabel(mat);
   // eslint-disable-next-line no-console
   console.log('percentDiff: ', percentDiff);
   if (status) {
