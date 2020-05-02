@@ -76,17 +76,21 @@ class Meaning {
 
 function trimPayload(payload) {
   const {
-    frame
-    // placeObj,
-    // titleObj,
-    // nameObj,
-    // minMaxObj,
-    // // mat,
-    // starMatched,
-    // activeWorking
+    frame,
+    placeObj,
+    titleObj,
+    nameObj,
+    minMaxObj,
+    starMatched
   } = payload;
+  const { isWhite, isBlack } = minMaxObj;
   return {
-    frame
+    frame,
+    name: nameObj.status,
+    place: placeObj.status,
+    title: titleObj.status,
+    star: starMatched,
+    minMax: { isWhite, isBlack }
   };
 }
 
@@ -151,7 +155,7 @@ function nonBlockingLoop({
       // console.log('update Thumbnail');
       message2UI('update-thumbnail', {
         path,
-        info: trimPayload(payload)
+        info: payload.info
       });
     }
     if (gracefulFinish || i >= limitVCap) finished.call(null, true);
@@ -418,13 +422,15 @@ export default function mainEvent({ vCap, start, end, index }) {
             activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
         }
         return {
-          frame,
           activeWorking,
-          placeObj,
-          titleObj,
-          nameObj,
-          minMaxObj,
-          starMatched
+          info: trimPayload({
+            frame,
+            placeObj,
+            titleObj,
+            nameObj,
+            minMaxObj,
+            starMatched
+          })
         };
       },
       finished: finished => {

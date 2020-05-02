@@ -10,6 +10,13 @@ import {
 import cv from 'opencv4nodejs';
 import mainEvent from './mainFunctions/mainEvent';
 import matFunctions from './matFunctions';
+import {
+  addNameMat,
+  addPlaceMat,
+  addTitleMat,
+  addWhiteMat,
+  addBlackMat
+} from './matFunctions/additive';
 
 export default class VideoCapture {
   constructor({
@@ -120,7 +127,7 @@ export default class VideoCapture {
     }
   }
 
-  getMat(frame, mode = 'frame') {
+  getMat(frame, mode = 'frame', scale = true) {
     if (frame === undefined) {
       if (this.rotate)
         return this.vCap
@@ -131,11 +138,12 @@ export default class VideoCapture {
     }
     const currentFrame = this.getFrame(mode);
     if (frame !== currentFrame) this.setFrame(frame, mode);
-    const readFrame = this.vCap.read();
+    let readFrame = this.vCap.read();
     if (readFrame.empty) return readFrame;
     if (this.rotate)
-      return readFrame.rotate(cv.ROTATE_90_COUNTERCLOCKWISE).rescale(rx);
-    return readFrame.rescale(rx);
+      readFrame = readFrame.rotate(cv.ROTATE_90_COUNTERCLOCKWISE);
+    if (scale) readFrame = readFrame.rescale(rx);
+    return readFrame;
   }
 
   getImageFromFrame(frame, mode = 'frame') {
@@ -284,9 +292,22 @@ export default class VideoCapture {
   }
 
   async updateThumbnail(payload) {
-    const { frame } = payload;
-    const mat = this.getMat(frame);
+    const {
+      frame,
+      name,
+      place,
+      title,
+      star,
+      minMax: { isWhite, isBlack }
+    } = payload;
+    let mat = this.getMat(frame, undefined, false);
     if (mat.empty) return;
+    if (name) mat = addNameMat(mat, star);
+    if (place) mat = addPlaceMat(mat);
+    if (title) mat = addTitleMat(mat);
+    if (isWhite) mat = addWhiteMat(mat);
+    if (isBlack) mat = addBlackMat(mat);
+    mat = mat.rescale(rx);
     this.showMatInCanvas(mat);
   }
 

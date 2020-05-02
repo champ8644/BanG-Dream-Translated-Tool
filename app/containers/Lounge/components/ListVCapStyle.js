@@ -59,7 +59,7 @@ export const styles = theme => ({
   chip: {
     marginLeft: theme.spacing(1)
   },
-  loader: props => {
+  isLoading: props => {
     if (props.vCap && props.vCap.dWidth && props.vCap.dHeight)
       return {
         position: 'absolute',
@@ -68,6 +68,15 @@ export const styles = theme => ({
         zIndex: 10
       };
     return {};
+  },
+  isConverting: {
+    position: 'absolute',
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    zIndex: 10
+  },
+  circularWrapper: {
+    position: 'relative'
   },
   closeIcon: {
     height: '2em'

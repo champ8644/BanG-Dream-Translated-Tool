@@ -68,7 +68,18 @@ function ListVCap(props) {
   return (
     <Card className={classes.root}>
       {isLoading && (
-        <CircularProgress className={classes.loader} disableShrink />
+        <div className={classes.circularWrapper}>
+          <CircularProgress
+            className={classes.isLoading}
+            disableShrink
+            color='secondary'
+          />
+        </div>
+      )}
+      {readyToWork && !cancelWork && !completeWork && (
+        <div className={classes.circularWrapper}>
+          <CircularProgress className={classes.isConverting} size={30} />
+        </div>
       )}
       <div className={classes.flex}>
         <ButtonBase
