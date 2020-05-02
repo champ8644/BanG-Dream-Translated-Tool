@@ -177,7 +177,8 @@ class Lounge extends Component {
       beginLinear,
       finishLinear,
       cancelLinear,
-      openFile
+      openFile,
+      updateThumbnail
     } = this.props;
     sendCanvas(this.canvas);
     ipcRenderer.on('message-from-worker', (e, arg) => {
@@ -188,6 +189,9 @@ class Lounge extends Component {
           break;
         case 'update-progress':
           updateLinear(payload);
+          break;
+        case 'update-thumbnail':
+          updateThumbnail(payload);
           break;
         case 'finish-progress':
           finishLinear(payload);

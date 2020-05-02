@@ -286,6 +286,12 @@ export default class VideoCapture {
     }
   }
 
+  async updateThumbnail(payload) {
+    const { frame } = payload;
+    const mat = this.getFrame(frame);
+    this.showMatInCanvas(mat);
+  }
+
   mainEvent() {
     mainEvent(this);
   }

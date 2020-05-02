@@ -1,4 +1,9 @@
-import { chunkCount, meanLength, meanSmooth } from '../constants/config';
+import {
+  chunkCount,
+  meanLength,
+  meanSmooth,
+  updateThumbnailInterval
+} from '../constants/config';
 import { fadeThreshold, intersectCompensate } from '../constants';
 
 import cv from 'opencv4nodejs';
@@ -69,6 +74,22 @@ class Meaning {
   }
 }
 
+function trimPayload(path, payload) {
+  const {
+    frame
+    // placeObj,
+    // titleObj,
+    // nameObj,
+    // minMaxObj,
+    // // mat,
+    // starMatched,
+    // activeWorking
+  } = payload;
+  return {
+    frame
+  };
+}
+
 let prevDialog;
 let meanClass;
 let data;
@@ -88,6 +109,7 @@ function nonBlockingLoop({
   finished,
   index
 }) {
+  // console.log('hello2');
   // eslint-disable-next-line no-console
   console.log({
     beginFrame,
@@ -101,13 +123,17 @@ function nonBlockingLoop({
   let gracefulFinish = false;
   isLoopValid = true;
   message2UI('begin-progress', { path, index, beginFrame, endFrame });
+  let prevTime = new Date().getTime();
   (function chunk() {
     const end = Math.min(i + chunksize, limitVCap);
-    let activeWorking;
+    let payload;
     for (; i < end; i++) {
       if (!isLoopValid) break;
-      activeWorking = callback.call(null, i);
-      if (i >= endFrame + intersectCompensate && !activeWorking.notEmpty) {
+      payload = callback.call(null, payload);
+      if (
+        i >= endFrame + intersectCompensate &&
+        !payload.activeWorking.notEmpty
+      ) {
         gracefulFinish = true;
         break;
       }
@@ -120,6 +146,15 @@ function nonBlockingLoop({
       beginFrame,
       endFrame
     });
+    const now = new Date().getTime();
+    if (now - prevTime > updateThumbnailInterval) {
+      prevTime = now;
+      // console.log('update Thumbnail');
+      message2UI('update-thumbnail', {
+        path,
+        payload: trimPayload(payload)
+      });
+    }
     if (gracefulFinish || i >= limitVCap) finished.call(null, true);
     else if (!isLoopValid) finished.call(null, false);
     else setTimeout(chunk, 0);
@@ -131,6 +166,7 @@ let currentActor;
 
 export default function mainEvent({ vCap, start, end, index }) {
   return new Promise(resolve => {
+    // console.log('hello');
     prevDialog = null;
     meanClass = new Meaning();
     data = {
@@ -156,20 +192,40 @@ export default function mainEvent({ vCap, start, end, index }) {
       endFrame: end,
       limitVCap: vCap.length,
       path: vCap.path,
+      vCap,
       chunksize: chunkCount,
-      callback: i => {
-        const frame = i;
-        let activeWorking = {};
-        // const ms = (i * 1000) / vCap.FPS;
-        // const frame = vCap.getFrame();
-        // const ms = vCap.getFrame('ms');
+      getPayload: frame => {
         const mat = vCap.getMat(frame);
         if (mat.empty) {
           isLoopValid = false;
           return;
         }
-
+        return {
+          frame,
+          mat,
+          placeObj: makePlaceLabel(mat, refractory.place),
+          titleObj: makeTitleLabel(mat, refractory.title),
+          nameObj: makeNameLabel(mat),
+          minMaxObj: minMaxFinder(mat)
+        };
+      },
+      callback: frame => {
+        const mat = vCap.getMat(frame);
+        if (mat.empty) {
+          isLoopValid = false;
+          return;
+        }
         const placeObj = makePlaceLabel(mat, refractory.place);
+        const titleObj = makeTitleLabel(mat, refractory.title);
+        const nameObj = makeNameLabel(mat);
+        const minMaxObj = minMaxFinder(mat);
+        let starMatched;
+
+        let activeWorking = {};
+        // const ms = (i * 1000) / vCap.FPS;
+        // const frame = vCap.getFrame();
+        // const ms = vCap.getFrame('ms');
+
         if (placeObj.status) {
           if (!refractory.place) {
             data.place.push({ begin: frame });
@@ -185,7 +241,6 @@ export default function mainEvent({ vCap, start, end, index }) {
           refractory.place = false;
         }
 
-        const titleObj = makeTitleLabel(mat, refractory.title);
         if (titleObj.status) {
           if (!refractory.title) {
             data.title.push({ begin: frame, width: titleObj.width });
@@ -201,7 +256,6 @@ export default function mainEvent({ vCap, start, end, index }) {
           refractory.title = false;
         }
 
-        const nameObj = makeNameLabel(mat);
         // if (frame >= 112405 && frame <= 112630) console.log(frame, nameObj);
         if (nameObj.status && refractory.star === 0) {
           if (isNewDialog(nameObj.dialog, prevDialog)) {
@@ -235,7 +289,7 @@ export default function mainEvent({ vCap, start, end, index }) {
           // console.log('new dialog at', frame);
         } else if (refractory.name) {
           // vCap.showMatInCanvas(nameObj.actorStar);
-          const starMatched = starMatching(mat, currentActor);
+          starMatched = starMatching(mat, currentActor);
           // console.log('starMatched: ', starMatched);
           // console.log('refractory: ', { ...refractory });
           // console.log('nameObj: ', nameObj);
@@ -334,7 +388,6 @@ export default function mainEvent({ vCap, start, end, index }) {
           }
         }
 
-        const minMaxObj = minMaxFinder(mat);
         meanClass.push(frame, minMaxObj.mean);
         if (minMaxObj.isBlack) {
           activeWorking = { ...activeWorking, fadeB: true, notEmpty: true };
@@ -381,7 +434,15 @@ export default function mainEvent({ vCap, start, end, index }) {
           } else
             activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
         }
-        return activeWorking;
+        return {
+          frame,
+          activeWorking,
+          placeObj,
+          titleObj,
+          nameObj,
+          minMaxObj,
+          starMatched
+        };
       },
       finished: finished => {
         tmp

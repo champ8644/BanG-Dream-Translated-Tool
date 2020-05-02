@@ -47,7 +47,7 @@ export const radioObj = IS_DEV
 export const defaultOverlayMode = IS_DEV ? 'nameLabelGenerator' : 'none';
 export const isAutoOpen = IS_DEV; // IS_DEV;
 export const autoOpenFileName =
-  '"E:\\Champ\\Downloads\\EVENT_024วิวา_ScreenRecording_04-30-2563 16-20-22 [382D2370]_3_183705.mp4"';
+  'E:\\Champ\\Downloads\\EVENT_024วิวา_ScreenRecording_04-30-2563 16-20-22 [382D2370]_3_183705.mp4';
 
 export const sliderObjSelector = {
   starMatching: {
@@ -128,5 +128,6 @@ export const defaultVCapBeginFrame = IS_DEV ? 37686 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
+export const updateThumbnailInterval = 5000;
 
 export const enabledSnapToFade = false;
