@@ -1,4 +1,11 @@
 import {
+  addBlackMat,
+  addNameMat,
+  addPlaceMat,
+  addTitleMat,
+  addWhiteMat
+} from './matFunctions/additive';
+import {
   blackMaxThreshold,
   green,
   maxHeight,
@@ -10,13 +17,48 @@ import {
 import cv from 'opencv4nodejs';
 import mainEvent from './mainFunctions/mainEvent';
 import matFunctions from './matFunctions';
-import {
-  addNameMat,
-  addPlaceMat,
-  addTitleMat,
-  addWhiteMat,
-  addBlackMat
-} from './matFunctions/additive';
+
+class MaskStoreClass {
+  constructor() {
+    this.data = {};
+    this.rows = 1080;
+    this.cols = 1920;
+  }
+
+  getRect(index, total) {
+    const totalRow = Math.ceil((Math.sqrt(total * 4 + 1) - 1) / 2);
+    const totalCol = Math.ceil(Math.sqrt(total));
+    const idxRow = Math.floor(index / totalCol);
+    const idxCol = index % totalCol;
+    const width = this.cols / totalCol;
+    const height = this.rows / totalRow;
+    const x1 = Math.round(idxCol * width);
+    const x2 = Math.round((idxCol + 1) * width);
+    const y1 = Math.round(idxRow * height);
+    const y2 = Math.round((idxRow + 1) * height);
+    return new cv.Rect(x1, y1, x2 - x1, y2 - y1);
+  }
+
+  getMask(index, total) {
+    if (!this.data[index]) this.data[index] = {};
+    // return old one
+    if (this.data[index][total]) return this.data[index][total];
+    // generate a new one
+    const mat = new cv.Mat(this.rows, this.cols, cv.CV_8UC3, [0, 0, 0]);
+    mat.drawRectangle(this.getRect(index, total), [255, 255, 255], cv.FILLED);
+    this.data[index][total] = mat;
+    // eslint-disable-next-line no-console
+    console.log('getMask: ', {
+      index,
+      total,
+      rect: this.getRect(index, total),
+      mat
+    });
+    return mat;
+  }
+}
+
+const maskStore = new MaskStoreClass();
 
 export default class VideoCapture {
   constructor({
@@ -298,7 +340,9 @@ export default class VideoCapture {
       place,
       title,
       star,
-      minMax: { isWhite, isBlack }
+      minMax: { isWhite, isBlack },
+      index,
+      process
     } = payload;
     let mat = this.getMat(frame, undefined, false);
     if (mat.empty) return;
@@ -308,7 +352,8 @@ export default class VideoCapture {
     if (isWhite) mat = addWhiteMat(mat);
     if (isBlack) mat = addBlackMat(mat);
     mat = mat.rescale(rx);
-    this.showMatInCanvas(mat);
+    const mask = maskStore.getMask(index, process);
+    this.showMatInCanvas(mat.copy(mask));
   }
 
   mainEvent() {

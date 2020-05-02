@@ -81,7 +81,9 @@ function trimPayload(payload) {
     titleObj,
     nameObj,
     minMaxObj,
-    starMatched
+    starMatched,
+    index,
+    process
   } = payload;
   const { isWhite, isBlack } = minMaxObj;
   return {
@@ -90,7 +92,9 @@ function trimPayload(payload) {
     place: placeObj.status,
     title: titleObj.status,
     star: starMatched,
-    minMax: { isWhite, isBlack }
+    minMax: { isWhite, isBlack },
+    index,
+    process
   };
 }
 
@@ -167,7 +171,7 @@ function nonBlockingLoop({
 let currentActor;
 // let prevFullDialog;
 
-export default function mainEvent({ vCap, start, end, index }) {
+export default function mainEvent({ vCap, start, end, index, process }) {
   return new Promise(resolve => {
     prevDialog = null;
     meanClass = new Meaning();
@@ -429,7 +433,9 @@ export default function mainEvent({ vCap, start, end, index }) {
             titleObj,
             nameObj,
             minMaxObj,
-            starMatched
+            starMatched,
+            index,
+            process
           })
         };
       },
