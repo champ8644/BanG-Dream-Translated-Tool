@@ -3,6 +3,7 @@ import { correctPlaceFadeBlack, skipNonIntersectWhiteLine } from '../constants';
 import assTemplate from '../constants/assTemplate';
 import { enabledSnapToFade } from '../constants/config';
 import fs from 'fs';
+import moment from 'moment';
 
 let toMs;
 
@@ -177,7 +178,9 @@ export default function writeAss({ data, nameActor, info }) {
   const { path, limitVCap, FPS } = info;
   toMs = frame => (frame * 1000) / FPS;
   const stream = fs.createWriteStream(
-    `${path.substr(0, path.lastIndexOf('.'))}.ass`,
+    `${path.substr(0, path.lastIndexOf('.'))} [${moment().format(
+      'YYYY-MM-DD_HH-mm'
+    )}].ass`,
     {
       encoding: 'utf8'
     }

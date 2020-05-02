@@ -98,6 +98,14 @@ export function updateLinear(payload) {
   };
 }
 
+export function updateThumbnail(payload) {
+  return (dispatch, getState) => {
+    const { path, info } = payload;
+    const { vCap } = getState().Lounge.videoDatas[path];
+    vCap.updateThumbnail(info);
+  };
+}
+
 export function beginLinear(payload) {
   return {
     type: actionTypes.BEGIN_LINEAR,

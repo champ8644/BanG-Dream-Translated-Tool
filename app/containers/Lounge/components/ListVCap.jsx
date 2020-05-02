@@ -10,7 +10,6 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CloseIcon from '@material-ui/icons/Close';
-import Fab from '@material-ui/core/Fab';
 import Grow from '@material-ui/core/Grow';
 import IconButton from '@material-ui/core/IconButton';
 import ProgressChipBar from './ProgressChipBar';
@@ -60,7 +59,7 @@ function ListVCap(props) {
     ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     setTimeout(() => {
       vCap
-        .asyncRead(Math.round(vCap.length / 4))
+        .asyncNonWhiteRead(Math.round(vCap.length / 4))
         .then(() => setLoading(false))
         .catch(() => setLoading(false));
     }, 0);
@@ -68,7 +67,18 @@ function ListVCap(props) {
   return (
     <Card className={classes.root}>
       {isLoading && (
-        <CircularProgress className={classes.loader} disableShrink />
+        <div className={classes.circularWrapper}>
+          <CircularProgress
+            className={classes.isLoading}
+            disableShrink
+            color='secondary'
+          />
+        </div>
+      )}
+      {readyToWork && !cancelWork && !completeWork && (
+        <div className={classes.circularWrapper}>
+          <CircularProgress className={classes.isConverting} size={30} />
+        </div>
       )}
       <div className={classes.flex}>
         <ButtonBase
@@ -81,9 +91,11 @@ function ListVCap(props) {
           <span className={classes.imageBackdrop} />
           <span className={classes.imageButtonFAB}>
             <div>
-              <Fab size='medium' disableRipple className={classes.FAB}>
-                <RefreshIcon />
-              </Fab>
+              <div className={classes.FAB}>
+                <span className={classes.childFAB}>
+                  <RefreshIcon />
+                </span>
+              </div>
               <Typography
                 component='h4'
                 variant='h4'

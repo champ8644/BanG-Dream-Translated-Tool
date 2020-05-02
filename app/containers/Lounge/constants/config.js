@@ -44,12 +44,16 @@ export const radioObj = IS_DEV
     ]
   : [];
 
-export const defaultOverlayMode = IS_DEV ? 'starMatching' : 'none';
-export const isAutoOpen = IS_DEV; // IS_DEV;
+export const defaultOverlayMode = IS_DEV ? 'none' : 'none';
+export const isAutoOpen = false; // IS_DEV;
 export const autoOpenFileName =
-  'E:\\Bandori\\Events\\EVENT_023หน้ากากแก้ว_Pastel pallet Play act [DE99576F]_2_190151.mp4';
+  'E:\\Champ\\Downloads\\EVENT_024วิวา_ScreenRecording_04-30-2563 16-20-22 [382D2370]_3_183705.mp4';
 
 export const sliderObjSelector = {
+  starMatching: {
+    slider: [{ name: 'aperture', max: 99 }],
+    commit: false
+  },
   BGRFinder: {
     slider: [
       { name: 'red', max: 255 },
@@ -98,6 +102,7 @@ export const defaultValueSlider = {
   outerY: [0, 1440],
   innerY: [0, 1440],
   thresh: [20, 255],
+  aperture: 3,
   blur: 5
 };
 
@@ -117,11 +122,12 @@ export const ws = {
 // export const startFrameTest = 116230;
 // export const startFrameTest = 106848;
 // export const endFrameTest = 106969;
-export const startFrameTest = 111909;
-export const endFrameTest = 112529;
-export const defaultVCapBeginFrame = IS_DEV ? 111909 : 0;
+export const startFrameTest = 37619;
+export const endFrameTest = 37690;
+export const defaultVCapBeginFrame = IS_DEV ? 0 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
+export const updateThumbnailInterval = 5000;
 
 export const enabledSnapToFade = false;

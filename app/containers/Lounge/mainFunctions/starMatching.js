@@ -27,7 +27,8 @@ export default function starMatching(mat, currentActor) {
     .cvtColor(cv.COLOR_BGR2HSV)
     .inRange(lowerColorBounds, upperColorBounds)
     .bitwiseNot()
-    .matchTemplate(actor, cv.TM_CCORR_NORMED, actor)
+    .canny(0, 255, 7)
+    .matchTemplate(actor.canny(0, 255, 7), cv.TM_CCORR_NORMED, actor)
     .minMaxLoc();
   if (maxVal > threshStarMatching) {
     return {

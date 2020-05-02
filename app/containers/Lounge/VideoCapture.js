@@ -1,8 +1,22 @@
-import { green, maxHeight, maxWidth, rx } from './constants';
+import {
+  blackMaxThreshold,
+  green,
+  maxHeight,
+  maxWidth,
+  rx,
+  whiteMinThreshold
+} from './constants';
 
 import cv from 'opencv4nodejs';
 import mainEvent from './mainFunctions/mainEvent';
 import matFunctions from './matFunctions';
+import {
+  addNameMat,
+  addPlaceMat,
+  addTitleMat,
+  addWhiteMat,
+  addBlackMat
+} from './matFunctions/additive';
 
 export default class VideoCapture {
   constructor({
@@ -15,7 +29,6 @@ export default class VideoCapture {
     maxHeight: _maxHeight = maxHeight
   }) {
     this.vCap = new cv.VideoCapture(path);
-
     this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH) * rx;
     this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT) * rx;
     if (this.width < this.height) {
@@ -37,10 +50,19 @@ export default class VideoCapture {
     this.dHeight = this.height * this.ratio;
     this.path = path;
     this.prevMat = new cv.Mat();
+    this.msLength = this.getMsLength();
     if (canvas) this.canvas = canvas;
     if (updateFrame) this.updateFrame = updateFrame;
     if (colorSlider) this.colorSlider = colorSlider;
     if (modePostProcessor) this.setPostProcessor(modePostProcessor);
+  }
+
+  getMsLength() {
+    const thisFrame = this.frame();
+    this.setFrame(100, 'percent');
+    const msLength = this.ms();
+    this.setFrame(thisFrame);
+    return msLength;
   }
 
   setCanvas(canvasRef) {
@@ -74,6 +96,21 @@ export default class VideoCapture {
     }
   }
 
+  getMaxLength(mode = 'frame') {
+    switch (mode) {
+      case 'frame':
+        return this.length;
+      case 'ms':
+        return this.msLength;
+      case 'percent':
+        return 100;
+      case 'all':
+        return { frame: this.length, ms: this.msLength, percent: 100 };
+      default:
+        return null;
+    }
+  }
+
   setFrame(frame, mode = 'frame') {
     if (this.getFrame(mode) === frame) return;
     switch (mode) {
@@ -90,7 +127,7 @@ export default class VideoCapture {
     }
   }
 
-  getMat(frame, mode = 'frame') {
+  getMat(frame, mode = 'frame', scale = true) {
     if (frame === undefined) {
       if (this.rotate)
         return this.vCap
@@ -101,11 +138,12 @@ export default class VideoCapture {
     }
     const currentFrame = this.getFrame(mode);
     if (frame !== currentFrame) this.setFrame(frame, mode);
-    const readFrame = this.vCap.read();
+    let readFrame = this.vCap.read();
     if (readFrame.empty) return readFrame;
     if (this.rotate)
-      return readFrame.rotate(cv.ROTATE_90_COUNTERCLOCKWISE).rescale(rx);
-    return readFrame.rescale(rx);
+      readFrame = readFrame.rotate(cv.ROTATE_90_COUNTERCLOCKWISE);
+    if (scale) readFrame = readFrame.rescale(rx);
+    return readFrame;
   }
 
   getImageFromFrame(frame, mode = 'frame') {
@@ -138,6 +176,33 @@ export default class VideoCapture {
     );
     this.putImageData(imgData);
     if (this.updateFrame) this.updateFrame();
+  }
+
+  minMaxFinder(mat) {
+    const { maxVal, minVal } = mat.cvtColor(cv.COLOR_BGR2GRAY).minMaxLoc();
+    return {
+      isBlack: maxVal < blackMaxThreshold,
+      isWhite: minVal > whiteMinThreshold
+    };
+  }
+
+  findNonWhiteMat(frame, mode) {
+    const trial = 5;
+    const skip = (this.getMaxLength(mode) - frame) / trial;
+    let mat;
+    for (let i = 0; i < trial; i++) {
+      mat = this.getMat(frame + i * skip, mode);
+      const { isBlack, isWhite } = this.minMaxFinder(mat);
+      if (!isBlack && !isWhite) return mat;
+    }
+    return mat;
+  }
+
+  async asyncNonWhiteRead(frame, mode = 'frame') {
+    const rawMat = this.findNonWhiteMat(frame, mode);
+    const mat = rawMat.copy();
+    if (mat.empty) return;
+    this.showMatInCanvas(mat);
   }
 
   async asyncRead(frame, mode = 'frame') {
@@ -224,6 +289,26 @@ export default class VideoCapture {
       this.colorSlider = { ...this.colorSlider, ...payload };
       this.show();
     }
+  }
+
+  async updateThumbnail(payload) {
+    const {
+      frame,
+      name,
+      place,
+      title,
+      star,
+      minMax: { isWhite, isBlack }
+    } = payload;
+    let mat = this.getMat(frame, undefined, false);
+    if (mat.empty) return;
+    if (name) mat = addNameMat(mat, star);
+    if (place) mat = addPlaceMat(mat);
+    if (title) mat = addTitleMat(mat);
+    if (isWhite) mat = addWhiteMat(mat);
+    if (isBlack) mat = addBlackMat(mat);
+    mat = mat.rescale(rx);
+    this.showMatInCanvas(mat);
   }
 
   mainEvent() {

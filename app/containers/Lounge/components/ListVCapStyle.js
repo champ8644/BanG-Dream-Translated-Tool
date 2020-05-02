@@ -59,7 +59,7 @@ export const styles = theme => ({
   chip: {
     marginLeft: theme.spacing(1)
   },
-  loader: props => {
+  isLoading: props => {
     if (props.vCap && props.vCap.dWidth && props.vCap.dHeight)
       return {
         position: 'absolute',
@@ -68,6 +68,15 @@ export const styles = theme => ({
         zIndex: 10
       };
     return {};
+  },
+  isConverting: {
+    position: 'absolute',
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    zIndex: 10
+  },
+  circularWrapper: {
+    position: 'relative'
   },
   closeIcon: {
     height: '2em'
@@ -124,7 +133,69 @@ export const styles = theme => ({
   },
   basename: props =>
     props.cancelWork ? { color: theme.palette.error.dark } : {},
-  FAB: { marginTop: theme.spacing(1) },
+  FAB: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    WebkitTapHighlightColor: 'transparent',
+    // We disable the focus ring for mouse, touch and keyboard users.
+    outline: 0,
+    border: 0,
+    margin: 0, // Remove the margin in Safari
+    cursor: 'pointer',
+    userSelect: 'none',
+    verticalAlign: 'middle',
+    '-moz-appearance': 'none', // Reset
+    '-webkit-appearance': 'none', // Reset
+    textDecoration: 'none',
+    // So we take precedent over the style of a native <a /> element.
+    '&$disabled': {
+      pointerEvents: 'none', // Disable link interactions
+      cursor: 'default'
+    },
+    '@media print': {
+      colorAdjust: 'exact'
+    },
+    // marginTop: theme.spacing(1),
+    ...theme.typography.button,
+    boxSizing: 'border-box',
+    minHeight: 36,
+    transition: theme.transitions.create(
+      ['background-color', 'box-shadow', 'border'],
+      {
+        duration: theme.transitions.duration.short
+      }
+    ),
+    borderRadius: '50%',
+    padding: 0,
+    minWidth: 0,
+    width: 48,
+    height: 48,
+    boxShadow: theme.shadows[6],
+    '&:active': {
+      boxShadow: theme.shadows[12]
+    },
+    color: theme.palette.getContrastText(theme.palette.grey[300]),
+    backgroundColor: theme.palette.grey[300],
+    '&:hover': {
+      backgroundColor: theme.palette.grey.A100,
+      // Reset on touch devices, it doesn't add specificity
+      '@media (hover: none)': {
+        backgroundColor: theme.palette.grey[300]
+      },
+      '&$disabled': {
+        backgroundColor: theme.palette.action.disabledBackground
+      },
+      textDecoration: 'none'
+    }
+  },
+  childFAB: {
+    width: '100%',
+    display: 'inherit',
+    alignItems: 'inherit',
+    justifyContent: 'inherit'
+  },
   refreshFAB: {
     marginTop: theme.spacing(1),
     color: theme.palette.grey[300],
