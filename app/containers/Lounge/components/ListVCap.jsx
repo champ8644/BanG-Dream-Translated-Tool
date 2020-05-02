@@ -10,7 +10,6 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CloseIcon from '@material-ui/icons/Close';
-import Fab from '@material-ui/core/Fab';
 import Grow from '@material-ui/core/Grow';
 import IconButton from '@material-ui/core/IconButton';
 import ProgressChipBar from './ProgressChipBar';
@@ -92,9 +91,11 @@ function ListVCap(props) {
           <span className={classes.imageBackdrop} />
           <span className={classes.imageButtonFAB}>
             <div>
-              <Fab size='medium' disableRipple className={classes.FAB}>
-                <RefreshIcon />
-              </Fab>
+              <div className={classes.FAB}>
+                <span className={classes.childFAB}>
+                  <RefreshIcon />
+                </span>
+              </div>
               <Typography
                 component='h4'
                 variant='h4'
