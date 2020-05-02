@@ -74,7 +74,7 @@ class Meaning {
   }
 }
 
-function trimPayload(path, payload) {
+function trimPayload(payload) {
   const {
     frame
     // placeObj,
@@ -109,7 +109,6 @@ function nonBlockingLoop({
   finished,
   index
 }) {
-  // console.log('hello2');
   // eslint-disable-next-line no-console
   console.log({
     beginFrame,
@@ -129,7 +128,7 @@ function nonBlockingLoop({
     let payload;
     for (; i < end; i++) {
       if (!isLoopValid) break;
-      payload = callback.call(null, payload);
+      payload = callback.call(null, i);
       if (
         i >= endFrame + intersectCompensate &&
         !payload.activeWorking.notEmpty
@@ -152,7 +151,7 @@ function nonBlockingLoop({
       // console.log('update Thumbnail');
       message2UI('update-thumbnail', {
         path,
-        payload: trimPayload(payload)
+        info: trimPayload(payload)
       });
     }
     if (gracefulFinish || i >= limitVCap) finished.call(null, true);
@@ -166,7 +165,6 @@ let currentActor;
 
 export default function mainEvent({ vCap, start, end, index }) {
   return new Promise(resolve => {
-    // console.log('hello');
     prevDialog = null;
     meanClass = new Meaning();
     data = {
@@ -194,21 +192,6 @@ export default function mainEvent({ vCap, start, end, index }) {
       path: vCap.path,
       vCap,
       chunksize: chunkCount,
-      getPayload: frame => {
-        const mat = vCap.getMat(frame);
-        if (mat.empty) {
-          isLoopValid = false;
-          return;
-        }
-        return {
-          frame,
-          mat,
-          placeObj: makePlaceLabel(mat, refractory.place),
-          titleObj: makeTitleLabel(mat, refractory.title),
-          nameObj: makeNameLabel(mat),
-          minMaxObj: minMaxFinder(mat)
-        };
-      },
       callback: frame => {
         const mat = vCap.getMat(frame);
         if (mat.empty) {

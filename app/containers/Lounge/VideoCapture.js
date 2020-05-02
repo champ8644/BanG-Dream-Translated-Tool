@@ -22,7 +22,6 @@ export default class VideoCapture {
     maxHeight: _maxHeight = maxHeight
   }) {
     this.vCap = new cv.VideoCapture(path);
-
     this.width = this.vCap.get(cv.CAP_PROP_FRAME_WIDTH) * rx;
     this.height = this.vCap.get(cv.CAP_PROP_FRAME_HEIGHT) * rx;
     if (this.width < this.height) {
@@ -193,11 +192,9 @@ export default class VideoCapture {
 
   async asyncNonWhiteRead(frame, mode = 'frame') {
     const rawMat = this.findNonWhiteMat(frame, mode);
-    let mat = rawMat.copy();
+    const mat = rawMat.copy();
     if (mat.empty) return;
-    if (this.postProcessor) mat = this.postProcessor(mat, this);
     this.showMatInCanvas(mat);
-    this.prevMat = rawMat;
   }
 
   async asyncRead(frame, mode = 'frame') {
@@ -288,7 +285,8 @@ export default class VideoCapture {
 
   async updateThumbnail(payload) {
     const { frame } = payload;
-    const mat = this.getFrame(frame);
+    const mat = this.getMat(frame);
+    if (mat.empty) return;
     this.showMatInCanvas(mat);
   }
 

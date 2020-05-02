@@ -100,8 +100,9 @@ export function updateLinear(payload) {
 
 export function updateThumbnail(payload) {
   return (dispatch, getState) => {
-    const { vCap } = getState().Lounge.videoDatas[payload.path];
-    vCap.updateThumbnail(payload);
+    const { path, info } = payload;
+    const { vCap } = getState().Lounge.videoDatas[path];
+    vCap.updateThumbnail(info);
   };
 }
 
