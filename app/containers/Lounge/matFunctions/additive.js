@@ -1,19 +1,20 @@
-import cv from 'opencv4nodejs';
+import { adaptiveThreshold, thresholdOtsu } from '../utils/thresholdCv';
+import {
+  color,
+  nameLabelCrop,
+  placeLabelCrop,
+  subtitleCrop,
+  titleHeader
+} from '../constants';
 import { paintMat, writeMat } from '../utils/utilityCv';
+
+import cv from 'opencv4nodejs';
 import makePlaceLabel from '../mainFunctions/makePlaceLabel';
 import makeTitleLabel from '../mainFunctions/makeTitleLabel';
 import titleLineWidthFinder from './titleLineWidthFinder';
-import {
-  nameLabelCrop,
-  subtitlePartialCrop,
-  color,
-  placeLabelCrop,
-  titleHeader
-} from '../constants';
-import { thresholdOtsu, adaptiveThreshold } from '../utils/thresholdCv';
 
 const { outerX: actX, outerY: actY } = nameLabelCrop;
-const { rectX: subtX, rectY: subtY } = subtitlePartialCrop;
+const { rectX: subtX, rectY: subtY } = subtitleCrop;
 export function addNameMat(mat, star = { x: 0, y: 0 }) {
   const subtitleRect = new cv.Rect(
     subtX[0] + star.x,

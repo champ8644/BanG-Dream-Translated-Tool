@@ -80,17 +80,20 @@ function trimPayload(payload) {
     placeObj,
     titleObj,
     nameObj,
-    minMaxObj,
-    starMatched
+    minMaxObj: { isWhite, isBlack },
+    starMatched,
+    index,
+    process
   } = payload;
-  const { isWhite, isBlack } = minMaxObj;
   return {
     frame,
     name: nameObj.status,
     place: placeObj.status,
     title: titleObj.status,
     star: starMatched,
-    minMax: { isWhite, isBlack }
+    minMax: { isWhite, isBlack },
+    index,
+    process
   };
 }
 
@@ -108,6 +111,7 @@ function nonBlockingLoop({
   endFrame = 1e9,
   limitVCap,
   path,
+  process,
   chunksize,
   callback,
   finished,
@@ -126,7 +130,9 @@ function nonBlockingLoop({
   let gracefulFinish = false;
   isLoopValid = true;
   message2UI('begin-progress', { path, index, beginFrame, endFrame });
-  let prevTime = new Date().getTime();
+  let prevTime =
+    new Date().getTime() + index * (updateThumbnailInterval / process);
+  // console.log('prevTime: ', prevTime);
   (function chunk() {
     const end = Math.min(i + chunksize, limitVCap);
     let payload;
@@ -150,6 +156,7 @@ function nonBlockingLoop({
       endFrame
     });
     const now = new Date().getTime();
+    // console.log('now: ', now, now - prevTime);
     if (now - prevTime > updateThumbnailInterval) {
       prevTime = now;
       // console.log('update Thumbnail');
@@ -167,7 +174,7 @@ function nonBlockingLoop({
 let currentActor;
 // let prevFullDialog;
 
-export default function mainEvent({ vCap, start, end, index }) {
+export default function mainEvent({ vCap, start, end, index, process }) {
   return new Promise(resolve => {
     prevDialog = null;
     meanClass = new Meaning();
@@ -190,6 +197,7 @@ export default function mainEvent({ vCap, start, end, index }) {
     // eslint-disable-line no-console
     nonBlockingLoop({
       index,
+      process,
       beginFrame: start,
       endFrame: end,
       limitVCap: vCap.length,
@@ -429,7 +437,9 @@ export default function mainEvent({ vCap, start, end, index }) {
             titleObj,
             nameObj,
             minMaxObj,
-            starMatched
+            starMatched,
+            index,
+            process
           })
         };
       },

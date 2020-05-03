@@ -268,7 +268,8 @@ class Lounge extends Component {
         completeWork,
         cancelWork,
         showFPS
-      }
+      },
+      testingFunc
     } = this.props;
     return (
       <div className={classes.root}>
@@ -364,6 +365,12 @@ class Lounge extends Component {
                   onClick={() => devQueue({ end: 10000 })}
                 >
                   Start Until 10000 frames
+                </Button>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={testingFunc}
+                >
+                  Testing
                 </Button>
               </>
             )}

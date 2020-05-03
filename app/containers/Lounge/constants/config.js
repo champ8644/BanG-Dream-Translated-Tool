@@ -128,6 +128,6 @@ export const defaultVCapBeginFrame = IS_DEV ? 0 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
-export const updateThumbnailInterval = 5000;
+export const updateThumbnailInterval = 10000;
 
 export const enabledSnapToFade = false;

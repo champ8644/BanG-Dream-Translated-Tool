@@ -20,9 +20,9 @@ function message2UI(command, payload) {
 ipcRenderer.on('stop-events', devalidLoop);
 
 ipcRenderer.on('start-events', async (e, arg) => {
-  const { videoFilePath, start, end, uuid, index } = arg;
+  const { videoFilePath, start, end, uuid, index, process } = arg;
   const vCap = new VideoCapture({ path: videoFilePath });
-  const res = await mainEvent({ vCap, start, end, index });
+  const res = await mainEvent({ vCap, start, end, index, process });
   ipcRenderer.send(uuid, res);
 });
 
