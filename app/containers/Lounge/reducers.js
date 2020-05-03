@@ -243,6 +243,9 @@ export default function Lounge(state = initialState, action) {
       const { videoDatas, numProcess } = state;
       const { path, index, beginFrame, endFrame } = payload;
       let { progressFromWorker } = videoDatas[path];
+      const { vCap } = videoDatas[path];
+
+      vCap.fillBlack();
 
       if (!progressFromWorker) {
         progressFromWorker = { bar: Array(numProcess).fill(null) };
@@ -403,7 +406,9 @@ export default function Lounge(state = initialState, action) {
         ...newWorkingStatus
       };
     }
-    case actionTypes.ON_REFRESH_VCAP_LIST:
+    case actionTypes.ON_REFRESH_VCAP_LIST: {
+      const { vCap } = state.videoDatas[payload];
+      vCap.asyncNonWhiteRead(Math.round(vCap.length / 4));
       return {
         ...state,
         videoDatas: {
@@ -414,6 +419,7 @@ export default function Lounge(state = initialState, action) {
           }
         }
       };
+    }
     case actionTypes.ON_SWITCH_FPS_VCAP_LIST:
       return {
         ...state,

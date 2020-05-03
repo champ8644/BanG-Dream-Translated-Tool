@@ -66,6 +66,13 @@ const actionTypesList = [
 
 export const actionTypes = prefixer(prefix, actionTypesList);
 
+export function testingFunc() {
+  return (dispatch, getState) => {
+    const { vCap } = getState().Lounge;
+    vCap.testingFunc();
+  };
+}
+
 export function devQueue(payload = {}) {
   return (dispatch, getState) => {
     const { videoFilePath, vCap, displayNumProcess } = getState().Lounge;
@@ -103,6 +110,7 @@ export function updateThumbnail(payload) {
     const { path, info } = payload;
     const { vCap } = getState().Lounge.videoDatas[path];
     vCap.updateThumbnail(info);
+    console.log('info: ', info);
   };
 }
 

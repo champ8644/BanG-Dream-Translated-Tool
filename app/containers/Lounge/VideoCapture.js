@@ -21,11 +21,12 @@ import matFunctions from './matFunctions';
 class MaskStoreClass {
   constructor() {
     this.data = {};
-    this.rows = 1080;
+    this.rows = 1440;
     this.cols = 1920;
+    this.partial = false;
   }
 
-  getRect(index, total) {
+  getRect(index, total, mat) {
     const totalRow = Math.ceil((Math.sqrt(total * 4 + 1) - 1) / 2);
     const totalCol = Math.ceil(Math.sqrt(total));
     const idxRow = Math.floor(index / totalCol);
@@ -36,25 +37,65 @@ class MaskStoreClass {
     const x2 = Math.round((idxCol + 1) * width);
     const y1 = Math.round(idxRow * height);
     const y2 = Math.round((idxRow + 1) * height);
-    return new cv.Rect(x1, y1, x2 - x1, y2 - y1);
+    // console.log({
+    //   index,
+    //   total,
+    //   mat,
+    //   totalRow,
+    //   totalCol,
+    //   idxRow,
+    //   idxCol,
+    //   width,
+    //   height,
+    //   x1,
+    //   x2,
+    //   y1,
+    //   y2
+    // });
+    if (this.partial)
+      return {
+        rect: new cv.Rect(x1, y1, x2 - x1, y2 - y1),
+        at: { x: x1, y: y1 }
+      };
+    const progressiveX = (mat.cols - x2 + x1) / (totalCol - 1 || 1);
+    // console.log({
+    //   progressiveX,
+    //   x1: progressiveX * idxCol,
+    //   y1: 0,
+    //   width: x2 - x1,
+    //   height: y2 - y1,
+    //   atX1: x1,
+    //   atY1: y1
+    // });
+    return {
+      rect: new cv.Rect(progressiveX * idxCol, 0, x2 - x1, y2 - y1),
+      at: { x: x1, y: y1 }
+    };
   }
 
-  getMask(index, total) {
+  getRatio(total) {
+    return 1 / Math.ceil((Math.sqrt(total * 4 + 1) - 1) / 2);
+  }
+
+  getMask(mat, index, total) {
+    if (this.rows !== mat.rows || this.cols !== mat.cols) {
+      this.data = {};
+      this.rows = mat.rows;
+      this.cols = mat.cols;
+    }
     if (!this.data[index]) this.data[index] = {};
-    // return old one
-    if (this.data[index][total]) return this.data[index][total];
-    // generate a new one
-    const mat = new cv.Mat(this.rows, this.cols, cv.CV_8UC3, [0, 0, 0]);
-    mat.drawRectangle(this.getRect(index, total), [255, 255, 255], cv.FILLED);
-    this.data[index][total] = mat;
-    // eslint-disable-next-line no-console
-    console.log('getMask: ', {
-      index,
-      total,
-      rect: this.getRect(index, total),
-      mat
-    });
-    return mat;
+
+    if (this.partial) {
+      if (!this.data[index][total])
+        this.data[index][total] = this.getRect(index, total);
+      const { rect, at } = this.data[index][total];
+      return { mat: mat.getRegion(rect), at };
+    }
+    const smallMat = mat.rescale(this.getRatio(total));
+    if (!this.data[index][total])
+      this.data[index][total] = this.getRect(index, total, smallMat);
+    const { rect, at } = this.data[index][total];
+    return { mat: smallMat.getRegion(rect), at };
   }
 }
 
@@ -204,7 +245,22 @@ export default class VideoCapture {
     return imgData;
   }
 
-  showMatInCanvas(_mat) {
+  showMatInCanvasMinimal(mat, at = { x: 0, y: 0 }) {
+    if (mat.empty) return;
+    const matRGBA =
+      mat.channels === 1
+        ? mat.cvtColor(cv.COLOR_GRAY2RGBA)
+        : mat.cvtColor(cv.COLOR_BGR2RGBA);
+    const imgData = new ImageData(
+      new Uint8ClampedArray(matRGBA.getData()),
+      mat.cols,
+      mat.rows
+    );
+    this.putImageData(imgData, at);
+    if (this.updateFrame) this.updateFrame();
+  }
+
+  showMatInCanvas(_mat, at = { x: 0, y: 0 }) {
     if (_mat.empty) return;
     const mat = _mat.rescale(this.ratio);
     const matRGBA =
@@ -216,7 +272,7 @@ export default class VideoCapture {
       mat.cols,
       mat.rows
     );
-    this.putImageData(imgData);
+    this.putImageData(imgData, { x: at.x * this.ratio, y: at.y * this.ratio });
     if (this.updateFrame) this.updateFrame();
   }
 
@@ -287,9 +343,9 @@ export default class VideoCapture {
     this.show(prevFrame + value, mode);
   }
 
-  putImageData(imgData) {
+  putImageData(imgData, at = { x: 0, y: 0 }) {
     if (this.canvas)
-      this.canvas.current.getContext('2d').putImageData(imgData, 0, 0);
+      this.canvas.current.getContext('2d').putImageData(imgData, at.x, at.y);
   }
 
   async playing() {
@@ -333,6 +389,20 @@ export default class VideoCapture {
     }
   }
 
+  fill(color) {
+    this.showMatInCanvasMinimal(
+      new cv.Mat(this.dHeight, this.dWidth, cv.CV_8UC1, color)
+    );
+  }
+
+  fillBlack() {
+    this.fill(0);
+  }
+
+  fillWhite() {
+    this.fill(255);
+  }
+
   async updateThumbnail(payload) {
     const {
       frame,
@@ -351,9 +421,18 @@ export default class VideoCapture {
     if (title) mat = addTitleMat(mat);
     if (isWhite) mat = addWhiteMat(mat);
     if (isBlack) mat = addBlackMat(mat);
-    mat = mat.rescale(rx);
-    const mask = maskStore.getMask(index, process);
-    this.showMatInCanvas(mat.copy(mask));
+    const { at, mat: outputMat } = maskStore.getMask(
+      mat.rescale(this.ratio),
+      index,
+      process
+    );
+    this.showMatInCanvasMinimal(outputMat, at);
+  }
+
+  testingFunc() {
+    const raw = this.getMat(10000, undefined, false);
+    const { at, mat } = maskStore.getMask(raw.rescale(this.ratio), 4, 6);
+    this.showMatInCanvasMinimal(mat, at);
   }
 
   mainEvent() {

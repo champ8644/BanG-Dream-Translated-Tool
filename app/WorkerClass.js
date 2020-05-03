@@ -58,7 +58,7 @@ export default class WorkerClass {
         ? this.workerWindows[i]
         : this.openNewWindow(i);
     for (; i < this.workerWindows.length; i++) {
-      this.workerWindows[i].close();
+      if (this.workerWindows[i]) this.workerWindows[i].close();
     }
     this.workerWindows = await Promise.all(invokeWindows);
     const batch = Math.round((end - start) / process);
