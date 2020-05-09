@@ -19,6 +19,8 @@ Video File: ${path.basename(fileName)}
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: ข้อความ,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,125,100,1200,1
+Style: empty,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,125,100,1200,1
+Style: skip,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,125,100,1200,1
 Style: ข้อความสั่น,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,125,100,1200,1
 Style: ชื่อตอน,Layiji MaHaNiYom V1.61,54,&H00524F52,&H000000FF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,7,50,0,0,1
 Style: ชื่อสถานที่,Layiji MaHaNiYom V1.61,93,&H00524F52,&H000000FF,&H0059606A,&H00000000,0,0,0,0,100,100,0,0,1,0,0,2,0,0,673,1

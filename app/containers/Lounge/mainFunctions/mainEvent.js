@@ -193,7 +193,9 @@ export default function mainEvent({ vCap, start, end, index, process }) {
       place: [],
       title: [],
       fadeB: [],
-      fadeW: []
+      fadeW: [],
+      skip: [],
+      empty: []
     };
     refractory = {
       name: false,
@@ -201,7 +203,9 @@ export default function mainEvent({ vCap, start, end, index, process }) {
       title: false,
       fadeB: 0,
       fadeW: 0,
-      star: 0
+      star: 0,
+      skip: false,
+      empty: false
     };
     const nameActor = [];
     // eslint-disable-line no-console
@@ -285,6 +289,7 @@ export default function mainEvent({ vCap, start, end, index, process }) {
             // console.log(2);
             activeWorking = {
               ...activeWorking,
+              skipable: true,
               nameObj: true,
               notEmpty: true
             };
@@ -439,6 +444,27 @@ export default function mainEvent({ vCap, start, end, index, process }) {
           } else
             activeWorking = { ...activeWorking, fadeW: true, notEmpty: true };
         }
+
+        if (activeWorking.skipable) {
+          if (!refractory.skip) {
+            data.skip.push({ begin: frame });
+            refractory.skip = true;
+          }
+        } else if (refractory.skip) {
+          data.skip[data.skip.length - 1].end = frame;
+          refractory.skip = false;
+        }
+
+        if (!activeWorking.notEmpty) {
+          if (!refractory.empty) {
+            data.empty.push({ begin: frame });
+            refractory.empty = true;
+          }
+        } else if (refractory.empty) {
+          data.empty[data.empty.length - 1].end = frame;
+          refractory.empty = false;
+        }
+
         return {
           activeWorking,
           info: {

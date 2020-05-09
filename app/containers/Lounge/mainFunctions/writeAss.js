@@ -127,6 +127,22 @@ function writeShake({ arr, begin, end }) {
   `;
 }
 
+let countSkip;
+function writeSkip({ begin, end }) {
+  return `Dialogue: 0,${timestamp(begin)},${timestamp(
+    end
+  )},skip,${countSkip++},0,0,0,,
+  `;
+}
+
+let countEmpty;
+function writeEmpty({ begin, end }) {
+  return `Dialogue: 0,${timestamp(begin)},${timestamp(
+    end
+  )},empty,${countEmpty++},0,0,0,,
+  `;
+}
+
 function bakeShake(item) {
   const { begin, end } = item;
   // const min = item.shake[0].frame;
@@ -175,6 +191,8 @@ function isIntersect(a, b) {
 
 /* eslint-disable no-param-reassign */
 export default function writeAss({ data, nameActor, info }) {
+  countSkip = 1;
+  countEmpty = 1;
   const { path, limitVCap, FPS } = info;
   toMs = frame => (frame * 1000) / FPS;
   const stream = fs.createWriteStream(
@@ -367,6 +385,12 @@ export default function writeAss({ data, nameActor, info }) {
           break;
         case 'fixName':
           stream.write(writeFixName(item));
+          break;
+        case 'skip':
+          stream.write(writeSkip(item));
+          break;
+        case 'empty':
+          stream.write(writeEmpty(item));
           break;
         default:
       }
