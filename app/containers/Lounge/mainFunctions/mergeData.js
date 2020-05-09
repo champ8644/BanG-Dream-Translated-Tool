@@ -10,7 +10,9 @@ export default function mergeData(datas) {
     fadeW: [],
     name: [],
     place: [],
-    title: []
+    title: [],
+    empty: [],
+    skip: []
   };
   datas.forEach(({ data, nameActor }) => {
     const newUID = {};

@@ -109,7 +109,7 @@ export function updateThumbnail(payload) {
   return (dispatch, getState) => {
     const { path, info } = payload;
     const { vCap } = getState().Lounge.videoDatas[path];
-    vCap.updateThumbnail(info);
+    if (vCap) vCap.updateThumbnail(info);
     console.log('info: ', info);
   };
 }

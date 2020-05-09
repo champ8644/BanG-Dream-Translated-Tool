@@ -246,6 +246,7 @@ export default class VideoCapture {
   }
 
   showMatInCanvasMinimal(mat, at = { x: 0, y: 0 }) {
+    if (!this.canvas || !this.canvas.current) return;
     if (mat.empty) return;
     const matRGBA =
       mat.channels === 1
@@ -404,6 +405,7 @@ export default class VideoCapture {
   }
 
   async updateThumbnail(payload) {
+    if (!this.canvas || !this.canvas.current) return;
     const {
       frame,
       name,

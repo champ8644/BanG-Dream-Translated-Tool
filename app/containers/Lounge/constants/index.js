@@ -50,6 +50,7 @@ export const subtitleThreshold = {
 
 export const rows = 1440;
 export const cols = 1920;
+export const skipDialogCountThreshold = 3000;
 export const dialogThreshold = 200;
 export const dialogDiffThreshold = 100;
 export const dialogPartialDiffThreshold = 150;

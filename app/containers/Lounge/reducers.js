@@ -245,7 +245,7 @@ export default function Lounge(state = initialState, action) {
       let { progressFromWorker } = videoDatas[path];
       const { vCap } = videoDatas[path];
 
-      vCap.fillBlack();
+      if (vCap) vCap.fillBlack();
 
       if (!progressFromWorker) {
         progressFromWorker = { bar: Array(numProcess).fill(null) };

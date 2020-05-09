@@ -4,7 +4,11 @@ import {
   meanSmooth,
   updateThumbnailInterval
 } from '../constants/config';
-import { fadeThreshold, intersectCompensate } from '../constants';
+import {
+  fadeThreshold,
+  intersectCompensate,
+  skipDialogCountThreshold
+} from '../constants';
 
 import cv from 'opencv4nodejs';
 import findActorID from './findActorID';
@@ -287,9 +291,13 @@ export default function mainEvent({ vCap, start, end, index, process }) {
             ({ currentActor } = nameObj);
           } else {
             // console.log(2);
+            if (nameObj.dialog.countNonZero() > skipDialogCountThreshold)
+              activeWorking = {
+                ...activeWorking,
+                skipable: true
+              };
             activeWorking = {
               ...activeWorking,
-              skipable: true,
               nameObj: true,
               notEmpty: true
             };
@@ -455,7 +463,13 @@ export default function mainEvent({ vCap, start, end, index, process }) {
           refractory.skip = false;
         }
 
-        if (!activeWorking.notEmpty) {
+        const noskipEmpty =
+          activeWorking.notEmpty ||
+          placeObj.status ||
+          titleObj.status ||
+          nameObj.status;
+
+        if (!noskipEmpty) {
           if (!refractory.empty) {
             data.empty.push({ begin: frame });
             refractory.empty = true;
