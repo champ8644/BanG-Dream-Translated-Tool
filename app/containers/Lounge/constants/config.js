@@ -24,7 +24,9 @@ export const fileNames = [
   'titleLabelTemplater.js',
   'titleLineWidthFinder.js',
   'fullDialogGenerator.js',
-  'findTrueTitleSpline.js'
+  'findTrueTitleSpline.js',
+  'starLabelEndTemplater.js',
+  'starLabelEndGenerator.js'
 ];
 
 export const radioObj = IS_DEV
@@ -37,17 +39,24 @@ export const radioObj = IS_DEV
       // 'HSVFinder',
       // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
-      'nameLabelGenerator',
+      'starLabelEndGenerator',
       'starMatching'
       // 'titleLabelGenerator',
       // 'fullDialogGenerator'
     ]
   : [];
 
-export const defaultOverlayMode = IS_DEV ? 'none' : 'none';
-export const isAutoOpen = false; // IS_DEV;
-export const autoOpenFileName =
-  'E:\\Champ\\Downloads\\EVENT_024วิวา_ScreenRecording_04-30-2563 16-20-22 [382D2370]_3_183705.mp4';
+export const isAutoOpen = true; // IS_DEV;
+
+export const defaultOverlayMode = IS_DEV ? 'starLabelEndGenerator' : 'none';
+export const defaultVCapBeginFrame = IS_DEV ? 112359 : 0;
+
+// const prefixFileName = 'E:\\Champ\\Downloads\\';
+const prefixFileName = 'E:\\Bandori\\Events\\';
+const fileName =
+  'EVENT_023หน้ากากแก้ว_Pastel pallet Play act [DE99576F]_2_190151.mp4';
+
+export const autoOpenFileName = `${prefixFileName}${fileName}`;
 
 export const sliderObjSelector = {
   starMatching: {
@@ -124,7 +133,6 @@ export const ws = {
 // export const endFrameTest = 106969;
 export const startFrameTest = 37619;
 export const endFrameTest = 37690;
-export const defaultVCapBeginFrame = IS_DEV ? 0 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

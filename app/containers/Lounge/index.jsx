@@ -168,6 +168,7 @@ class Lounge extends Component {
   constructor(props) {
     super(props);
     this.canvas = React.createRef();
+    this.dialogFrame = React.createRef();
   }
 
   componentDidMount() {
@@ -573,7 +574,11 @@ class Lounge extends Component {
           </>
         )}
 
-        <Dialog open={dialog.open} onClose={handleCancelDialog}>
+        <Dialog
+          open={dialog.open}
+          onClose={handleCancelDialog}
+          onEntering={() => this.dialogFrame.current.select()}
+        >
           <DialogContent>
             <TextField
               autoFocus
@@ -582,6 +587,7 @@ class Lounge extends Component {
               value={dialog.value}
               onChange={handleChangeDialog}
               onKeyDown={handleKeyDownDialog}
+              inputRef={this.dialogFrame}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>

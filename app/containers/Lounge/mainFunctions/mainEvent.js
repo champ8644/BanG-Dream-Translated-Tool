@@ -97,6 +97,15 @@ function trimPayload(payload) {
   };
 }
 
+// let tempCount = 0;
+
+// function isSkippable(payload) {
+//   // const { activeWorking, info } = payload;
+//   if (!(tempCount % 100)) console.log(payload);
+//   tempCount++;
+//   return false;
+// }
+
 let prevDialog;
 let meanClass;
 let data;
@@ -146,6 +155,7 @@ function nonBlockingLoop({
         gracefulFinish = true;
         break;
       }
+      // if (isSkippable(payload)) console.log('skip!');
     }
     // const frame = i > endFrame ? endFrame : i;
     message2UI('update-progress', {
@@ -162,7 +172,7 @@ function nonBlockingLoop({
       // console.log('update Thumbnail');
       message2UI('update-thumbnail', {
         path,
-        info: payload.info
+        info: trimPayload(payload.info)
       });
     }
     if (gracefulFinish || i >= limitVCap) finished.call(null, true);
@@ -431,7 +441,7 @@ export default function mainEvent({ vCap, start, end, index, process }) {
         }
         return {
           activeWorking,
-          info: trimPayload({
+          info: {
             frame,
             placeObj,
             titleObj,
@@ -440,7 +450,7 @@ export default function mainEvent({ vCap, start, end, index, process }) {
             starMatched,
             index,
             process
-          })
+          }
         };
       },
       finished: finished => {

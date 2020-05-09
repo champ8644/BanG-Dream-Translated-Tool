@@ -424,7 +424,7 @@ export function skipFrame() {
 export function handleOpenDialog(type, value) {
   return (dispatch, getState) => {
     const { vCap } = getState().Lounge;
-    const dialog = { open: true, type, value };
+    const dialog = { open: true, type, value: value.replace(',', '') };
     switch (type) {
       case 'frame':
         dialog.maxValue = vCap.length;
