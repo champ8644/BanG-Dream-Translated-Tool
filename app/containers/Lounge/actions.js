@@ -367,9 +367,10 @@ export function startVideo() {
 
 export function stopVideo() {
   return async (dispatch, getState) => {
-    const { vCap } = getState().Lounge;
+    const { vCap, progressFull } = getState().Lounge;
     devalidLoop();
     message2Worker('stop-events');
+    if (progressFull) stopProgress();
     vCap.stop();
   };
 }
@@ -630,3 +631,9 @@ export function importingLounge() {
 //     return dispatch(changeSlider(num));
 //   };
 // }
+
+function stopProgress() {
+  return {
+    type: actionTypes.STOP_PROGRESS
+  };
+}

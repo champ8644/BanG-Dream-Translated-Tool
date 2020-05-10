@@ -49,13 +49,11 @@ export const radioObj = IS_DEV
 export const isAutoOpen = true; // IS_DEV;
 
 export const defaultOverlayMode = IS_DEV ? 'none' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 112359 : 0;
+export const defaultVCapBeginFrame = IS_DEV ? 1 : 0;
 
 // const prefixFileName = 'E:\\Champ\\Downloads\\';
 const prefixFileName = 'E:\\Bandori\\Events\\';
-const fileName =
-  'EVENT_023หน้ากากแก้ว_Pastel pallet Play act [DE99576F]_2_190151.mp4';
-
+const fileName = 'วันเกิดคุณคะน้าเรนเดอร์แล้ว.mp4';
 export const autoOpenFileName = `${prefixFileName}${fileName}`;
 
 export const sliderObjSelector = {

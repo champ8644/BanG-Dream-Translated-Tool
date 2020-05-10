@@ -121,152 +121,185 @@ function findDist(pt1, pt2) {
   return (pt1.x - pt2.x) * (pt1.x - pt2.x) + (pt1.y - pt2.y) * (pt1.y - pt2.y);
 }
 
+function nonBlockingLoop({
+  callback,
+  finished,
+  chunksize,
+  begin,
+  endend,
+  vCap,
+  checkLoopValid,
+  dispatch
+}) {
+  let i = begin;
+  (function chunk() {
+    const end = Math.min(i + chunksize, endend);
+    const before = i;
+    for (; i < end; i++) {
+      if (!checkLoopValid()) break;
+      callback(i);
+    }
+    dispatch(addProgress(i - before));
+    vCap.show(i);
+    if (i >= endend) finished(true);
+    else if (!checkLoopValid()) finished(false);
+    else setTimeout(chunk, 0);
+  })();
+}
+
 export function exporting() {
   return async (dispatch, getState) => {
     const {
       // canvasRef,
-      vCap,
-      vCapPackage: { putFrame }
+      vCap
+      // vCapPackage: { putFrame }
     } = getState().Lounge;
-    const [beginTime, endTime] = [200, 400];
+    const [beginTime, endTime] = [258, 576];
     let maxArea = 0;
     let maxItemIndex;
     let maxArrayIndex;
     dispatch(startProgress(endTime - beginTime + 1));
     // setFrameByType(vCap, beginTime, 'frame');
     const outArr = [];
-    for (let i = beginTime; i < endTime; i++) {
-      const {
-        progressFull,
-        vCapPackage: { current }
-      } = getState().Lounge;
-      if (!progressFull) return;
-      const obj = { ms: current.ms(), frame: current.frame() };
+    nonBlockingLoop({
+      chunksize: 50,
+      begin: beginTime,
+      endend: endTime,
+      dispatch,
+      vCap,
+      checkLoopValid: () => getState().Lounge.progressFull,
+      callback: i => {
+        const obj = { frame: i };
+        const frame = vCap.getRawRaw(i);
+
+        if (frame.empty) return false;
+        obj.arr = findTextBubble(frame);
+        outArr.push(obj);
+        for (let j = 0; j < obj.arr.length; j++) {
+          const item = obj.arr[j];
+          const area = item.width * item.height;
+          if (maxArea < area) {
+            maxArea = area;
+            maxItemIndex = j;
+            maxArrayIndex = outArr.length - 1;
+          }
+        }
+        // putImage(canvasRef, frame, ratio);
+      },
+      finished: async resolved => {
+        if (!resolved) return;
+        const trueOutput = [];
+        const makeObjOutput = (keyFrame, keyRect) => {
+          const { arr, ms, frame } = outArr[keyFrame];
+          const rect = arr[keyRect];
+          const { width, height } = rect;
+          const pt1 = { x: rect.x, y: rect.y };
+          const pt2 = { x: rect.x + width, y: rect.y + height };
+          const center = { x: (pt1.x + pt2.x) / 2, y: (pt1.y + pt2.y) / 2 };
+          return {
+            pt1,
+            pt2,
+            center,
+            centerX: center.x,
+            centerY: center.y,
+            left: center.x - (width / 2) * 0.9,
+            top: center.y - (height / 2) * 0.9,
+            right: center.x + (width / 2) * 0.9,
+            bottom: center.y + (height / 2) * 0.9,
+            width,
+            height,
+            area: width * height,
+            ms,
+            frame
+          };
+        };
+        console.log(
+          'maxArrayIndex, maxItemIndex: ',
+          maxArrayIndex,
+          maxItemIndex
+        );
+        trueOutput.push(makeObjOutput(maxArrayIndex, maxItemIndex));
+        const orgPt = { x: trueOutput[0].centerX, y: trueOutput[0].centerY };
+
+        let prevPt = orgPt;
+        // console.log('trueOutput: ', { trueOutput, maxArrayIndex, maxItemIndex });
+        const colDist = [];
+        for (let i = maxArrayIndex - 1; i > 0; i--) {
+          const { arr } = outArr[i];
+          if (arr.length > 0) {
+            let minDist = 999999999;
+            let pickKey;
+            for (let j = 0; j < arr.length; j++) {
+              const dist = findDist(prevPt, rectToCenterPt(arr[j]));
+              if (minDist > dist) {
+                minDist = dist;
+                pickKey = j;
+              }
+            }
+            if (minDist > maxMinDist) break;
+            colDist.push({ frame: i, minDist });
+            trueOutput.unshift(makeObjOutput(i, pickKey));
+            prevPt = rectToCenterPt(arr[pickKey]);
+          }
+        }
+        prevPt = orgPt;
+        for (let i = maxArrayIndex + 1; i < outArr.length; i++) {
+          const { arr } = outArr[i];
+          if (arr.length > 0) {
+            let minDist = 999999999;
+            let pickKey;
+            for (let j = 0; j < arr.length; j++) {
+              const dist = findDist(prevPt, rectToCenterPt(arr[j]));
+              if (minDist > dist) {
+                minDist = dist;
+                pickKey = j;
+              }
+            }
+            if (minDist > maxMinDist) break;
+            colDist.push({ frame: i, minDist });
+            trueOutput.push(makeObjOutput(i, pickKey));
+            prevPt = rectToCenterPt(arr[pickKey]);
+          }
+        }
+        /*
+      let ii = 200;
+      const contourY = trueOutput.map(item => {
+        return new cv.Point2(ii++, item.centerY);
+      });
+  
+      rewindOneFrame(vCap);
       const frame = vCap.read();
-
+      const blue = new cv.Vec(255, 0, 0);
+      frame.drawContours([contourY], -1, blue, 3);
       dispatch(putFrame(frame));
-
-      if (frame.empty) return false;
-      obj.arr = findTextBubble(frame);
-      outArr.push(obj);
-      for (let j = 0; j < obj.arr.length; j++) {
-        const item = obj.arr[j];
-        const area = item.width * item.height;
-        if (maxArea < area) {
-          maxArea = area;
-          maxItemIndex = j;
-          maxArrayIndex = outArr.length - 1;
-        }
-      }
-      // putImage(canvasRef, frame, ratio);
       frame.release();
-      dispatch(addProgress(1));
-    }
-    const trueOutput = [];
-    const makeObjOutput = (keyFrame, keyRect) => {
-      const { arr, ms, frame } = outArr[keyFrame];
-      const rect = arr[keyRect];
-      const { width, height } = rect;
-      const pt1 = { x: rect.x, y: rect.y };
-      const pt2 = { x: rect.x + width, y: rect.y + height };
-      const center = { x: (pt1.x + pt2.x) / 2, y: (pt1.y + pt2.y) / 2 };
-      return {
-        pt1,
-        pt2,
-        center,
-        centerX: center.x,
-        centerY: center.y,
-        left: center.x - (width / 2) * 0.9,
-        top: center.y - (height / 2) * 0.9,
-        right: center.x + (width / 2) * 0.9,
-        bottom: center.y + (height / 2) * 0.9,
-        width,
-        height,
-        area: width * height,
-        ms,
-        frame
-      };
-    };
-    trueOutput.push(makeObjOutput(maxArrayIndex, maxItemIndex));
-    const orgPt = { x: trueOutput[0].centerX, y: trueOutput[0].centerY };
-
-    let prevPt = orgPt;
-    // console.log('trueOutput: ', { trueOutput, maxArrayIndex, maxItemIndex });
-    const colDist = [];
-    for (let i = maxArrayIndex - 1; i > 0; i--) {
-      const { arr } = outArr[i];
-      if (arr.length > 0) {
-        let minDist = 999999999;
-        let pickKey;
-        for (let j = 0; j < arr.length; j++) {
-          const dist = findDist(prevPt, rectToCenterPt(arr[j]));
-          if (minDist > dist) {
-            minDist = dist;
-            pickKey = j;
-          }
-        }
-        if (minDist > maxMinDist) break;
-        colDist.push({ frame: i, minDist });
-        trueOutput.unshift(makeObjOutput(i, pickKey));
-        prevPt = rectToCenterPt(arr[pickKey]);
+  
+      console.log('trueOutput: ', trueOutput);
+  */
+        const header = [
+          'frame',
+          'ms',
+          'left',
+          'top',
+          'right',
+          'bottom',
+          'centerX',
+          'centerY',
+          'width',
+          'height',
+          'area'
+        ];
+        const { canceled, filePath } = await dialog.showSaveDialog({
+          filters: [{ name: 'Excel files', extensions: ['xlsx'] }]
+        });
+        if (canceled) return;
+        const worksheet = XLSX.utils.json_to_sheet(trueOutput, { header });
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'BanG_Dream');
+        XLSX.writeFile(workbook, filePath);
+        dispatch(stopProgress());
       }
-    }
-    prevPt = orgPt;
-    for (let i = maxArrayIndex + 1; i < outArr.length; i++) {
-      const { arr } = outArr[i];
-      if (arr.length > 0) {
-        let minDist = 999999999;
-        let pickKey;
-        for (let j = 0; j < arr.length; j++) {
-          const dist = findDist(prevPt, rectToCenterPt(arr[j]));
-          if (minDist > dist) {
-            minDist = dist;
-            pickKey = j;
-          }
-        }
-        if (minDist > maxMinDist) break;
-        colDist.push({ frame: i, minDist });
-        trueOutput.push(makeObjOutput(i, pickKey));
-        prevPt = rectToCenterPt(arr[pickKey]);
-      }
-    }
-    /*
-    let ii = 200;
-    const contourY = trueOutput.map(item => {
-      return new cv.Point2(ii++, item.centerY);
     });
-
-    rewindOneFrame(vCap);
-    const frame = vCap.read();
-    const blue = new cv.Vec(255, 0, 0);
-    frame.drawContours([contourY], -1, blue, 3);
-    dispatch(putFrame(frame));
-    frame.release();
-
-    console.log('trueOutput: ', trueOutput);
-*/
-    const header = [
-      'frame',
-      'ms',
-      'left',
-      'top',
-      'right',
-      'bottom',
-      'centerX',
-      'centerY',
-      'width',
-      'height',
-      'area'
-    ];
-    const { filePaths, canceled } = await dialog.showSaveDialog({
-      filters: [{ name: 'Excel files', extensions: ['xlsx'] }]
-    });
-    if (canceled) return;
-    const worksheet = XLSX.utils.json_to_sheet(trueOutput, { header });
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'BanG_Dream');
-    XLSX.writeFile(workbook, filePaths[0]);
-    dispatch(stopProgress());
   };
 }
 
@@ -274,7 +307,7 @@ export function importing() {
   return async (dispatch, getState) => {
     const {
       vCap,
-      vCapPackage: { putFrame, FPS },
+      // vCapPackage: { putFrame, FPS },
       importedFile,
       valueSlider
     } = getState().Lounge;
@@ -364,7 +397,7 @@ export function importing() {
     // contourW.sort((a, b) => a.x - b.x);
     // contourH.sort((a, b) => a.x - b.x);
     // rewindOneFrame(vCap);
-    const frame = vCap.read();
+    const frame = vCap.getRawRaw();
     const blue = new cv.Vec(255, 0, 0);
     const red = new cv.Vec(0, 0, 255);
     const yellow = new cv.Vec(0, 255, 255);
@@ -559,7 +592,7 @@ export function importing() {
     const arr = [];
     for (let i = 0; i < iterFrames.length; i++) {
       const join = [
-        `t=${round3Dig((iterFrames[i] * 1000) / FPS)}`,
+        `t=${round3Dig((iterFrames[i] * 1000) / vCap.FPS)}`,
         `x=${round3Dig(sumContour[iterFrames[i]].centerX)}`,
         `y=${round3Dig(sumContour[iterFrames[i]].centerY)}`,
         `w=${round3Dig(sumContour[iterFrames[i]].width)}`,
@@ -572,14 +605,7 @@ export function importing() {
     console.log('output: ', output);
     // delete sumContour[iterFrames[0]];
 
-    dispatch(putFrame(frame));
-    frame.release();
-  };
-}
-
-function stopProgress() {
-  return {
-    type: actionTypes.STOP_PROGRESS
+    vCap.showMatInCanvas(frame);
   };
 }
 
@@ -594,5 +620,11 @@ function addProgress(val) {
   return {
     type: actionTypes.ADD_PROGRESS,
     payload: val
+  };
+}
+
+function stopProgress() {
+  return {
+    type: actionTypes.STOP_PROGRESS
   };
 }
