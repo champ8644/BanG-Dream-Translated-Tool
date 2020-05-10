@@ -46,7 +46,7 @@ export const radioObj = IS_DEV
     ]
   : [];
 
-export const isAutoOpen = false; // IS_DEV;
+export const isAutoOpen = true; // IS_DEV;
 
 export const defaultOverlayMode = IS_DEV ? 'none' : 'none';
 export const defaultVCapBeginFrame = IS_DEV ? 112359 : 0;

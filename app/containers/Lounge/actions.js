@@ -19,6 +19,7 @@ import cv from 'opencv4nodejs';
 import { message2Worker } from './utils';
 import prefixer from '../../utils/reducerPrefixer';
 import { remote } from 'electron';
+import testerFunction from './nodeFunctions';
 import { throwAlert } from '../Alerts/actions';
 
 const { dialog } = remote;
@@ -68,8 +69,7 @@ export const actionTypes = prefixer(prefix, actionTypesList);
 
 export function testingFunc() {
   return (dispatch, getState) => {
-    const { vCap } = getState().Lounge;
-    vCap.testingFunc();
+    testerFunction();
   };
 }
 

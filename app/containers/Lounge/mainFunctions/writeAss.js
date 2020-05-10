@@ -1,6 +1,5 @@
 import { correctPlaceFadeBlack, skipNonIntersectWhiteLine } from '../constants';
 
-import additionInfoTemplate from '../constants/additionInfoTemplate';
 import assTemplate from '../constants/assTemplate';
 import { enabledSnapToFade } from '../constants/config';
 import fs from 'fs';
@@ -135,6 +134,13 @@ function writeSkip({ begin, end }) {
 
 function writeEmpty({ begin, end }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},empty,,0,0,0,,
+`;
+}
+
+function additionInfoTemplate(info) {
+  return `
+[BanG Dream Translated Tool Info]
+${JSON.stringify(info)}
 `;
 }
 

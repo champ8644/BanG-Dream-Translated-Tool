@@ -9,6 +9,7 @@ import {
 
 import { actionTypes } from './actions';
 import moment from 'moment';
+import { showTime } from './constants/function';
 
 export const initialState = {
   videoFilePath: '',
@@ -62,14 +63,6 @@ export const initialVideoDatas = {
   readyToWork: false,
   showFPS: true
 };
-
-function showTime(dur) {
-  const h = dur.hours();
-  const mm = `${dur.minutes()}`.padStart(2, '0');
-  const ss = `${dur.seconds()}`.padStart(2, '0');
-  if (h > 0) return `${h}:${mm}:${ss}`;
-  return `${mm}:${ss}`;
-}
 
 export default function Lounge(state = initialState, action) {
   const { type, payload } = action;
