@@ -148,17 +148,17 @@ function nonBlockingLoop({
   // console.log('prevTime: ', prevTime);
   (function chunk() {
     const end = Math.min(i + chunksize, limitVCap);
-    let payload;
+    let activeWorking;
+    let info;
     for (; i < end; i++) {
       if (!isLoopValid) break;
-      payload = callback.call(null, i);
-      if (
-        i >= endFrame + intersectCompensate &&
-        !payload.activeWorking.notEmpty
-      ) {
+      ({ activeWorking, info } = callback(i));
+      if (i >= endFrame + intersectCompensate && !activeWorking.notEmpty) {
         gracefulFinish = true;
         break;
       }
+      // if (activeWorking.skipable)
+
       // if (isSkippable(payload)) console.log('skip!');
     }
     // const frame = i > endFrame ? endFrame : i;
@@ -176,11 +176,11 @@ function nonBlockingLoop({
       // console.log('update Thumbnail');
       message2UI('update-thumbnail', {
         path,
-        info: trimPayload(payload.info)
+        info: trimPayload(info)
       });
     }
-    if (gracefulFinish || i >= limitVCap) finished.call(null, true);
-    else if (!isLoopValid) finished.call(null, false);
+    if (gracefulFinish || i >= limitVCap) finished(true);
+    else if (!isLoopValid) finished(false);
     else setTimeout(chunk, 0);
   })();
 }
