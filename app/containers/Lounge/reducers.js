@@ -155,6 +155,8 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.HANDLE_CHANGE_SLIDER:
     case actionTypes.HANDLE_COMMITTED_SLIDER:
       return { ...state, valueSlider: { ...state.valueSlider, ...payload } };
+    case actionTypes.ADD_PROGRESS:
+      return { ...state, progress: state.progress + payload };
     case actionTypes.STOP_PROGRESS:
       return { ...state, progressFull: null, progress: null };
     case actionTypes.START_PROGRESS:
@@ -176,8 +178,6 @@ export default function Lounge(state = initialState, action) {
         },
         numProcess: payload.displayNumProcess
       };
-    case actionTypes.ADD_PROGRESS:
-      return { ...state, progress: state.progress + payload };
     case actionTypes.IMPORTING:
       return { ...state, importedFile: payload };
     case actionTypes.FINISHING_QUEUE: {
