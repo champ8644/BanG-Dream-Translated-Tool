@@ -61,7 +61,7 @@ function writeSubtitleShake({
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ข้อความสั่น,${shakeUID};${actor},0,0,0,,${content}
-  `;
+`;
 }
 function writeNameActor({ frame, uid }) {
   return `Comment: 0,${timestamp(frame)},${timestamp(
