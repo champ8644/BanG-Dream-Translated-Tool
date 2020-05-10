@@ -20,39 +20,41 @@ function tick(vCap, callback) {
 
 export default function speedTester() {
   const vCap = new VideoCapture({ path: autoOpenFileName });
-  const goal = 1000;
+  const goal = 10000;
   const testArr = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    20,
-    30,
-    40,
-    50,
-    60,
-    70,
-    80,
-    90,
-    100,
-    120,
-    140,
-    160,
-    180,
-    200,
-    250,
-    300,
-    400,
-    500,
-    750,
-    1000
+    // 1,
+    // 2,
+    // 3,
+    // 4,
+    // 5,
+    // 6,
+    // 7,
+    // 8,
+    // 9,
+    // 10,
+    // 20,
+    // 30,
+    // 40,
+    // 50,
+    // 60,
+    // 70,
+    // 80,
+    // 90,
+    // 100,
+    // 120,
+    // 140,
+    // 160,
+    // 180,
+    // 200,
+    // 250,
+    // 300,
+    // 400,
+    // 500,
+    // 750,
+    // 1000
   ];
+  for (let i = 100; i < 1000; i += 50) testArr.push(i);
+  for (let i = 1000; i < 5500; i += 500) testArr.push(i);
   const res = testArr
     .sort((a, b) => a - b)
     .map(skip => {
