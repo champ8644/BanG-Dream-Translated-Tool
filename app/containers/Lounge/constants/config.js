@@ -39,20 +39,21 @@ export const radioObj = IS_DEV
       // 'HSVFinder',
       // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
-      'starLabelEndGenerator',
-      'starMatching'
+      // 'starLabelEndGenerator',
+      // 'starMatching',
       // 'titleLabelGenerator',
       // 'fullDialogGenerator'
+      'lounge'
     ]
   : [];
 
 export const isAutoOpen = true; // IS_DEV;
 
-export const defaultOverlayMode = IS_DEV ? 'none' : 'none';
+export const defaultOverlayMode = IS_DEV ? 'lounge' : 'none';
 export const defaultVCapBeginFrame = IS_DEV ? 1 : 0;
-
 // const prefixFileName = 'E:\\Champ\\Downloads\\';
-const prefixFileName = 'E:\\Bandori\\Events\\';
+// const prefixFileName = 'E:\\Bandori\\Events\\';
+const prefixFileName = 'E:\\Bandori\\LoungeHNY2020\\';
 const fileName = 'วันเกิดคุณคะน้าเรนเดอร์แล้ว.mp4';
 export const autoOpenFileName = `${prefixFileName}${fileName}`;
 
@@ -93,6 +94,10 @@ export const sliderObjSelector = {
   fullDialogGenerator: {
     slider: [{ name: 'thresh', max: 255 }, { name: 'blur', max: 30 }],
     commit: false
+  },
+  lounge: {
+    slider: [{ name: 'approx', max: 100 }],
+    commit: false
   }
 };
 
@@ -110,7 +115,8 @@ export const defaultValueSlider = {
   innerY: [0, 1440],
   thresh: [20, 255],
   aperture: 3,
-  blur: 5
+  blur: 5,
+  approx: 10
 };
 
 export const ws = {

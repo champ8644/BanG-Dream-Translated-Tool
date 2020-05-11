@@ -3,7 +3,45 @@ import XLSX from 'xlsx';
 import _ from 'lodash';
 import { actionTypes } from '../actions';
 import cv from 'opencv4nodejs';
+// import fitCurve from './fitCurve';
+import fs from 'fs';
 import { maxMinDist } from '../constants';
+// export function importing() {
+//   return async (dispatch, getState) => {
+//     const {
+//       vCap,
+//       // vCapPackage: { putFrame, FPS },
+//       importedFile,
+//       valueSlider
+//     } = getState().Lounge;
+//     let data = importedFile;
+//     if (!data) {
+//       const { filePaths, canceled } = await dialog.showOpenDialog({
+//         properties: ['openFile'],
+//         filters: [{ name: 'Excel Files', extensions: ['xls', 'xlsx', 'csv'] }]
+//       });
+//       if (canceled) return;
+//       const workbook = XLSX.readFile(filePaths[0]);
+//       const firstWorksheet = workbook.Sheets[workbook.SheetNames[0]];
+//       data = XLSX.utils.sheet_to_json(firstWorksheet);
+//       dispatch({
+//         type: actionTypes.IMPORTING,
+//         payload: data
+//       });
+//     }
+//     const subtract = 0;
+//     const multiply = 1;
+//     const div = 1;
+//     const contourX = data.map(item => [
+//       (item.frame - subtract) * multiply,
+//       item.centerX / div
+//     ]);
+//     console.log('contourX: ', contourX);
+//     const temp1 = fitCurve(contourX, 10, res => console.log('res', res));
+//     console.log('temp1: ', temp1);
+//   };
+// }
+import path from 'path';
 import { remote } from 'electron';
 
 const { dialog } = remote;
@@ -154,7 +192,13 @@ export function exporting() {
       vCap
       // vCapPackage: { putFrame }
     } = getState().Lounge;
-    const [beginTime, endTime] = [258, 576];
+    // const [beginTime, endTime] = [258, 576];
+    // const [beginTime, endTime] = [574, 815];
+    // const [beginTime, endTime] = [815, 1038];
+    // const [beginTime, endTime] = [1036, 1224];
+    // const [beginTime, endTime] = [1223, 1474];
+    const [beginTime, endTime] = [3122, 3587];
+    // const [beginTime, endTime] = [3447, 3604];
     let maxArea = 0;
     let maxItemIndex;
     let maxArrayIndex;
@@ -305,11 +349,12 @@ export function exporting() {
 
 export function importing() {
   return async (dispatch, getState) => {
+    let defaultFileName = '';
     const {
       vCap,
       // vCapPackage: { putFrame, FPS },
       importedFile,
-      valueSlider
+      valueSlider: { approx: approxDP }
     } = getState().Lounge;
     let data = importedFile;
     if (!data) {
@@ -318,6 +363,7 @@ export function importing() {
         filters: [{ name: 'Excel Files', extensions: ['xls', 'xlsx', 'csv'] }]
       });
       if (canceled) return;
+      defaultFileName = path.parse(filePaths[0]).name;
       const workbook = XLSX.readFile(filePaths[0]);
       const firstWorksheet = workbook.Sheets[workbook.SheetNames[0]];
       data = XLSX.utils.sheet_to_json(firstWorksheet);
@@ -328,9 +374,14 @@ export function importing() {
     }
 
     const approxContour = _item => {
+      console.log('1');
       const item = new cv.Contour(_item);
+      console.log('2');
       const peri = item.arcLength(true);
-      const approx = item.approxPolyDP(0.0001 * valueSlider * peri, true);
+      console.log('3');
+      const approx = item.approxPolyDP(0.0001 * approxDP * peri, true);
+      console.log('approx: ', approx);
+      console.log('4');
       return approx;
     };
     const subtract = 0;
@@ -362,6 +413,7 @@ export function importing() {
       }),
       false
     );
+    console.log('contourY: ', contourY);
     const contourX = approxContour(
       data.map(item => {
         const out = new cv.Point2(
@@ -372,6 +424,7 @@ export function importing() {
       }),
       false
     );
+    console.log('contourX: ', contourX);
     const contourW = approxContour(
       data.map(item => {
         const out = new cv.Point2(
@@ -382,6 +435,7 @@ export function importing() {
       }),
       false
     );
+    console.log('contourW: ', contourW);
     const contourH = approxContour(
       data.map(item => {
         const out = new cv.Point2(
@@ -392,12 +446,13 @@ export function importing() {
       }),
       false
     );
+    console.log('contourH: ', contourH);
     // contourX.sort((a, b) => a.x - b.x);
     // contourY.sort((a, b) => a.x - b.x);
     // contourW.sort((a, b) => a.x - b.x);
     // contourH.sort((a, b) => a.x - b.x);
     // rewindOneFrame(vCap);
-    const frame = vCap.getRawRaw();
+    const frame = vCap.getMat();
     const blue = new cv.Vec(255, 0, 0);
     const red = new cv.Vec(0, 0, 255);
     const yellow = new cv.Vec(0, 255, 255);
@@ -573,8 +628,8 @@ export function importing() {
     );
     sumContour[key3] = val2;
     console.log(_.cloneDeep(sumContour));
-    delete sumContour[iterFrames[0]];
-    delete sumContour[iterFrames[iterFrames.length - 1]];
+    // delete sumContour[iterFrames[0]];
+    // delete sumContour[iterFrames[iterFrames.length - 1]];
     console.log(sumContour, iterFrames);
     iterFrames = Object.keys(sumContour);
     const embrace = arr => {
@@ -604,8 +659,15 @@ export function importing() {
     const output = `_G.table.insert(db,${embrace(arr)})`;
     console.log('output: ', output);
     // delete sumContour[iterFrames[0]];
-
     vCap.showMatInCanvas(frame);
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      defaultPath: defaultFileName,
+      filters: [{ name: 'Text file', extensions: ['txt'] }]
+    });
+    if (canceled) return;
+    fs.writeFile(filePath, output, err => {
+      if (!err) console.log('finished writing file');
+    });
   };
 }
 
