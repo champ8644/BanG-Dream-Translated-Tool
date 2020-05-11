@@ -141,6 +141,8 @@ function trySkip({ frame, vCap, prevDialog }) {
       i += RESEARCH_SKIP;
     }
   } while (canSkip);
+  // if (frame < i) console.log('skipped', frame, '->', i);
+  // else console.log('failed skip', i);
   return { frameAfterSkip: i, refracSkip: i + RESEARCH_SKIP };
 }
 
@@ -176,6 +178,7 @@ function nonBlockingLoop({
   // console.log('prevTime: ', prevTime);
   let frameAfterSkip;
   let refracSkip = 0;
+  let prevDataNameLength = -1;
   (function chunk() {
     const end = Math.min(i + chunksize, vCap.current.length);
     let activeWorking;
@@ -186,6 +189,16 @@ function nonBlockingLoop({
       if (i >= endFrame + intersectCompensate && !activeWorking.notEmpty) {
         gracefulFinish = true;
         break;
+      }
+      if (
+        data.name &&
+        data.name.length > 0 &&
+        data.name[data.name.length - 1] &&
+        !data.name[data.name.length - 1].end &&
+        prevDataNameLength < data.name.length
+      ) {
+        prevDataNameLength = data.name.length;
+        refracSkip = i;
       }
       if (activeWorking.skipable && i >= refracSkip) {
         ({ frameAfterSkip, refracSkip } = trySkip({

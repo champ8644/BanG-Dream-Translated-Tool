@@ -1,6 +1,6 @@
 import VideoCapture from './VideoCapture';
 
-export class BiVideoCapture {
+export default class BiVideoCapture {
   constructor(payload) {
     const { path } = payload;
     this.vCap = [new VideoCapture({ path }), new VideoCapture({ path })];
@@ -13,7 +13,7 @@ export class BiVideoCapture {
     this.next = this.vCap[this.primary ^ 1];
   }
 
-  swtich() {
+  switch() {
     this.primary = this.primary ^ 1;
     this.reset();
   }

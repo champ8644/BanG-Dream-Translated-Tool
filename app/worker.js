@@ -2,7 +2,7 @@ import mainEvent, {
   devalidLoop
 } from './containers/Lounge/mainFunctions/mainEvent';
 
-import BiVideoCapture from './containers/Lounge/VideoCapture';
+import BiVideoCapture from './containers/Lounge/BiVideoCapture';
 import electron from 'electron';
 import mergeData from './containers/Lounge/mainFunctions/mergeData';
 import writeAss from './containers/Lounge/mainFunctions/writeAss';

@@ -47,7 +47,7 @@ export const radioObj = IS_DEV
     ]
   : [];
 
-export const isAutoOpen = true; // IS_DEV;
+export const isAutoOpen = false; // IS_DEV;
 
 export const defaultOverlayMode = IS_DEV ? 'lounge' : 'none';
 export const defaultVCapBeginFrame = IS_DEV ? 1 : 0;
