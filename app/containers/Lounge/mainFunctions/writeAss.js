@@ -26,28 +26,28 @@ function writeCredit(frame) {
   return `Dialogue: 0,0:00:00.00,${timestamp(
     frame
   )},Credit,,0,0,0,,Facebook.com/Nep4A4Life
-  `;
+`;
 }
 
 function writePlace({ begin, end, content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ชื่อสถานที่,93,0,0,0,,${content}
-  `;
+`;
 }
 
 function writeTitle({ begin, end, width, content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ชื่อตอน,${width},0,0,0,,${content}
-  `;
+`;
 }
 
 function writeSubtitle({ begin, end, actor = '', content = '' }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ข้อความ,${actor},0,0,0,,${content}
-  `;
+`;
 }
 
 function writeSubtitleShake({
@@ -60,13 +60,13 @@ function writeSubtitleShake({
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ข้อความสั่น,${shakeUID};${actor},0,0,0,,${content}
-  `;
+`;
 }
 function writeNameActor({ frame, uid }) {
   return `Comment: 0,${timestamp(frame)},${timestamp(
     frame
   )},ข้อความ,,0,0,0,code once,name[${uid}] = ""
-  `;
+`;
 }
 
 function writeWhite({
@@ -82,7 +82,7 @@ function writeWhite({
   )};${timeMs(end - fadeOut)};${leftCompensate ? 1 : 0};${
     rightCompensate ? 1 : 0
   },0,0,0,,
-  `;
+`;
 }
 
 function writeBlack({
@@ -98,14 +98,14 @@ function writeBlack({
   )};${timeMs(end - fadeOut)};${leftCompensate ? 1 : 0};${
     rightCompensate ? 1 : 0
   },0,0,0,,
-  `;
+`;
 }
 
 function writeFixName({ begin, end, color, direction, fade, offset }) {
   return `Dialogue: 0,${timestamp(begin)},${timestamp(
     end
   )},ปรับสี,${color};${direction};${timeMs(fade)};${timeMs(offset)},0,0,0,,
-  `;
+`;
 }
 
 function embrace(arr) {
@@ -124,7 +124,24 @@ function writeShake({ arr, begin, end }) {
       ])
     )
   )})
-  `;
+`;
+}
+
+// function writeSkip({ begin, end }) {
+//   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},skip,,0,0,0,,
+// `;
+// }
+
+// function writeEmpty({ begin, end }) {
+//   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},empty,,0,0,0,,
+// `;
+// }
+
+function additionInfoTemplate(info) {
+  return `
+[BanG Dream Translated Tool Info]
+${JSON.stringify(info)}
+`;
 }
 
 function bakeShake(item) {
@@ -177,16 +194,6 @@ function isIntersect(a, b) {
 export default function writeAss({ data, nameActor, info }) {
   const { path, limitVCap, FPS } = info;
   toMs = frame => (frame * 1000) / FPS;
-  const stream = fs.createWriteStream(
-    `${path.substr(0, path.lastIndexOf('.'))} [${moment().format(
-      'YYYY-MM-DD_HH-mm'
-    )}].ass`,
-    {
-      encoding: 'utf8'
-    }
-  );
-  // eslint-disable-next-line no-console
-  stream.on('finish', () => console.log('Finish writing file!!'));
 
   const outData = [];
   const shakeArr = [];
@@ -340,12 +347,82 @@ export default function writeAss({ data, nameActor, info }) {
   );
   // eslint-disable-next-line no-console
   console.log('outData: ', outData);
+
+  const skipProp = data.skip.reduce(
+    (state, { begin, end }) => ({
+      count: state.count + 1,
+      min: Math.min(state.min, end - begin),
+      max: Math.max(state.max, end - begin),
+      sum: state.sum + end - begin
+    }),
+    {
+      count: 0,
+      min: 1e10,
+      max: -1e10,
+      sum: 0
+    }
+  );
+  const emptyProp = data.empty.reduce(
+    (state, { begin, end }) => ({
+      count: state.count + 1,
+      min: Math.min(state.min, end - begin),
+      max: Math.max(state.max, end - begin),
+      sum: state.sum + end - begin
+    }),
+    {
+      count: 0,
+      min: 1e10,
+      max: -1e10,
+      sum: 0
+    }
+  );
+  const comments = {
+    countSkip: skipProp.count,
+    countEmpty: emptyProp.count,
+    minEmpty: emptyProp.min,
+    maxEmpty: emptyProp.max,
+    minSkip: skipProp.min,
+    maxSkip: skipProp.max,
+    meanEmpty: emptyProp.sum / emptyProp.count,
+    meanSkip: skipProp.sum / skipProp.count
+  };
+
+  exportingAss({
+    data: outData,
+    path,
+    nameActor,
+    shakeArr,
+    limitVCap,
+    comments,
+    info: comments
+  });
+}
+
+function exportingAss({
+  data,
+  path,
+  comments,
+  nameActor,
+  shakeArr,
+  limitVCap,
+  info
+}) {
+  const stream = fs.createWriteStream(
+    `${path.substr(0, path.lastIndexOf('.'))} [${moment().format(
+      'YYYY-MM-DD_HH-mm'
+    )}].ass`,
+    {
+      encoding: 'utf8'
+    }
+  );
+  // eslint-disable-next-line no-console
+  stream.on('finish', () => console.log('Finish writing file!!'));
   stream.once('open', () => {
-    stream.write(assTemplate(path));
+    stream.write(assTemplate(path, comments));
     shakeArr.forEach(item => stream.write(writeShake(item)));
     stream.write(writeCredit(limitVCap));
     nameActor.forEach(item => stream.write(writeNameActor(item)));
-    outData.forEach(item => {
+    data.forEach(item => {
       switch (item.type) {
         case 'name':
           stream.write(writeSubtitle(item));
@@ -368,9 +445,16 @@ export default function writeAss({ data, nameActor, info }) {
         case 'fixName':
           stream.write(writeFixName(item));
           break;
+        // case 'skip':
+        //   stream.write(writeSkip(item));
+        //   break;
+        // case 'empty':
+        //   stream.write(writeEmpty(item));
+        //   break;
         default:
       }
     });
+    stream.write(additionInfoTemplate(info));
     stream.end();
   });
 }

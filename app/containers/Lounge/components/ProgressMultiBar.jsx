@@ -3,7 +3,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
-const CustomLinearProgress = withStyles({
+export const CustomLinearProgress = withStyles({
   root: props => {
     let backgroundColor = '#FFB1A8';
     if (props.iscomplete) backgroundColor = '#8FFFC3';

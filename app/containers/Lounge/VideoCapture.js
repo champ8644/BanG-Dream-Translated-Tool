@@ -246,6 +246,7 @@ export default class VideoCapture {
   }
 
   showMatInCanvasMinimal(mat, at = { x: 0, y: 0 }) {
+    if (!this.canvas || !this.canvas.current) return;
     if (mat.empty) return;
     const matRGBA =
       mat.channels === 1
@@ -315,10 +316,11 @@ export default class VideoCapture {
   read(frame, mode = 'frame') {
     const rawMat = this.getMat(frame, mode);
     let mat = rawMat.copy();
-    if (mat.empty) return;
+    if (mat.empty) return mat;
     if (this.postProcessor) mat = this.postProcessor(mat, this);
     this.showMatInCanvas(mat);
     this.prevMat = rawMat;
+    return mat;
   }
 
   getRaw(frame, mode = 'frame') {
@@ -327,6 +329,12 @@ export default class VideoCapture {
     else prevFrame = this.getFrame(mode);
     const mat = this.getMat(frame, mode);
     this.setFrame(prevFrame, mode);
+    return mat;
+  }
+
+  getRawRaw(frame, mode = 'frame') {
+    this.setFrame(frame, mode);
+    const mat = this.vCap.read();
     return mat;
   }
 
@@ -404,6 +412,7 @@ export default class VideoCapture {
   }
 
   async updateThumbnail(payload) {
+    if (!this.canvas || !this.canvas.current) return;
     const {
       frame,
       name,

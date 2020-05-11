@@ -2,7 +2,7 @@ import mainEvent, {
   devalidLoop
 } from './containers/Lounge/mainFunctions/mainEvent';
 
-import VideoCapture from './containers/Lounge/VideoCapture';
+import BiVideoCapture from './containers/Lounge/BiVideoCapture';
 import electron from 'electron';
 import mergeData from './containers/Lounge/mainFunctions/mergeData';
 import writeAss from './containers/Lounge/mainFunctions/writeAss';
@@ -21,7 +21,7 @@ ipcRenderer.on('stop-events', devalidLoop);
 
 ipcRenderer.on('start-events', async (e, arg) => {
   const { videoFilePath, start, end, uuid, index, process } = arg;
-  const vCap = new VideoCapture({ path: videoFilePath });
+  const vCap = new BiVideoCapture({ path: videoFilePath });
   const res = await mainEvent({ vCap, start, end, index, process });
   ipcRenderer.send(uuid, res);
 });

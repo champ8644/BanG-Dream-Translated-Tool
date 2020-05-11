@@ -24,7 +24,9 @@ export const fileNames = [
   'titleLabelTemplater.js',
   'titleLineWidthFinder.js',
   'fullDialogGenerator.js',
-  'findTrueTitleSpline.js'
+  'findTrueTitleSpline.js',
+  'starLabelEndTemplater.js',
+  'starLabelEndGenerator.js'
 ];
 
 export const radioObj = IS_DEV
@@ -37,17 +39,23 @@ export const radioObj = IS_DEV
       // 'HSVFinder',
       // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
-      'nameLabelGenerator',
-      'starMatching'
+      // 'starLabelEndGenerator',
+      // 'starMatching',
       // 'titleLabelGenerator',
       // 'fullDialogGenerator'
+      'lounge'
     ]
   : [];
 
-export const defaultOverlayMode = IS_DEV ? 'none' : 'none';
 export const isAutoOpen = false; // IS_DEV;
-export const autoOpenFileName =
-  'E:\\Champ\\Downloads\\EVENT_024วิวา_ScreenRecording_04-30-2563 16-20-22 [382D2370]_3_183705.mp4';
+
+export const defaultOverlayMode = IS_DEV ? 'lounge' : 'none';
+export const defaultVCapBeginFrame = IS_DEV ? 1 : 0;
+// const prefixFileName = 'E:\\Champ\\Downloads\\';
+// const prefixFileName = 'E:\\Bandori\\Events\\';
+const prefixFileName = 'E:\\Bandori\\LoungeHNY2020\\';
+const fileName = 'วันเกิดคุณคะน้าเรนเดอร์แล้ว.mp4';
+export const autoOpenFileName = `${prefixFileName}${fileName}`;
 
 export const sliderObjSelector = {
   starMatching: {
@@ -86,6 +94,10 @@ export const sliderObjSelector = {
   fullDialogGenerator: {
     slider: [{ name: 'thresh', max: 255 }, { name: 'blur', max: 30 }],
     commit: false
+  },
+  lounge: {
+    slider: [{ name: 'approx', max: 100 }],
+    commit: false
   }
 };
 
@@ -103,7 +115,8 @@ export const defaultValueSlider = {
   innerY: [0, 1440],
   thresh: [20, 255],
   aperture: 3,
-  blur: 5
+  blur: 5,
+  approx: 10
 };
 
 export const ws = {
@@ -124,7 +137,6 @@ export const ws = {
 // export const endFrameTest = 106969;
 export const startFrameTest = 37619;
 export const endFrameTest = 37690;
-export const defaultVCapBeginFrame = IS_DEV ? 0 : 0;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

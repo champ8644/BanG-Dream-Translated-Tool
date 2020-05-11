@@ -149,11 +149,6 @@ export const styles = theme => ({
     '-moz-appearance': 'none', // Reset
     '-webkit-appearance': 'none', // Reset
     textDecoration: 'none',
-    // So we take precedent over the style of a native <a /> element.
-    '&$disabled': {
-      pointerEvents: 'none', // Disable link interactions
-      cursor: 'default'
-    },
     '@media print': {
       colorAdjust: 'exact'
     },
@@ -183,9 +178,6 @@ export const styles = theme => ({
       // Reset on touch devices, it doesn't add specificity
       '@media (hover: none)': {
         backgroundColor: theme.palette.grey[300]
-      },
-      '&$disabled': {
-        backgroundColor: theme.palette.action.disabledBackground
       },
       textDecoration: 'none'
     }

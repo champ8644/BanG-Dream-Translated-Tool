@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export function formatNumber(_x) {
   const x = parseFloat(_x);
   if (isNaN(x)) return _x;
@@ -26,4 +28,15 @@ export function showMatWH(name, mat) {
       channels: mat.channels
     });
   }
+}
+
+export function showTime(_dur) {
+  let dur;
+  if (!moment.isDuration(_dur)) dur = moment.duration(_dur);
+  else dur = _dur;
+  const h = dur.hours();
+  const mm = `${dur.minutes()}`.padStart(2, '0');
+  const ss = `${dur.seconds()}`.padStart(2, '0');
+  if (h > 0) return `${h}:${mm}:${ss}`;
+  return `${mm}:${ss}`;
 }

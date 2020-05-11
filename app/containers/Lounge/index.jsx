@@ -2,6 +2,9 @@
 
 import * as actions from './actions';
 
+import ProgressMultiBar, {
+  CustomLinearProgress
+} from './components/ProgressMultiBar';
 import React, { Component } from 'react';
 import {
   autoOpenFileName,
@@ -49,7 +52,6 @@ import { IS_DEV } from '../../constants/env';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import ListVCap from './components/ListVCap';
 import MenuItem from '@material-ui/core/MenuItem';
 import { NUM_MAX_PROCESS } from './constants';
@@ -57,7 +59,6 @@ import Paper from '@material-ui/core/Paper';
 import PieChartIcon from '@material-ui/icons/PieChart';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import ProgressChipbar from './components/ProgressChipBar';
-import ProgressMultiBar from './components/ProgressMultiBar';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Select from '@material-ui/core/Select';
@@ -168,6 +169,7 @@ class Lounge extends Component {
   constructor(props) {
     super(props);
     this.canvas = React.createRef();
+    this.dialogFrame = React.createRef();
   }
 
   componentDidMount() {
@@ -234,10 +236,8 @@ class Lounge extends Component {
       status,
       valueSlider,
       handleChangeSlider,
-      exporting,
       progress,
       progressFull,
-      importing,
       frame,
       ms,
       percent,
@@ -261,6 +261,8 @@ class Lounge extends Component {
       handleConfirmCloseConvertingDialog,
       closeConvertingDialog,
       onSwitchFPSVCapList,
+      exportingLounge,
+      importingLounge,
       mainProgressProps: {
         readyToWork,
         percentLinear,
@@ -335,12 +337,12 @@ class Lounge extends Component {
           <div className={classes.buttonSliderContainer}>
             {radioObj.length > 0 && (
               <>
-                <Button className={classes.btn} onClick={exporting}>
+                <Button className={classes.btn} onClick={exportingLounge}>
                   Export
                 </Button>
                 <Button
                   className={clsx(classes.btn, classes.marginLeft)}
-                  onClick={importing}
+                  onClick={importingLounge}
                 >
                   Import
                 </Button>
@@ -526,10 +528,19 @@ class Lounge extends Component {
                 )}
               </Grid>
             </Grid>
-            {progressFull > 0 && (
+            {/* {progressFull > 0 && (
               <LinearProgress
                 variant='determinate'
                 value={(progress / progressFull) * 100}
+              />
+            )} */}
+            {progressFull > 0 && (
+              <CustomLinearProgress
+                variant='determinate'
+                value={(progress / progressFull) * 100}
+                isfirst={1}
+                islast={1}
+                iscomplete={progress / progressFull >= 1 ? 1 : undefined}
               />
             )}
             <Grid container>
@@ -573,7 +584,11 @@ class Lounge extends Component {
           </>
         )}
 
-        <Dialog open={dialog.open} onClose={handleCancelDialog}>
+        <Dialog
+          open={dialog.open}
+          onClose={handleCancelDialog}
+          onEntering={() => this.dialogFrame.current.select()}
+        >
           <DialogContent>
             <TextField
               autoFocus
@@ -582,6 +597,7 @@ class Lounge extends Component {
               value={dialog.value}
               onChange={handleChangeDialog}
               onKeyDown={handleKeyDownDialog}
+              inputRef={this.dialogFrame}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>

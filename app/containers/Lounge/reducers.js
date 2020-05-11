@@ -9,6 +9,7 @@ import {
 
 import { actionTypes } from './actions';
 import moment from 'moment';
+import { showTime } from './constants/function';
 
 export const initialState = {
   videoFilePath: '',
@@ -62,14 +63,6 @@ export const initialVideoDatas = {
   readyToWork: false,
   showFPS: true
 };
-
-function showTime(dur) {
-  const h = dur.hours();
-  const mm = `${dur.minutes()}`.padStart(2, '0');
-  const ss = `${dur.seconds()}`.padStart(2, '0');
-  if (h > 0) return `${h}:${mm}:${ss}`;
-  return `${mm}:${ss}`;
-}
 
 export default function Lounge(state = initialState, action) {
   const { type, payload } = action;
@@ -162,6 +155,8 @@ export default function Lounge(state = initialState, action) {
     case actionTypes.HANDLE_CHANGE_SLIDER:
     case actionTypes.HANDLE_COMMITTED_SLIDER:
       return { ...state, valueSlider: { ...state.valueSlider, ...payload } };
+    case actionTypes.ADD_PROGRESS:
+      return { ...state, progress: state.progress + payload };
     case actionTypes.STOP_PROGRESS:
       return { ...state, progressFull: null, progress: null };
     case actionTypes.START_PROGRESS:
@@ -183,8 +178,6 @@ export default function Lounge(state = initialState, action) {
         },
         numProcess: payload.displayNumProcess
       };
-    case actionTypes.ADD_PROGRESS:
-      return { ...state, progress: state.progress + payload };
     case actionTypes.IMPORTING:
       return { ...state, importedFile: payload };
     case actionTypes.FINISHING_QUEUE: {
@@ -245,7 +238,7 @@ export default function Lounge(state = initialState, action) {
       let { progressFromWorker } = videoDatas[path];
       const { vCap } = videoDatas[path];
 
-      vCap.fillBlack();
+      if (vCap) vCap.fillBlack();
 
       if (!progressFromWorker) {
         progressFromWorker = { bar: Array(numProcess).fill(null) };

@@ -33,6 +33,15 @@ export const nameLabelThreshold = {
   val: [224, 255]
 };
 
+export const starLabelEndColorThreshold = {
+  blue: [87, 185],
+  green: [41, 126],
+  red: [229, 255],
+  hue: [145, 181],
+  sat: [123, 255],
+  val: [200, 255]
+};
+
 export const subtitleThreshold = {
   blue: [0, 128],
   green: [0, 128],
@@ -41,9 +50,11 @@ export const subtitleThreshold = {
 
 export const rows = 1440;
 export const cols = 1920;
+export const skipDialogCountThreshold = 3000;
 export const dialogThreshold = 200;
 export const dialogDiffThreshold = 100;
 export const dialogPartialDiffThreshold = 150;
+export const starLabelEndThreshold = 0.6;
 export const threshPercentDiff = 3;
 export const threshStarMatching = 0.45;
 export const threshPlacePercentDiff = 5;
@@ -111,6 +122,21 @@ export const starROI = {
     Math.round((1400 + diffShaken) * rx)
   ]
 };
+
+export const starLabelEndROI = {
+  roiX: [
+    Math.round((555 - diffShaken) * rx),
+    Math.round((619 + diffShaken) * rx)
+  ],
+  roiY: [
+    Math.round((1105 - diffShaken) * rx),
+    Math.round((1189 + diffShaken) * rx)
+  ]
+};
+export const starLabelEndCrop = {
+  rectX: [Math.round(555 * rx), Math.round(619 * rx)],
+  rectY: [Math.round(1105 * rx), Math.round(1189 * rx)]
+};
 export const subtitleCrop = {
   rectX: [Math.round(100 * rx), Math.round(1800 * rx)],
   rectY: [Math.round(1200 * rx), Math.round(1400 * rx)]
@@ -157,3 +183,5 @@ export const videoListMaxWidth = Math.round(1920 * videoListRatio);
 export const videoListMaxHeight = Math.round(1440 * videoListRatio);
 
 export const skipNonIntersectWhiteLine = false;
+
+export const RESEARCH_SKIP = 150;
