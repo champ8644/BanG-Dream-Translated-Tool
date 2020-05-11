@@ -184,4 +184,4 @@ export const videoListMaxHeight = Math.round(1440 * videoListRatio);
 
 export const skipNonIntersectWhiteLine = false;
 
-export const researchSkip = 150;
+export const RESEARCH_SKIP = 150;

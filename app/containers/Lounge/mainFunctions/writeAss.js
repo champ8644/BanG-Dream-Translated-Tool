@@ -127,15 +127,15 @@ function writeShake({ arr, begin, end }) {
 `;
 }
 
-function writeSkip({ begin, end }) {
-  return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},skip,,0,0,0,,
-`;
-}
+// function writeSkip({ begin, end }) {
+//   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},skip,,0,0,0,,
+// `;
+// }
 
-function writeEmpty({ begin, end }) {
-  return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},empty,,0,0,0,,
-`;
-}
+// function writeEmpty({ begin, end }) {
+//   return `Dialogue: 0,${timestamp(begin)},${timestamp(end)},empty,,0,0,0,,
+// `;
+// }
 
 function additionInfoTemplate(info) {
   return `
@@ -445,12 +445,12 @@ function exportingAss({
         case 'fixName':
           stream.write(writeFixName(item));
           break;
-        case 'skip':
-          stream.write(writeSkip(item));
-          break;
-        case 'empty':
-          stream.write(writeEmpty(item));
-          break;
+        // case 'skip':
+        //   stream.write(writeSkip(item));
+        //   break;
+        // case 'empty':
+        //   stream.write(writeEmpty(item));
+        //   break;
         default:
       }
     });

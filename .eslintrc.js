@@ -71,6 +71,7 @@ module.exports = {
     'no-shadow': 'off',
     'react/prop-types': 'off',
     'import/no-dynamic-require': 'off',
+    'no-bitwise': ['error', { allow: ['^'] }],
     'no-unused-vars': [
       'error',
       {

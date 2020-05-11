@@ -1,14 +1,15 @@
 import {
+  RESEARCH_SKIP,
+  fadeThreshold,
+  intersectCompensate,
+  skipDialogCountThreshold
+} from '../constants';
+import {
   chunkCount,
   meanLength,
   meanSmooth,
   updateThumbnailInterval
 } from '../constants/config';
-import {
-  fadeThreshold,
-  intersectCompensate,
-  skipDialogCountThreshold
-} from '../constants';
 
 import cv from 'opencv4nodejs';
 import findActorID from './findActorID';
@@ -119,11 +120,34 @@ let isLoopValid;
 export function devalidLoop() {
   isLoopValid = false;
 }
+
+function trySkip({ frame, vCap, prevDialog }) {
+  let i = frame;
+  let canSkip;
+  const limitVCap = vCap.current.length;
+  do {
+    canSkip = false;
+    if (i + RESEARCH_SKIP >= limitVCap)
+      return { frameAfterSkip: i, refracSkip: limitVCap };
+    const mat = vCap.next.getMat(i + RESEARCH_SKIP);
+    if (mat.empty) {
+      isLoopValid = false;
+      return { frameAfterSkip: i, refracSkip: i };
+    }
+    const { status, dialog } = makeNameLabel(mat);
+    if (status) canSkip = !isNewDialog(dialog, prevDialog);
+    if (canSkip) {
+      vCap.switch();
+      i += RESEARCH_SKIP;
+    }
+  } while (canSkip);
+  return { frameAfterSkip: i, refracSkip: i + RESEARCH_SKIP };
+}
+
 function nonBlockingLoop({
   beginFrame = 0,
   endFrame = 1e9,
-  limitVCap,
-  path,
+  vCap,
   process,
   chunksize,
   callback,
@@ -134,7 +158,6 @@ function nonBlockingLoop({
   console.log({
     beginFrame,
     endFrame,
-    limitVCap,
     chunksize,
     callback,
     finished
@@ -142,12 +165,19 @@ function nonBlockingLoop({
   let i = beginFrame;
   let gracefulFinish = false;
   isLoopValid = true;
-  message2UI('begin-progress', { path, index, beginFrame, endFrame });
+  message2UI('begin-progress', {
+    path: vCap.current.path,
+    index,
+    beginFrame,
+    endFrame
+  });
   let prevTime =
     new Date().getTime() + index * (updateThumbnailInterval / process);
   // console.log('prevTime: ', prevTime);
+  let frameAfterSkip;
+  let refracSkip = 0;
   (function chunk() {
-    const end = Math.min(i + chunksize, limitVCap);
+    const end = Math.min(i + chunksize, vCap.current.length);
     let activeWorking;
     let info;
     for (; i < end; i++) {
@@ -157,13 +187,18 @@ function nonBlockingLoop({
         gracefulFinish = true;
         break;
       }
-      // if (activeWorking.skipable)
-
-      // if (isSkippable(payload)) console.log('skip!');
+      if (activeWorking.skipable && i >= refracSkip) {
+        ({ frameAfterSkip, refracSkip } = trySkip({
+          frame: i,
+          vCap,
+          prevDialog: info.nameObj.dialog
+        }));
+        i = frameAfterSkip;
+      }
     }
     // const frame = i > endFrame ? endFrame : i;
     message2UI('update-progress', {
-      path,
+      path: vCap.current.path,
       index,
       frame: i,
       beginFrame,
@@ -175,11 +210,11 @@ function nonBlockingLoop({
       prevTime = now;
       // console.log('update Thumbnail');
       message2UI('update-thumbnail', {
-        path,
+        path: vCap.current.path,
         info: trimPayload(info)
       });
     }
-    if (gracefulFinish || i >= limitVCap) finished(true);
+    if (gracefulFinish || i >= vCap.current.length) finished(true);
     else if (!isLoopValid) finished(false);
     else setTimeout(chunk, 0);
   })();
@@ -218,12 +253,10 @@ export default function mainEvent({ vCap, start, end, index, process }) {
       process,
       beginFrame: start,
       endFrame: end,
-      limitVCap: vCap.length,
-      path: vCap.path,
       vCap,
       chunksize: chunkCount,
       callback: frame => {
-        const mat = vCap.getMat(frame);
+        const mat = vCap.current.getMat(frame);
         if (mat.empty) {
           isLoopValid = false;
           return;
@@ -235,9 +268,9 @@ export default function mainEvent({ vCap, start, end, index, process }) {
         let starMatched;
 
         let activeWorking = {};
-        // const ms = (i * 1000) / vCap.FPS;
-        // const frame = vCap.getFrame();
-        // const ms = vCap.getFrame('ms');
+        // const ms = (i * 1000) / vCap.current.FPS;
+        // const frame = vCap.current.getFrame();
+        // const ms = vCap.current.getFrame('ms');
 
         if (placeObj.status) {
           if (!refractory.place) {
@@ -306,7 +339,7 @@ export default function mainEvent({ vCap, start, end, index, process }) {
           prevDialog = nameObj.dialog;
           // console.log('new dialog at', frame);
         } else if (refractory.name) {
-          // vCap.showMatInCanvas(nameObj.actorStar);
+          // vCap.current.showMatInCanvas(nameObj.actorStar);
           starMatched = starMatching(mat, currentActor);
           // console.log('starMatched: ', starMatched);
           // console.log('refractory: ', { ...refractory });
@@ -508,9 +541,9 @@ export default function mainEvent({ vCap, start, end, index, process }) {
               nameActor,
               finished,
               info: {
-                limitVCap: vCap.length,
-                path: vCap.path,
-                FPS: vCap.FPS,
+                limitVCap: vCap.current.length,
+                path: vCap.current.path,
+                FPS: vCap.current.FPS,
                 beginFrame: start,
                 endFrame: end,
                 index
