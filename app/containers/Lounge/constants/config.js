@@ -26,7 +26,8 @@ export const fileNames = [
   'fullDialogGenerator.js',
   'findTrueTitleSpline.js',
   'starLabelEndTemplater.js',
-  'starLabelEndGenerator.js'
+  'starLabelEndGenerator.js',
+  'findTextBubble.js'
 ];
 
 export const radioObj = IS_DEV
@@ -43,14 +44,15 @@ export const radioObj = IS_DEV
       // 'starMatching',
       // 'titleLabelGenerator',
       // 'fullDialogGenerator'
-      'lounge'
+      'lounge',
+      'findTextBubble'
     ]
   : [];
 
-export const isAutoOpen = false; // IS_DEV;
+export const isAutoOpen = true; // IS_DEV;
 
-export const defaultOverlayMode = IS_DEV ? 'lounge' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 1 : 0;
+export const defaultOverlayMode = IS_DEV ? 'findTextBubble' : 'none';
+export const defaultVCapBeginFrame = IS_DEV ? 3489 : 0;
 // const prefixFileName = 'E:\\Champ\\Downloads\\';
 // const prefixFileName = 'E:\\Bandori\\Events\\';
 const prefixFileName = 'E:\\Bandori\\LoungeHNY2020\\';

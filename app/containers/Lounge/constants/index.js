@@ -14,10 +14,10 @@ export const yellow = new cv.Vec(0, 255, 255);
 export const black = new cv.Vec(0, 0, 0);
 export const white = new cv.Vec(255, 255, 255);
 export const color = {
-  green,
-  blue,
   red,
+  blue,
   purple,
+  green,
   cyan,
   yellow,
   black,
@@ -185,3 +185,5 @@ export const videoListMaxHeight = Math.round(1440 * videoListRatio);
 export const skipNonIntersectWhiteLine = false;
 
 export const RESEARCH_SKIP = 150;
+
+export const loungeBackgroundColorThreshold = 242;

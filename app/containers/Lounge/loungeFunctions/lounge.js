@@ -1,11 +1,17 @@
+import {
+  color,
+  loungeBackgroundColorThreshold,
+  maxMinDist
+} from '../constants';
+
 import Queue from '../../../classes/Queue';
 import XLSX from 'xlsx';
 import _ from 'lodash';
 import { actionTypes } from '../actions';
 import cv from 'opencv4nodejs';
+// import { dotMat } from '../utils/utilityCv';
 // import fitCurve from './fitCurve';
 import fs from 'fs';
-import { maxMinDist } from '../constants';
 // export function importing() {
 //   return async (dispatch, getState) => {
 //     const {
@@ -102,43 +108,84 @@ function isFinalContour(contour) {
   return true;
 }
 
-function findTextBubble(frame) {
-  const red = new cv.Vec(0, 0, 255);
-  const green = new cv.Vec(0, 255, 0);
-  const blue = new cv.Vec(255, 0, 0);
+function getH(contour) {
+  const { w: next, x: prev, y: child, z: parent } = contour.hierarchy;
+  return { next, prev, child, parent };
+}
+
+function logChild(mat, contours, arr) {
+  const colorKey = Object.keys(color);
+  arr.forEach((selected, index) => {
+    const selectedColor = color[colorKey[index % colorKey.length]];
+    let { child: cur } = getH(selected);
+    let c = 1;
+    mat.drawContours([selected.getPoints()], -1, selectedColor, 2);
+    const sumPoints = [];
+    do {
+      const { next } = getH(contours[cur]);
+      console.log(c++, next, contours[cur].area);
+      const points = contours[cur].getPoints();
+      sumPoints.push(points);
+      cur = next;
+    } while (cur > 0);
+    mat.drawContours(sumPoints, -1, selectedColor, 1);
+    const rect = new cv.Contour(sumPoints.flat()).boundingRect();
+    mat.drawRectangle(rect, selectedColor, 3);
+  });
+}
+
+function getChildrenRect(contours, selected) {
+  let { child: cur } = getH(selected);
+  const sumPoints = [];
+  do {
+    const { next } = getH(contours[cur]);
+    const points = contours[cur].getPoints();
+    sumPoints.push(points);
+    cur = next;
+  } while (cur > 0);
+  return new cv.Contour(sumPoints.flat()).boundingRect();
+}
+
+export function findTextBubble(frame) {
   const contours = frame
     .cvtColor(cv.COLOR_RGB2GRAY)
     .gaussianBlur(new cv.Size(3, 3), 0)
-    .threshold(240, 255, cv.THRESH_BINARY)
-    .findContours(cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+    .threshold(200, 255, cv.THRESH_BINARY)
+    .findContours(cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+  console.log('contours: ', contours);
   const outObj = [];
   contours.forEach(item => {
-    // if (item.area > 5000) {
-    const peri = item.arcLength(true);
-    const approx = item.approxPolyDP(0.04 * peri, true);
-    if (approx.length === 4) {
-      const approxContour = new cv.Contour(approx);
-      if (isFinalContour(approxContour)) {
-        const finalRect = approxContour.boundingRect();
-        outObj.push(finalRect);
-        frame.drawContours([approx], -1, blue, 1);
-        frame.drawContours([item.getPoints()], -1, green, 1);
-        frame.drawRectangle(item.boundingRect(), green, 1);
-        frame.drawRectangle(finalRect, red, 3);
-        frame.drawCircle(
-          new cv.Point(
-            finalRect.x + finalRect.width / 2,
-            finalRect.y + finalRect.height / 2
-          ),
-          5,
-          red,
-          10,
-          cv.FILLED
-        );
+    if (item.area > 5000) {
+      const peri = item.arcLength(true);
+      const approx = item.approxPolyDP(0.04 * peri, true);
+      if (approx.length === 4) {
+        const approxContour = new cv.Contour(approx);
+        if (isFinalContour(approxContour)) {
+          const maskMat = new cv.Mat(
+            frame.rows,
+            frame.cols,
+            cv.CV_8UC1,
+            color.black
+          );
+          maskMat.drawContours([item.getPoints()], -1, color.white, cv.FILLED);
+          const childrenRect = getChildrenRect(contours, item);
+          maskMat.drawRectangle(childrenRect, color.black, cv.FILLED);
+          const intermetFrame = new cv.Mat(
+            frame.rows,
+            frame.cols,
+            cv.CV_8UC3,
+            color.black
+          );
+          frame.copyTo(intermetFrame, maskMat);
+          const { w, x, y } = frame.mean(maskMat);
+          if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
+            outObj.push(item);
+          }
+        }
       }
-      // }
     }
   });
+  console.log('outObj: ', outObj);
   return outObj;
 }
 
