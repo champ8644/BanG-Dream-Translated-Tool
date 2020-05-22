@@ -52,12 +52,13 @@ export const radioObj = IS_DEV
 export const isAutoOpen = true; // IS_DEV;
 
 export const defaultOverlayMode = IS_DEV ? 'findTextBubble' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 3489 : 0;
+export const defaultVCapBeginFrame = IS_DEV ? 1234 : 0;
 // const prefixFileName = 'E:\\Champ\\Downloads\\';
 // const prefixFileName = 'E:\\Bandori\\Events\\';
 const prefixFileName = 'E:\\Bandori\\LoungeHNY2020\\';
 const fileName = 'วันเกิดคุณคะน้าเรนเดอร์แล้ว.mp4';
 export const autoOpenFileName = `${prefixFileName}${fileName}`;
+// export const autoOpenFileName = `"E:\\Champ\\Downloads\\วิดีโอ_วันเกิด+ล้อนจ์_2020010ซาบะ_HBD2020_Saaya [F6E1211A]_1_220703.mp4"`;
 
 export const sliderObjSelector = {
   starMatching: {

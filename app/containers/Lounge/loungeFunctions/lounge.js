@@ -146,7 +146,7 @@ function getChildrenRect(contours, selected) {
   return new cv.Contour(sumPoints.flat()).boundingRect();
 }
 
-export function findTextBubble(frame) {
+export function findTextBubble2(frame) {
   const contours = frame
     .cvtColor(cv.COLOR_RGB2GRAY)
     .gaussianBlur(new cv.Size(3, 3), 0)
@@ -186,6 +186,46 @@ export function findTextBubble(frame) {
     }
   });
   console.log('outObj: ', outObj);
+  return outObj;
+}
+
+function findTextBubble(frame) {
+  const red = new cv.Vec(0, 0, 255);
+  const green = new cv.Vec(0, 255, 0);
+  const blue = new cv.Vec(255, 0, 0);
+  const contours = frame
+    .cvtColor(cv.COLOR_RGB2GRAY)
+    .gaussianBlur(new cv.Size(3, 3), 0)
+    .threshold(240, 255, cv.THRESH_BINARY)
+    .findContours(cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+  const outObj = [];
+  contours.forEach(item => {
+    // if (item.area > 5000) {
+    const peri = item.arcLength(true);
+    const approx = item.approxPolyDP(0.04 * peri, true);
+    if (approx.length === 4) {
+      const approxContour = new cv.Contour(approx);
+      if (isFinalContour(approxContour)) {
+        const finalRect = approxContour.boundingRect();
+        outObj.push(finalRect);
+        frame.drawContours([approx], -1, blue, 1);
+        frame.drawContours([item.getPoints()], -1, green, 1);
+        frame.drawRectangle(item.boundingRect(), green, 1);
+        frame.drawRectangle(finalRect, red, 3);
+        frame.drawCircle(
+          new cv.Point(
+            finalRect.x + finalRect.width / 2,
+            finalRect.y + finalRect.height / 2
+          ),
+          5,
+          red,
+          10,
+          cv.FILLED
+        );
+      }
+      // }
+    }
+  });
   return outObj;
 }
 
@@ -239,13 +279,8 @@ export function exporting() {
       vCap
       // vCapPackage: { putFrame }
     } = getState().Lounge;
-    // const [beginTime, endTime] = [258, 576];
-    // const [beginTime, endTime] = [574, 815];
-    // const [beginTime, endTime] = [815, 1038];
-    // const [beginTime, endTime] = [1036, 1224];
-    // const [beginTime, endTime] = [1223, 1474];
-    const [beginTime, endTime] = [3122, 3587];
-    // const [beginTime, endTime] = [3447, 3604];
+    const [beginTime, endTime] = [1234, 1581];
+    // const [beginTime, endTime] = [1819, 2005];
     let maxArea = 0;
     let maxItemIndex;
     let maxArrayIndex;
