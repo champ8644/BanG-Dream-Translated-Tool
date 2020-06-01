@@ -55,12 +55,13 @@ Comment: 1,0:00:00.00,0:00:00.00,ปรับสี,,0,0,0,code line,function co
 Comment: 2,0:00:00.00,0:00:00.00,ปรับสี,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an7\\bord0\\shad0\\p1\\c&HFFFFFF&\\fscx150\\fscy500\\clip(106,1115,554,1181)\\pos(366.845,1050)!alphaFix()!}m -200 5 l 200 5 200 32 -200 32
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,name = {}
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,colorBackground = "f8f8f8"
+Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,code once,function getPos (actor) if string.len(actor)>50 then return 95 else return 130 end end
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an7\\bord0\\shad0\\p1\\c&H733CFF&\\fscx150\\fscy500\\clip(106,1115,554,1181)\\pos(366.845,1050)!checkIfEmpty(name[$actor])!}m -200 5 l 200 5 200 32 -200 32
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\an7\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx800\\fscy3500\\pos(957.2,957)\\clip(90,1198,1820,1407)!checkIfEmpty(line.text_stripped)!}m -156 -15 l 120 -15 120 13 -156 13
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template line,{\\clip(90,1198,1820,1403)}
-Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\1c&HFFFFFF&\\shad0.2\\fs95\\pos(130,1150)\\an4}!name[$actor]!
-Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx1500\\fscy1500\\clip(90,1198,1820,1296)\\t(0,2750,\\clip(1820,1198,1820,1296))!checkIfEmpty(line.text_stripped)!}m -120 -15 l 120 -15 120 13 -120 13
-Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx1500\\fscy1500\\clip(90,1298,1820,1403)\\t(2750,5300,\\clip(1820,1298,1820,1403))!checkIfEmpty(line.text_stripped)!}m -120 -15 l 120 -15 120 13 -120 13
+Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\1c&HFFFFFF&\\shad0.2\\fs95\\pos(!getPos(name[$actor])!,1150)\\an4}!name[$actor]!
+Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx1500\\fscy1500\\clip(90,1198,1820,1286)\\t(0,2750,\\clip(1820,1198,1820,1286))!checkIfEmpty(line.text_stripped)!}m -120 -15 l 120 -15 120 13 -120 13
+Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\blur0.1\\bord0\\shad0\\p1\\c&H!colorBackground!&\\fscx1500\\fscy1500\\clip(90,1286,1820,1403)\\t(2750,5300,\\clip(1820,1286,1820,1403))!checkIfEmpty(line.text_stripped)!}m -120 -15 l 120 -15 120 13 -120 13
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,code once,shake = {}
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,code line,_, _,idx,actx = string.find(line.actor, "([%d.]*)%p*([%d.]*)"); id = _G.tonumber(idx); act = _G.tonumber(actx)
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,template notext line,!maxloop(_G.table.getn(shake[id])-1)! !retime("preline",shake[id][j].t,shake[id][j+1].t)!{\\an7\\bord0\\shad0\\p1\\c&H733CFF&\\fscx150\\fscy500\\clip(106,1115,554,1181)\\pos(!shake[id][j].x+366.845!,!shake[id][j].y+1050!)!checkIfEmpty(name[act])!}m -200 5 l 200 5 200 32 -200 32
