@@ -73,7 +73,7 @@ function nonBlockingLoop({
       // });
     }
     if (i >= vCap.length) finished(true);
-    if (i >= endFrame) finished(true);
+    else if (i >= endFrame) finished(true);
     else if (!isLoopValid) finished(false);
     else setTimeout(chunk, 0);
   })();
