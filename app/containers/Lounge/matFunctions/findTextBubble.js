@@ -245,6 +245,6 @@ export function testfindTextBubble(mat, prevRes) {
     }
   });
   // eslint-disable-next-line
-  console.log({ calcs, rects });
+  // console.log({ calcs, rects });
   return { calcs, rects };
 }

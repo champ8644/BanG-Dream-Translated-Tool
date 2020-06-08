@@ -50,7 +50,7 @@ export const subtitleThreshold = {
 
 export const rows = 1440;
 export const cols = 1920;
-export const skipDialogCountThreshold = 3000;
+export const skipDialogCountThreshold = 4000;
 export const dialogThreshold = 200;
 export const dialogDiffThreshold = 100;
 export const dialogPartialDiffThreshold = 150;
@@ -142,7 +142,7 @@ export const subtitleCrop = {
   rectY: [Math.round(1200 * rx), Math.round(1400 * rx)]
 };
 export const subtitlePartialCrop = {
-  rectX: [Math.round(120 * rx), Math.round(600 * rx)],
+  rectX: [Math.round(120 * rx), Math.round(1000 * rx)],
   rectY: [Math.round(1200 * rx), Math.round(1260 * rx)]
 };
 export const subtitleFifthCrop = {
