@@ -49,7 +49,7 @@ function nonBlockingLoop({
   let prevTime =
     new Date().getTime() + index * (updateThumbnailInterval / process);
   (function chunk() {
-    const end = Math.min(i + chunksize, vCap.length);
+    const end = Math.min(i + chunksize, vCap.length, endFrame);
     // let info;
     for (; i < end; i++) {
       if (!isLoopValid) break;
@@ -73,6 +73,7 @@ function nonBlockingLoop({
       // });
     }
     if (i >= vCap.length) finished(true);
+    if (i >= endFrame) finished(true);
     else if (!isLoopValid) finished(false);
     else setTimeout(chunk, 0);
   })();

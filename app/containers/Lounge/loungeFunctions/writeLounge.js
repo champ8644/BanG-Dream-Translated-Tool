@@ -1,4 +1,5 @@
 import fs from 'fs';
+import loungeTemplate from '../constants/loungeTemplate';
 import moment from 'moment';
 
 let toMs;
@@ -46,7 +47,8 @@ function writeTemplateLine() {
 
 /* eslint-disable no-param-reassign */
 export default function writeAss({ data, vCap }) {
-  const { path, FPS, msLength } = vCap;
+  const { path, FPS, length } = vCap;
+
   toMs = frame => (frame * 1000) / FPS;
 
   const stream = fs.createWriteStream(
@@ -60,8 +62,9 @@ export default function writeAss({ data, vCap }) {
   // eslint-disable-next-line no-console
   stream.on('finish', () => console.log('Finish writing file!!'));
   stream.once('open', () => {
+    stream.write(loungeTemplate(path));
     data.forEach(item => stream.write(writeShake(item)));
-    stream.write(writeCredit(msLength));
+    stream.write(writeCredit(length));
     stream.write(writeTemplateLine());
     data.forEach(item => stream.write(writeText(item)));
     stream.end();

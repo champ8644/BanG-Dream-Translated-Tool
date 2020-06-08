@@ -18,8 +18,8 @@ export default function adapterLounge(outputLounge) {
     ...item.reduce(
       (state, next, idx) => {
         state.uid = next.uid + 1;
-        state.beginFrame = Math.min(state.beginFrame, next.frame);
-        state.endFrame = Math.max(state.endFrame, next.frame);
+        state.begin = Math.min(state.begin, next.frame);
+        state.end = Math.max(state.end, next.frame);
         ['height', 'width', 'x', 'y'].forEach(key => {
           state[key] = (state[key] * idx + next[key]) / (idx + 1);
         });
@@ -34,8 +34,8 @@ export default function adapterLounge(outputLounge) {
       },
       {
         uid: null,
-        beginFrame: 1e10,
-        endFrame: -1,
+        begin: 1e10,
+        end: -1,
         height: 0,
         width: 0,
         y: 0,
