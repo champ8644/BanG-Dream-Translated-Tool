@@ -1,4 +1,8 @@
-import { color, loungeBackgroundColorThreshold } from '../constants';
+import {
+  color,
+  limitLoungeMoving,
+  loungeBackgroundColorThreshold
+} from '../constants';
 
 import cv from 'opencv4nodejs';
 import { writeMat } from '../utils/utilityCv';
@@ -54,9 +58,10 @@ function getH(contour) {
   return { next, prev, child, parent };
 }
 
-function isFinalContour(contour) {
-  if (contour.width < 130) return false;
-  if (contour.height < 130) return false;
+function isFinalContour(contour, roi) {
+  // if (roi.width < 130) return false;
+  // if (roi.height < 130) return false;
+  if (roi.width / roi.height < 2) return false;
   const rect = contour.boundingRect();
   if (rect.width <= rect.height) return false;
   const percent = (contour.area / rect.width / rect.height) * 100;
@@ -111,7 +116,7 @@ function abs(x) {
 function calcRect(rect, prevRect) {
   const diff = compareRect(rect, prevRect);
   return ['x1', 'y1', 'x2', 'y2'].reduce(
-    (state, val) => state + abs(diff[val]),
+    (state, val) => Math.max(state, abs(diff[val])),
     0
   );
 }
@@ -138,8 +143,8 @@ export default function findTextBubble(mat, vCap) {
       const approx = item.approxPolyDP(0.04 * peri, true);
       if (approx.length === 4) {
         const approxContour = new cv.Contour(approx);
-        if (isFinalContour(approxContour)) {
-          const roi = item.boundingRect();
+        const roi = item.boundingRect();
+        if (isFinalContour(approxContour, roi)) {
           const maskMat = new cv.Mat(
             mat.rows,
             mat.cols,
@@ -188,7 +193,7 @@ export default function findTextBubble(mat, vCap) {
   return outputFrame;
 }
 
-export function testfindTextBubble(mat, prevRes) {
+export function testfindTextBubble(mat, prevRes, state, frame) {
   const contours = mat
     .cvtColor(cv.COLOR_RGB2GRAY)
     .gaussianBlur(new cv.Size(3, 3), 0)
@@ -196,14 +201,16 @@ export function testfindTextBubble(mat, prevRes) {
     .findContours(cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
   // const outObj = [];
   const rects = [];
-  const calcs = [];
+  // const calcs = [];
+  const info = { a: 0, b: 0, c: 0 };
   contours.forEach(item => {
     if (item.area > 5000) {
       const peri = item.arcLength(true);
       const approx = item.approxPolyDP(0.04 * peri, true);
       if (approx.length === 4) {
         const approxContour = new cv.Contour(approx);
-        if (isFinalContour(approxContour)) {
+        const roi = item.boundingRect();
+        if (isFinalContour(approxContour, roi)) {
           const maskMat = new cv.Mat(
             mat.rows,
             mat.cols,
@@ -220,31 +227,82 @@ export function testfindTextBubble(mat, prevRes) {
           );
           mat.copyTo(intermetmat, maskMat);
           const { w, x, y } = mat.mean(maskMat);
+          info.a++;
           if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
-            let selectedRect;
-            // outObj.push(item);
-            // res.push(childrenRect);
-            let mincalc = 1e10;
-            let compc;
+            info.b++;
             rects.push(childrenRect);
-            prevRes.forEach(rect => {
-              const calc = calcRect(childrenRect, rect);
-              const compare = compareRect(childrenRect, rect);
-              if (mincalc > calc) {
-                selectedRect = rect;
-                mincalc = calc;
-                compc = compare;
-              }
-            });
-            if (selectedRect) {
-              calcs.push({ mincalc, ...selectedRect, ...compc });
-            }
+          } else {
+            // eslint-disable-next-line no-console
+            console.log({ w, x, y, z: loungeBackgroundColorThreshold });
           }
         }
       }
     }
   });
-  // eslint-disable-next-line
-  // console.log({ calcs, rects });
-  return { calcs, rects };
+
+  // eslint-disable-next-line no-console
+  // console.log(frame, info.a, info.b);
+
+  const outputRect = [];
+  const newRects = [];
+
+  while (prevRes.length > 0 && rects.length > 0) {
+    let minCalc = 1e10;
+    let selP;
+    let selR;
+    let comp;
+    prevRes.forEach((prev, idxP) => {
+      rects.forEach((cur, idxR) => {
+        const calc = calcRect(cur, prev);
+        if (minCalc > calc) {
+          minCalc = calc;
+          selP = idxP;
+          selR = idxR;
+          comp = compareRect(cur, prev);
+        }
+      });
+    });
+    if (isNewRect(comp, minCalc)) {
+      newRects.push(rects.splice(selR, 1)[0]);
+    } else {
+      outputRect.push({
+        frame,
+        ...rects.splice(selR, 1)[0],
+        uid: prevRes.splice(selP, 1)[0].uid,
+        ...comp,
+        calc: minCalc
+      });
+    }
+  }
+  // console.log('outputRect: ', outputRect);
+  outputRect.forEach(rect => {
+    state[rect.uid].push(rect);
+  });
+  rects.forEach(rect => {
+    outputRect.push({
+      frame,
+      ...rect,
+      uid: state.length
+    });
+    state.push([outputRect[outputRect.length - 1]]);
+  });
+  newRects.forEach(rect => {
+    outputRect.push({
+      frame,
+      ...rect,
+      uid: state.length
+    });
+    state.push([outputRect[outputRect.length - 1]]);
+  });
+
+  return outputRect;
+}
+
+function isNewRect(rect, calc) {
+  if (calc > limitLoungeMoving.c) return true;
+  if (rect.x1 > limitLoungeMoving.x) return true;
+  if (rect.x2 > limitLoungeMoving.x) return true;
+  if (rect.y1 > limitLoungeMoving.y) return true;
+  if (rect.y2 > limitLoungeMoving.y) return true;
+  return false;
 }

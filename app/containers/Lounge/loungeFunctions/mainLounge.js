@@ -3,14 +3,14 @@ import { chunkCount, updateThumbnailInterval } from '../constants/config';
 import message2UI from '../../../worker/message2UI';
 import { testfindTextBubble } from '../matFunctions/findTextBubble';
 
-function trimPayload(payload) {
-  const { frame, index, process } = payload;
-  return {
-    frame,
-    index,
-    process
-  };
-}
+// function trimPayload(payload) {
+//   const { frame, index, process } = payload;
+//   return {
+//     frame,
+//     index,
+//     process
+//   };
+// }
 
 let isLoopValid;
 export function devalidLoungeLoop() {
@@ -50,7 +50,7 @@ function nonBlockingLoop({
     new Date().getTime() + index * (updateThumbnailInterval / process);
   (function chunk() {
     const end = Math.min(i + chunksize, vCap.length);
-    let info;
+    // let info;
     for (; i < end; i++) {
       if (!isLoopValid) break;
       callback(i);
@@ -67,10 +67,10 @@ function nonBlockingLoop({
     if (now - prevTime > updateThumbnailInterval) {
       prevTime = now;
       // console.log('update Thumbnail');
-      message2UI('update-thumbnail', {
-        path: vCap.path,
-        info: trimPayload(info)
-      });
+      // message2UI('update-thumbnail', {
+      //   path: vCap.path,
+      //   info: trimPayload(info)
+      // });
     }
     if (i >= vCap.length) finished(true);
     else if (!isLoopValid) finished(false);
@@ -78,12 +78,13 @@ function nonBlockingLoop({
   })();
 }
 
-let outputLounge;
+// let outputLounge;
 let prevRes = [];
 
 export default function mainLounge({ vCap, start, end, index, process }) {
   return new Promise(resolve => {
-    outputLounge = [];
+    // outputLounge = [];
+    const state = [];
     nonBlockingLoop({
       index,
       process,
@@ -97,12 +98,17 @@ export default function mainLounge({ vCap, start, end, index, process }) {
           isLoopValid = false;
           return;
         }
-        const { calcs, rects } = testfindTextBubble(mat, prevRes);
-        outputLounge = [...outputLounge, ...calcs];
-        prevRes = rects;
+        // const rects = testfindTextBubble(mat, prevRes, state);
+        // outputLounge = [...outputLounge, ...calcs];
+        prevRes = testfindTextBubble(mat, prevRes, state, frame);
       },
       finished: async finished => {
-        if (finished) resolve(outputLounge);
+        if (finished) {
+          resolve(state);
+          message2UI('finish-progress', { path: vCap.path });
+        } else {
+          message2UI('cancel-progress', { path: vCap.path });
+        }
       }
     });
   });

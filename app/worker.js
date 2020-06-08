@@ -3,7 +3,7 @@ import mainEvent, {
 } from './containers/Lounge/mainFunctions/mainEvent';
 import mainLounge, {
   devalidLoungeLoop
-} from './containers/Lounge/loungeFunctions/mainLounge';
+} from './containers/Lounge/loungeFunctions/loungeResearch';
 
 import BiVideoCapture from './containers/Lounge/BiVideoCapture';
 import VideoCapture from './containers/Lounge/VideoCapture';
@@ -11,6 +11,8 @@ import electron from 'electron';
 import mergeData from './containers/Lounge/mainFunctions/mergeData';
 import writeAss from './containers/Lounge/mainFunctions/writeAss';
 import writeLounge from './containers/Lounge/loungeFunctions/writeLounge';
+
+// } from './containers/Lounge/loungeFunctions/mainLounge';
 
 const { ipcRenderer } = electron;
 
