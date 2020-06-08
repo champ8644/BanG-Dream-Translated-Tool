@@ -69,11 +69,8 @@ export function testingFunc() {
 export function devQueue(payload = {}) {
   return (dispatch, getState) => {
     const { videoFilePath, vCap, displayNumProcess } = getState().Lounge;
-    const { start: _start, end: _end, test } = payload;
-    let start = _start;
-    let end = _end;
-    if (start === undefined) start = 0;
-    if (end === undefined) end = vCap.length;
+    let { start = 0, end = vCap.length } = payload;
+    const { test } = payload;
     if (test) {
       start = startFrameTest;
       end = endFrameTest;
@@ -87,6 +84,28 @@ export function devQueue(payload = {}) {
       start,
       end,
       process: displayNumProcess
+    });
+  };
+}
+
+export function devLounge(payload = {}) {
+  return (dispatch, getState) => {
+    const { videoFilePath, vCap } = getState().Lounge;
+    let { start = 0, end = vCap.length } = payload;
+    const { test } = payload;
+    if (test) {
+      start = startFrameTest;
+      end = endFrameTest;
+    }
+    dispatch({
+      type: actionTypes.TICK_QUEUE,
+      payload: { displayNumProcess: 1, path: vCap.path }
+    });
+    message2Worker('start-lounge', {
+      videoFilePath,
+      start,
+      end,
+      process: 1
     });
   };
 }

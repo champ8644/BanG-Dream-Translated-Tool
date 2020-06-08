@@ -237,6 +237,13 @@ let currentActor;
 // let prevFullDialog;
 
 export default function mainEvent({ vCap, start, end, index, process }) {
+  // console.log('{ vCap, start, end, index, process }: ', {
+  //   vCap,
+  //   start,
+  //   end,
+  //   index,
+  //   process
+  // });
   return new Promise(resolve => {
     prevDialog = null;
     meanClass = new Meaning();

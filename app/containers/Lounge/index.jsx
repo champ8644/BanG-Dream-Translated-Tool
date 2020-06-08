@@ -263,6 +263,7 @@ class Lounge extends Component {
       onSwitchFPSVCapList,
       exportingLounge,
       importingLounge,
+      devLounge,
       mainProgressProps: {
         readyToWork,
         percentLinear,
@@ -355,6 +356,18 @@ class Lounge extends Component {
                   onClick={() => devQueue({ test: true })}
                 >
                   Start Testing
+                </Button>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={() => devLounge()}
+                >
+                  Start Lounge
+                </Button>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={() => devLounge({ test: true })}
+                >
+                  Lounge Test
                 </Button>
                 <Button
                   className={clsx(classes.btn, classes.marginLeft)}

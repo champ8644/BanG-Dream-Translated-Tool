@@ -1,4 +1,4 @@
-import { black, thickness } from '../constants';
+import { black, color as colorConst, thickness } from '../constants';
 
 import cv from 'opencv4nodejs';
 
@@ -35,14 +35,25 @@ export function dotMat(
 }
 
 export function writeMat(mat, text, point, color = black) {
+  let colorText = color;
+  if (typeof color === 'string') colorText = colorConst[color];
   mat.putText(
     text,
     getPoint(point),
     cv.FONT_HERSHEY_COMPLEX,
     2,
-    color,
+    colorConst.white,
+    cv.LINE_AA,
+    5
+  );
+  mat.putText(
+    text,
+    getPoint(point),
+    cv.FONT_HERSHEY_COMPLEX,
+    2,
+    colorText,
     cv.LINE_4,
-    1
+    2
   );
 }
 

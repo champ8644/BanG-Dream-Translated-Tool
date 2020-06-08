@@ -134,6 +134,7 @@ export default class VideoCapture {
     this.path = path;
     this.prevMat = new cv.Mat();
     this.msLength = this.getMsLength();
+    this.prevMemoized = [];
     if (canvas) this.canvas = canvas;
     if (updateFrame) this.updateFrame = updateFrame;
     if (colorSlider) this.colorSlider = colorSlider;
@@ -446,5 +447,13 @@ export default class VideoCapture {
 
   mainEvent() {
     mainEvent(this);
+  }
+
+  putMemoize(payload) {
+    this.prevMemoized = payload;
+  }
+
+  getMemoize() {
+    return this.prevMemoized;
   }
 }

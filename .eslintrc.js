@@ -79,6 +79,7 @@ module.exports = {
         argsIgnorePattern: '^(theme|props|state|ownProps|dispatch|getState)|_',
         varsIgnorePattern: '^(variables|mixins|args|log)'
       }
-    ]
+    ],
+    'no-param-reassign': ['error', { props: false }]
   }
 };

@@ -48,6 +48,27 @@ export default class WorkerClass {
     }, 10000);
   }
 
+  async startLounge(payload) {
+    const { videoFilePath, start, end, process } = payload;
+    const invokeWindows = [];
+    let i = 0;
+    for (; i < process; i++)
+      invokeWindows[i] = this.workerWindows[i]
+        ? this.workerWindows[i]
+        : this.openNewWindow(i);
+    for (; i < this.workerWindows.length; i++) {
+      if (this.workerWindows[i]) this.workerWindows[i].close();
+    }
+    this.workerWindows = await Promise.all(invokeWindows);
+    this.workerWindows[0].webContents.send('start-lounge', {
+      videoFilePath,
+      start,
+      end,
+      process,
+      index: 0
+    });
+  }
+
   async startEvents(payload) {
     const { videoFilePath, start, end, process } = payload;
     const waiting = [];
@@ -88,7 +109,11 @@ export default class WorkerClass {
       case 'start-events': {
         this.isWorking = true;
         await this.startEvents(payload);
-        this.waitForClosing();
+        break;
+      }
+      case 'start-lounge': {
+        this.isWorking = true;
+        await this.startLounge(payload);
         break;
       }
       case 'stop-events':
@@ -96,10 +121,10 @@ export default class WorkerClass {
           if (window)
             if (window.webContents) window.webContents.send('stop-events');
         });
-        this.waitForClosing();
         break;
       default:
     }
+    this.waitForClosing();
   }
 
   close() {
