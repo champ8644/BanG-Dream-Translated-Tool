@@ -7,6 +7,7 @@ import mainLounge, {
 
 import BiVideoCapture from './containers/Lounge/BiVideoCapture';
 import VideoCapture from './containers/Lounge/VideoCapture';
+import adapterLounge from './containers/Lounge/loungeFunctions/adapterLounge';
 import electron from 'electron';
 import mergeData from './containers/Lounge/mainFunctions/mergeData';
 import writeAss from './containers/Lounge/mainFunctions/writeAss';
@@ -40,7 +41,7 @@ ipcRenderer.on('start-lounge', async (e, arg) => {
   const { videoFilePath, start, end, index, process } = arg;
   const vCap = new VideoCapture({ path: videoFilePath });
   const res = await mainLounge({ vCap, start, end, index, process });
-  writeLounge(res);
+  writeLounge({ data: adapterLounge(res), vCap });
 });
 
 ipcRenderer.on('sum-events', (e, payload) => {

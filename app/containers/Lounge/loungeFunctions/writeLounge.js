@@ -1,68 +1,69 @@
 import fs from 'fs';
-import { remote } from 'electron';
+import moment from 'moment';
 
-const { dialog } = remote;
+let toMs;
 
-// import XLSX from 'xlsx';
-// export default async function writeOutputLounge(outputLounge) {
-//   // eslint-disable-next-line no-console
-//   console.log('outputLounge: ', outputLounge);
-//   const header = ['x1', 'y1', 'x2', 'y2'];
-//   const { canceled, filePath } = await dialog.showSaveDialog({
-//     filters: [{ name: 'Excel files', extensions: ['xlsx'] }]
-//   });
-//   if (canceled) return;
-//   const worksheet = XLSX.utils.json_to_sheet(outputLounge, { header });
-//   const workbook = XLSX.utils.book_new();
-//   XLSX.utils.book_append_sheet(workbook, worksheet, 'BanG_Dream');
-//   XLSX.writeFile(workbook, filePath);
-// }
-
-export default async function writeOutputLounge(outputLounge) {
-  // eslint-disable-next-line no-console
-  console.log('outputLounge: ', outputLounge);
-  const jsonOutput = outputLounge.map(item =>
-    item.reduce(
-      (state, next, idx) => {
-        state.uid = next.uid;
-        state.beginFrame = Math.min(state.beginFrame, next.frame);
-        state.endFrame = Math.max(state.endFrame, next.frame);
-        ['height', 'width', 'x', 'y'].forEach(key => {
-          state[key] = (state[key] * idx + next[key]) / (idx + 1);
-        });
-        const abs = x => {
-          if (isNaN(x)) return 0;
-          return x < 0 ? -x : x;
-        };
-        ['x1', 'y1', 'x2', 'y2', 'calc'].forEach(key => {
-          state[key] = Math.max(state[key], abs(next[key]));
-        });
-        return state;
-      },
-      {
-        uid: null,
-        beginFrame: 1e10,
-        endFrame: -1,
-        height: 0,
-        width: 0,
-        y: 0,
-        x: 0,
-        x1: 0,
-        y1: 0,
-        x2: 0,
-        y2: 0,
-        calc: 0
-      }
-    )
-  );
-  // const header = ['x1', 'y1', 'x2', 'y2'];
-  const { canceled, filePath } = await dialog.showSaveDialog({
-    filters: [{ name: 'JSON files', extensions: ['json'] }]
-  });
-  if (canceled) return;
-  fs.writeFileSync(filePath, JSON.stringify(jsonOutput, null, 2));
+function timestamp(frame) {
+  const ms = toMs(frame);
+  const h = Math.floor(ms / 60 / 60 / 1000);
+  let mm = Math.floor(ms / 60 / 1000) % 60;
+  mm = mm.toString().padStart(2, '0');
+  let ss = (Math.floor(ms / 10) % 6000) / 100;
+  ss = ss.toFixed(2).padStart(5, '0');
+  return `${h}:${mm}:${ss}`;
 }
 
-// export default function writeLounge(res) {
-//   console.log('res: ', res);
+// function timeMs(frame) {
+//   const ms = toMs(frame);
+//   return Math.floor(ms * 100) / 100;
 // }
+
+function writeCredit(frame) {
+  return `Dialogue: 0,0:00:00.00,${timestamp(
+    frame
+  )},Credit,,0,0,0,,Facebook.com/Nep4A4Life
+`;
+}
+
+function writeText({ begin, end, uid }) {
+  return `Comment: 0,${timestamp(begin)},${timestamp(
+    end
+  )},Text,${uid},0,0,0,karaoke,
+`;
+}
+
+function writeShake({ shake, begin, end }) {
+  return `Comment: 0,${timestamp(begin)},${timestamp(
+    end
+  )},Text,,0,0,0,code once,${shake}
+`;
+}
+
+function writeTemplateLine() {
+  return `Dialogue: 0,0:00:00.00,0:00:00.00,Default,▼TEMPLATE LINES▼,0,0,0,,
+`;
+}
+
+/* eslint-disable no-param-reassign */
+export default function writeAss({ data, vCap }) {
+  const { path, FPS, msLength } = vCap;
+  toMs = frame => (frame * 1000) / FPS;
+
+  const stream = fs.createWriteStream(
+    `${path.substr(0, path.lastIndexOf('.'))} [${moment().format(
+      'YYYY-MM-DD_HH-mm'
+    )}].ass`,
+    {
+      encoding: 'utf8'
+    }
+  );
+  // eslint-disable-next-line no-console
+  stream.on('finish', () => console.log('Finish writing file!!'));
+  stream.once('open', () => {
+    data.forEach(item => stream.write(writeShake(item)));
+    stream.write(writeCredit(msLength));
+    stream.write(writeTemplateLine());
+    data.forEach(item => stream.write(writeText(item)));
+    stream.end();
+  });
+}
