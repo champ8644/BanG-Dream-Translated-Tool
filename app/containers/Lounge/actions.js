@@ -55,7 +55,8 @@ const actionTypesList = [
   'CONFIRMING_CLOSE_CONVERTING_DIALOG',
   'CONFIRMED_CLOSE_CONVERTING_DIALOG',
   'ON_SWITCH_FPS_VCAP_LIST',
-  'FINISHING_QUEUE'
+  'FINISHING_QUEUE',
+  'HANDLE_SWITCH_CAP_LIST'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -176,6 +177,13 @@ export function handleConfirmCloseConvertingDialog() {
   };
 }
 
+export function handleSwitchVCapList(path) {
+  return {
+    type: actionTypes.HANDLE_SWITCH_CAP_LIST,
+    payload: path
+  };
+}
+
 export function onCloseVCapList(path) {
   return (dispatch, getState) => {
     const { videoDatas } = getState().Lounge;
@@ -240,12 +248,20 @@ export function tickQueue() {
     if (!isActivate) return;
     let nextQueue = null;
     let vCapLength;
+    let nextIsEvent;
     for (let i = 0; i < queue.length; i++) {
       const path = queue[i];
-      const { vCap, completeWork, cancelWork, readyToWork } = videoDatas[path];
+      const {
+        vCap,
+        completeWork,
+        cancelWork,
+        readyToWork,
+        isEvent
+      } = videoDatas[path];
       if (!completeWork && !cancelWork && !readyToWork) {
         nextQueue = path;
         vCapLength = vCap.length;
+        nextIsEvent = isEvent;
         break;
       }
     }
@@ -254,12 +270,21 @@ export function tickQueue() {
       type: actionTypes.TICK_QUEUE,
       payload: { displayNumProcess, path: nextQueue }
     });
-    message2Worker('start-events', {
-      videoFilePath: nextQueue,
-      start: 0,
-      end: vCapLength,
-      process: displayNumProcess
-    });
+    if (nextIsEvent) {
+      message2Worker('start-events', {
+        videoFilePath: nextQueue,
+        start: 0,
+        end: vCapLength,
+        process: displayNumProcess
+      });
+    } else {
+      message2Worker('start-lounge', {
+        videoFilePath: nextQueue,
+        start: 0,
+        end: vCapLength,
+        process: 1
+      });
+    }
   };
 }
 

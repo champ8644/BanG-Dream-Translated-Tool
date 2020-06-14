@@ -264,6 +264,7 @@ class Lounge extends Component {
       exportingLounge,
       importingLounge,
       devLounge,
+      handleSwitchVCapList,
       mainProgressProps: {
         readyToWork,
         percentLinear,
@@ -427,6 +428,7 @@ class Lounge extends Component {
                 onCancel={onCancelVCapList.bind(this, path)}
                 onRefresh={onRefreshVCapList.bind(this, path)}
                 onSwitchFPS={onSwitchFPSVCapList.bind(this, path)}
+                handleSwitch={handleSwitchVCapList.bind(this, path)}
               />
             ))}
           </div>

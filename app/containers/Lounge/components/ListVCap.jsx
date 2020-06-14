@@ -17,6 +17,7 @@ import ProgressMultiBar from './ProgressMultiBar';
 import React from 'react';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import StopIcon from '@material-ui/icons/Stop';
+import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
@@ -48,7 +49,9 @@ function ListVCap(props) {
     onRefresh,
     workingStatus,
     showFPS,
-    onSwitchFPS
+    onSwitchFPS,
+    isEvent,
+    handleSwitch
   } = props;
   const canvasRef = React.useRef();
   const [isLoading, setLoading] = React.useState(true);
@@ -140,6 +143,18 @@ function ListVCap(props) {
                 noWrap
                 gutterBottom={false}
               >
+                <span className={classes.spanBox}>
+                  {isEvent ? 'Events' : 'Lounge'}
+                </span>
+                <Switch
+                  classes={{
+                    switchBase: classes.switchBase,
+                    track: classes.track
+                  }}
+                  checked={isEvent}
+                  onChange={handleSwitch}
+                  disabled={readyToWork || cancelWork || completeWork}
+                />
                 {path.dirname(videoFilePath)}
               </Typography>
             </CardContent>

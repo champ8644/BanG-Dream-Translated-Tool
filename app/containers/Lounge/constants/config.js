@@ -32,7 +32,7 @@ export const fileNames = [
 
 export const radioObj = IS_DEV
   ? [
-      'none',
+      'none'
       // 'maxFinder',
       // 'scopeFinder',
       // 'GRAYFinder',
@@ -41,16 +41,16 @@ export const radioObj = IS_DEV
       // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
       // 'starLabelEndGenerator',
-      'nameLabelGenerator',
+      // 'nameLabelGenerator',
       // 'starMatching',
       // 'titleLabelGenerator',
       // 'fullDialogGenerator'
-      'lounge',
-      'findTextBubble'
+      // 'lounge',
+      // 'findTextBubble'
     ]
   : [];
 
-export const isAutoOpen = true; // IS_DEV;
+export const isAutoOpen = false; // IS_DEV;
 
 export const defaultOverlayMode = IS_DEV ? 'findTextBubble' : 'none';
 export const defaultVCapBeginFrame = IS_DEV ? 3450 : 0;

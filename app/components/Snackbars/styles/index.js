@@ -1,10 +1,10 @@
 'use strict';
 
-import { variables, mixins } from '../../../styles/js';
+import { mixins, variables } from '../../../styles/js';
 
 export const styles = theme => ({
   margin: {
-    margin: theme.spacing.unit
+    margin: theme.spacing(1)
   },
   root: {
     top: 10,

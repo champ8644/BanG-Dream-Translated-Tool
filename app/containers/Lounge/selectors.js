@@ -146,6 +146,11 @@ export const makeVideoCaptureEach = () =>
     videoData => (videoData ? videoData.vCap : initialVideoDatas.vCap)
   );
 
+const makeIsEvent = createSelector(
+  getVideoDatas,
+  videoData => (videoData ? videoData.isEvent : initialVideoDatas.isEvent)
+);
+
 export const makeProgressMultiBarProps = () =>
   createSelector(
     makePercentLinear,
@@ -154,20 +159,23 @@ export const makeProgressMultiBarProps = () =>
     makeCompleteWork,
     makeShowFPS,
     makeNumProcess,
+    makeIsEvent,
     (
       percentLinear,
       readyToWork,
       cancelWork,
       completeWork,
       showFPS,
-      NUM_PROCESS
+      NUM_PROCESS,
+      isEvent
     ) => ({
       percentLinear,
       readyToWork,
       cancelWork,
       completeWork,
       showFPS,
-      NUM_PROCESS
+      NUM_PROCESS,
+      isEvent
     })
   );
 

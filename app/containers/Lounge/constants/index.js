@@ -189,3 +189,5 @@ export const RESEARCH_SKIP = 150;
 export const loungeBackgroundColorThreshold = 220;
 
 export const limitLoungeMoving = { x: 118, y: 68, c: 118 };
+
+export const eventLoungeThreshold = 240;
