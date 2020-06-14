@@ -24,7 +24,7 @@ class ProgressbarPage extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     ipcRenderer.on('progressBarDataCommunication', (event, { ...args }) => {
       this.setState({ ...args });
     });

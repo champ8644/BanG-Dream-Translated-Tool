@@ -1,29 +1,30 @@
 'use strict';
 
-import React, { Component } from 'react';
-import { log } from '@Log';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   MuiThemeProvider,
   createMuiTheme,
   withStyles
 } from '@material-ui/core/styles';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { IS_PROD } from '../../constants/env';
-import { theme, styles } from './styles';
-import Alerts from '../Alerts';
-import Titlebar from './components/Titlebar';
-import ErrorBoundary from '../ErrorBoundary';
-import Routes from '../../routing';
-import { bootLoader } from '../../utils/bootHelper';
-import { settingsStorage } from '../../utils/storageHelper';
-import SettingsDialog from '../Settings';
-import { withReducer } from '../../store/reducers/withReducer';
-import reducers from './reducers';
+import React, { Component } from 'react';
 import { copyJsonFileToSettings, freshInstall } from '../Settings/actions';
-import { analytics } from '../../utils/analyticsHelper';
+import { styles, theme } from './styles';
+
+import Alerts from '../Alerts';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import ErrorBoundary from '../ErrorBoundary';
+import { IS_PROD } from '../../constants/env';
+import Routes from '../../routing';
+import SettingsDialog from '../Settings';
+import Titlebar from './components/Titlebar';
+import { bindActionCreators } from 'redux';
+import { bootLoader } from '../../utils/bootHelper';
+import { connect } from 'react-redux';
+// import { logEvent } from '../../utils/analyticsHelper';
 import { isConnected } from '../../utils/isOnline';
+import { log } from '@Log';
+import reducers from './reducers';
+import { settingsStorage } from '../../utils/storageHelper';
+import { withReducer } from '../../store/reducers/withReducer';
 
 const appTheme = createMuiTheme(theme());
 
@@ -35,7 +36,16 @@ class App extends Component {
     this.allowWritingJsonToSettings = false;
   }
 
-  async componentWillMount() {
+  componentDidMount() {
+    this.componentWillMounting();
+    try {
+      bootLoader.cleanRotationFiles();
+    } catch (e) {
+      log.error(e, `App -> componentDidMount`);
+    }
+  }
+
+  async componentWillMounting() {
     try {
       this.setFreshInstall();
       if (this.allowWritingJsonToSettings) {
@@ -44,15 +54,7 @@ class App extends Component {
 
       this.runAnalytics();
     } catch (e) {
-      log.error(e, `App -> componentWillMount`);
-    }
-  }
-
-  componentDidMount() {
-    try {
-      bootLoader.cleanRotationFiles();
-    } catch (e) {
-      log.error(e, `App -> componentDidMount`);
+      log.error(e, `App -> componentWillMounting`);
     }
   }
 
@@ -108,8 +110,8 @@ class App extends Component {
       if (isAnalyticsEnabledSettings.enableAnalytics && IS_PROD) {
         isConnected()
           .then(connected => {
-            analytics.send('screenview', { cd: '/Home' });
-            analytics.send(`pageview`, { dp: '/Home' });
+            // logEvent('screenview', { cd: '/Home' });
+            // logEvent(`pageview`, { dp: '/Home' });
 
             return connected;
           })
