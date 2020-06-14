@@ -21,8 +21,8 @@ module.exports = api => {
         {
           targets: {
             electron: require('electron/package.json').version
-          },
-          useBuiltIns: 'usage'
+          }
+          // useBuiltIns: 'usage'
         }
       ],
       [require('@babel/preset-react'), { development }]
