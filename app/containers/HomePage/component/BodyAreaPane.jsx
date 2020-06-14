@@ -5,7 +5,7 @@
 import React, { PureComponent } from 'react';
 
 import { APP_VERSION } from '../../../constants/meta';
-import Button from '@material-ui/core/Button';
+import SignIn from './SignIn';
 import { log } from '@Log';
 import { routes } from '../../../routing/mainMenu';
 import { styles } from '../styles/BodyAreaPane';
@@ -18,15 +18,9 @@ class BodyAreaPane extends PureComponent {
     return (
       <div className={styles.root}>
         <div className={styles.subroot}>
-          <div className={styles.title}>BanG Dream</div>
-          <div className={styles.heading1}>Translated Tool</div>
+          <div className={styles.heading1}>BanG Dream Translated Tool</div>
           <div className={styles.subTitle}>version {APP_VERSION}</div>
-          <Button
-            className={styles.btn}
-            onClick={() => history.push(routes.MainMenu.locate)}
-          >
-            Start!
-          </Button>
+          <SignIn onClick={() => history.push(routes.MainMenu.locate)} />
         </div>
       </div>
     );

@@ -64,3 +64,6 @@ eslint-common-rules.txt
 
 build/entitlements.mas.plist
 *embedded.provisionprofile
+
+# firebase
+firebaseConfig.json
