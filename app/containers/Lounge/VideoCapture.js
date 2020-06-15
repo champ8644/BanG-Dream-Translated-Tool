@@ -17,6 +17,7 @@ import {
 import cv from 'opencv4nodejs';
 import mainEvent from './mainFunctions/mainEvent';
 import matFunctions from './matFunctions';
+import { vCapfindTextBubble } from './matFunctions/findTextBubble';
 
 class MaskStoreClass {
   constructor() {
@@ -412,7 +413,21 @@ export default class VideoCapture {
     this.fill(255);
   }
 
-  async updateThumbnail(payload) {
+  updateThumbnail(payload, type) {
+    if (type === 'events') this.updateThumbnailEvents(payload);
+    else if (type === 'lounge') this.updateThumbnailLounge(payload);
+  }
+
+  async updateThumbnailLounge(payload) {
+    if (!this.canvas || !this.canvas.current) return;
+    const { frame } = payload;
+    let mat = this.getMat(frame, undefined, false);
+    if (mat.empty) return;
+    mat = vCapfindTextBubble(mat);
+    this.showMatInCanvas(mat);
+  }
+
+  async updateThumbnailEvents(payload) {
     if (!this.canvas || !this.canvas.current) return;
     const {
       frame,

@@ -224,6 +224,7 @@ function nonBlockingLoop({
       // console.log('update Thumbnail');
       message2UI('update-thumbnail', {
         path: vCap.current.path,
+        type: 'events',
         info: trimPayload(info)
       });
     }

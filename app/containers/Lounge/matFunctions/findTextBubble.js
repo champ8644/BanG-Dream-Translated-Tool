@@ -87,7 +87,7 @@ function logChild(mat, contours, arr) {
   arr.forEach(selected => {
     // const selectedColor = color[colorKey[index % colorKey.length]];
     let { child: cur } = getH(selected);
-    // mat.drawContours([selected.getPoints()], -1, selectedColor, 2);
+    // mat.drawContours([selected.getPoints()], -1, color.yellow, 2);
     const sumPoints = [];
     while (cur > 0) {
       const { next } = getH(contours[cur]);
@@ -95,9 +95,9 @@ function logChild(mat, contours, arr) {
       sumPoints.push(points);
       cur = next;
     }
-    // mat.drawContours(sumPoints, -1, selectedColor, 1);
+    mat.drawContours(sumPoints, -1, color.yellow, -1);
     // const rect = new cv.Contour(sumPoints.flat()).boundingRect();
-    // mat.drawRectangle(rect, selectedColor, 3);
+    // mat.drawRectangle(rect, color.green, 3);
   });
 }
 
@@ -192,6 +192,62 @@ export default function findTextBubble(mat, vCap) {
   });
   prevRes.forEach((rect, index) => statusRect.writeBelow({ ...rect, index }));
   vCap.putMemoize(res);
+  logChild(outputFrame, contours, outObj);
+  return outputFrame;
+}
+
+export function vCapfindTextBubble(mat) {
+  const outputFrame = mat.copy();
+  // const red = new cv.Vec(0, 0, 255);
+  // const green = new cv.Vec(0, 255, 0);
+  // const blue = new cv.Vec(255, 0, 0);
+  statusRect.setFrame(outputFrame);
+  const contours = mat
+    .cvtColor(cv.COLOR_RGB2GRAY)
+    .gaussianBlur(new cv.Size(3, 3), 0)
+    .threshold(200, 255, cv.THRESH_BINARY)
+    .findContours(cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+  // eslint-disable-next-line no-console
+  // console.log('contours: ', contours);
+  const outObj = [];
+  const res = [];
+  contours.forEach(item => {
+    if (item.area > 5000) {
+      const peri = item.arcLength(true);
+      const approx = item.approxPolyDP(0.04 * peri, true);
+      if (approx.length === 4) {
+        const approxContour = new cv.Contour(approx);
+        const roi = item.boundingRect();
+        if (isFinalContour(approxContour, roi)) {
+          const maskMat = new cv.Mat(
+            mat.rows,
+            mat.cols,
+            cv.CV_8UC1,
+            color.black
+          );
+          maskMat.drawContours([item.getPoints()], -1, color.white, cv.FILLED);
+          const childrenRect = getChildrenRect(contours, item);
+          if (childrenRect) {
+            maskMat.drawRectangle(childrenRect, color.black, cv.FILLED);
+            const intermetmat = new cv.Mat(
+              mat.rows,
+              mat.cols,
+              cv.CV_8UC3,
+              color.black
+            );
+            mat.copyTo(intermetmat, maskMat);
+            const { w, x, y } = mat.mean(maskMat);
+            if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
+              intermetmat.getRegion(roi).copyTo(outputFrame.getRegion(roi));
+              outObj.push(item);
+              res.push(childrenRect);
+              statusRect.write(childrenRect);
+            }
+          }
+        }
+      }
+    }
+  });
   logChild(outputFrame, contours, outObj);
   return outputFrame;
 }

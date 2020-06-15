@@ -54,6 +54,7 @@ function nonBlockingLoop({
     for (; i < end; i++) {
       if (!isLoopValid) break;
       callback(i);
+      // console.log('i: ', i);
     }
     message2UI('update-progress', {
       path: vCap.path,
@@ -62,15 +63,17 @@ function nonBlockingLoop({
       beginFrame,
       endFrame
     });
+    // console.log('update-progress: ');
     const now = new Date().getTime();
     // console.log('now: ', now, now - prevTime);
     if (now - prevTime > updateThumbnailInterval) {
       prevTime = now;
       // console.log('update Thumbnail');
-      // message2UI('update-thumbnail', {
-      //   path: vCap.path,
-      //   info: trimPayload(info)
-      // });
+      message2UI('update-thumbnail', {
+        path: vCap.path,
+        type: 'lounge',
+        info: { frame: i }
+      });
     }
     if (i >= vCap.length) finished(true);
     else if (i >= endFrame) finished(true);
