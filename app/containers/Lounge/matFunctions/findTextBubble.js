@@ -71,13 +71,14 @@ function isFinalContour(contour, roi) {
 
 function getChildrenRect(contours, selected) {
   let { child: cur } = getH(selected);
+  if (cur < 0) return null;
   const sumPoints = [];
-  do {
+  while (cur > 0) {
     const { next } = getH(contours[cur]);
     const points = contours[cur].getPoints();
     sumPoints.push(points);
     cur = next;
-  } while (cur > 0);
+  }
   return new cv.Contour(sumPoints.flat()).boundingRect();
 }
 
@@ -88,12 +89,12 @@ function logChild(mat, contours, arr) {
     let { child: cur } = getH(selected);
     // mat.drawContours([selected.getPoints()], -1, selectedColor, 2);
     const sumPoints = [];
-    do {
+    while (cur > 0) {
       const { next } = getH(contours[cur]);
       const points = contours[cur].getPoints();
       sumPoints.push(points);
       cur = next;
-    } while (cur > 0);
+    }
     // mat.drawContours(sumPoints, -1, selectedColor, 1);
     // const rect = new cv.Contour(sumPoints.flat()).boundingRect();
     // mat.drawRectangle(rect, selectedColor, 3);
@@ -133,7 +134,7 @@ export default function findTextBubble(mat, vCap) {
     .threshold(200, 255, cv.THRESH_BINARY)
     .findContours(cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
   // eslint-disable-next-line no-console
-  console.log('contours: ', contours);
+  // console.log('contours: ', contours);
   const outObj = [];
   const res = [];
   const prevRes = vCap.getMemoize();
@@ -153,35 +154,37 @@ export default function findTextBubble(mat, vCap) {
           );
           maskMat.drawContours([item.getPoints()], -1, color.white, cv.FILLED);
           const childrenRect = getChildrenRect(contours, item);
-          maskMat.drawRectangle(childrenRect, color.black, cv.FILLED);
-          const intermetmat = new cv.Mat(
-            mat.rows,
-            mat.cols,
-            cv.CV_8UC3,
-            color.black
-          );
-          mat.copyTo(intermetmat, maskMat);
-          const { w, x, y } = mat.mean(maskMat);
-          if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
-            intermetmat.getRegion(roi).copyTo(outputFrame.getRegion(roi));
-            outObj.push(item);
-            res.push(childrenRect);
-            statusRect.write(childrenRect);
-            let mincalc = 1e10;
-            let selectedRect = null;
-            prevRes.forEach((rect, index) => {
-              const calc = calcRect(childrenRect, rect);
-              // console.log('calc: ', calc);
-              if (mincalc > calc) {
-                selectedRect = index;
-                mincalc = calc;
-              }
-            });
-            if (selectedRect !== null)
-              statusRect.writeMiddle({
-                ...compareRect(childrenRect, prevRes[selectedRect]),
-                index: selectedRect
+          if (childrenRect) {
+            maskMat.drawRectangle(childrenRect, color.black, cv.FILLED);
+            const intermetmat = new cv.Mat(
+              mat.rows,
+              mat.cols,
+              cv.CV_8UC3,
+              color.black
+            );
+            mat.copyTo(intermetmat, maskMat);
+            const { w, x, y } = mat.mean(maskMat);
+            if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
+              intermetmat.getRegion(roi).copyTo(outputFrame.getRegion(roi));
+              outObj.push(item);
+              res.push(childrenRect);
+              statusRect.write(childrenRect);
+              let mincalc = 1e10;
+              let selectedRect = null;
+              prevRes.forEach((rect, index) => {
+                const calc = calcRect(childrenRect, rect);
+                // console.log('calc: ', calc);
+                if (mincalc > calc) {
+                  selectedRect = index;
+                  mincalc = calc;
+                }
               });
+              if (selectedRect !== null)
+                statusRect.writeMiddle({
+                  ...compareRect(childrenRect, prevRes[selectedRect]),
+                  index: selectedRect
+                });
+            }
           }
         }
       }
@@ -219,21 +222,23 @@ export function testfindTextBubble(mat, prevRes, state, frame) {
           );
           maskMat.drawContours([item.getPoints()], -1, color.white, cv.FILLED);
           const childrenRect = getChildrenRect(contours, item);
-          const intermetmat = new cv.Mat(
-            mat.rows,
-            mat.cols,
-            cv.CV_8UC3,
-            color.black
-          );
-          mat.copyTo(intermetmat, maskMat);
-          const { w, x, y } = mat.mean(maskMat);
-          info.a++;
-          if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
-            info.b++;
-            rects.push(childrenRect);
-          } else {
-            // eslint-disable-next-line no-console
-            console.log({ w, x, y, z: loungeBackgroundColorThreshold });
+          if (childrenRect) {
+            const intermetmat = new cv.Mat(
+              mat.rows,
+              mat.cols,
+              cv.CV_8UC3,
+              color.black
+            );
+            mat.copyTo(intermetmat, maskMat);
+            const { w, x, y } = mat.mean(maskMat);
+            info.a++;
+            if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
+              info.b++;
+              rects.push(childrenRect);
+            } else {
+              // eslint-disable-next-line no-console
+              // console.log({ w, x, y, z: loungeBackgroundColorThreshold });
+            }
           }
         }
       }

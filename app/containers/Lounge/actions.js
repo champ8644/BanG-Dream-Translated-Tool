@@ -266,11 +266,11 @@ export function tickQueue() {
       }
     }
     if (!nextQueue) return dispatch({ type: actionTypes.FINISHING_QUEUE });
-    dispatch({
-      type: actionTypes.TICK_QUEUE,
-      payload: { displayNumProcess, path: nextQueue }
-    });
     if (nextIsEvent) {
+      dispatch({
+        type: actionTypes.TICK_QUEUE,
+        payload: { displayNumProcess, path: nextQueue }
+      });
       message2Worker('start-events', {
         videoFilePath: nextQueue,
         start: 0,
@@ -278,6 +278,10 @@ export function tickQueue() {
         process: displayNumProcess
       });
     } else {
+      dispatch({
+        type: actionTypes.TICK_QUEUE,
+        payload: { displayNumProcess: 1, path: nextQueue }
+      });
       message2Worker('start-lounge', {
         videoFilePath: nextQueue,
         start: 0,

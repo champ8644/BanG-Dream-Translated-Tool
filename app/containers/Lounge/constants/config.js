@@ -32,7 +32,7 @@ export const fileNames = [
 
 export const radioObj = IS_DEV
   ? [
-      'none'
+      'none',
       // 'maxFinder',
       // 'scopeFinder',
       // 'GRAYFinder',
@@ -46,18 +46,19 @@ export const radioObj = IS_DEV
       // 'titleLabelGenerator',
       // 'fullDialogGenerator'
       // 'lounge',
-      // 'findTextBubble'
+      'findTextBubble'
     ]
   : [];
 
-export const isAutoOpen = false; // IS_DEV;
+export const isAutoOpen = IS_DEV;
 
 export const defaultOverlayMode = IS_DEV ? 'findTextBubble' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 3450 : 0;
+export const defaultVCapBeginFrame = IS_DEV ? 0 : 0;
 // const prefixFileName = 'E:\\Champ\\Downloads\\';
 // const prefixFileName = 'E:\\Bandori\\Events\\';
-const prefixFileName = 'E:\\Bandori\\LoungeHNY2020\\';
-const fileName = 'วันเกิดคุณคะน้าเรนเดอร์แล้ว.mp4';
+const prefixFileName = '"E:\\Bandori\\Events\\';
+const fileName =
+  'วิดีโอ_วันเกิด+ล้อนจ์_2019009_63_01_01 HNY Pasupare [C3FF93C7]_2_142138.mkv"';
 export const autoOpenFileName = `${prefixFileName}${fileName}`;
 // export const autoOpenFileName = `"E:\\Champ\\Downloads\\วิดีโอ_วันเกิด+ล้อนจ์_2020010ซาบะ_HBD2020_Saaya [F6E1211A]_1_220703.mp4"`;
 
