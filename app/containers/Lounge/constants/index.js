@@ -50,13 +50,13 @@ export const subtitleThreshold = {
 
 export const rows = 1440;
 export const cols = 1920;
-export const skipDialogCountThreshold = 4000;
+export const skipDialogCountThreshold = 5000;
 export const dialogThreshold = 200;
 export const dialogDiffThreshold = 100;
 export const dialogPartialDiffThreshold = 150;
 export const starLabelEndThreshold = 0.6;
 export const threshPercentDiff = 3;
-export const threshStarMatching = 0.45;
+export const threshStarMatching = 0.4;
 export const threshPlacePercentDiff = 5;
 export const threshTitlePercentDiff = 5;
 export const threshSubSubtitle = 20;

@@ -38,13 +38,24 @@ ipcRenderer.on('start-events', async (e, arg) => {
 ipcRenderer.on('start-lounge', async (e, arg) => {
   const { videoFilePath, start, end, index, process } = arg;
   const vCap = new VideoCapture({ path: videoFilePath });
-  const res = await mainLounge({ vCap, start, end, index, process });
-  writeLounge({ data: adapterLounge(res), vCap });
+  const { res, finished } = await mainLounge({
+    vCap,
+    start,
+    end,
+    index,
+    process
+  });
+  if (finished) {
+    const assPath = writeLounge({ data: adapterLounge(res), vCap });
+    message2UI('finish-progress', { path: vCap.path, assPath });
+  } else {
+    message2UI('cancel-progress', { path: vCap.path });
+  }
 });
 
 ipcRenderer.on('sum-events', (e, payload) => {
   if (payload[0].finished) {
-    writeAss(mergeData(payload));
-    message2UI('finish-progress', { path: payload[0].info.path });
+    const assPath = writeAss(mergeData(payload));
+    message2UI('finish-progress', { path: payload[0].info.path, assPath });
   } else message2UI('cancel-progress', { path: payload[0].info.path });
 });

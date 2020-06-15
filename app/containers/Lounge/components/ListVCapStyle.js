@@ -1,4 +1,5 @@
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import green from '@material-ui/core/colors/green';
 import { videoListMaxWidth } from '../constants/index';
 
 export const styles = theme => ({
@@ -228,5 +229,17 @@ export const styles = theme => ({
       borderColor: mainColor.main,
       color: mainColor.main
     };
+  },
+  openFolderButton: {
+    color: green[500],
+    border: `1px solid ${fade(green[500], 0.5)}`,
+    '&:hover': {
+      border: `1px solid ${green[500]}`,
+      backgroundColor: fade(green[500], theme.palette.action.hoverOpacity),
+      // Reset on touch devices, it doesn't add specificity
+      '@media (hover: none)': {
+        backgroundColor: 'transparent'
+      }
+    }
   }
 });

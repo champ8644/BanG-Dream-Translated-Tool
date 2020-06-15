@@ -151,6 +151,11 @@ const makeIsEvent = createSelector(
   videoData => (videoData ? videoData.isEvent : initialVideoDatas.isEvent)
 );
 
+const makeAssPath = createSelector(
+  getVideoDatas,
+  videoData => (videoData ? videoData.assPath : initialVideoDatas.assPath)
+);
+
 export const makeProgressMultiBarProps = () =>
   createSelector(
     makePercentLinear,
@@ -160,6 +165,7 @@ export const makeProgressMultiBarProps = () =>
     makeShowFPS,
     makeNumProcess,
     makeIsEvent,
+    makeAssPath,
     (
       percentLinear,
       readyToWork,
@@ -167,7 +173,8 @@ export const makeProgressMultiBarProps = () =>
       completeWork,
       showFPS,
       NUM_PROCESS,
-      isEvent
+      isEvent,
+      assPath
     ) => ({
       percentLinear,
       readyToWork,
@@ -175,7 +182,8 @@ export const makeProgressMultiBarProps = () =>
       completeWork,
       showFPS,
       NUM_PROCESS,
-      isEvent
+      isEvent,
+      assPath
     })
   );
 

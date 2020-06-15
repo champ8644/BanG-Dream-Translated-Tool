@@ -196,7 +196,7 @@ export default function Lounge(state = initialState, action) {
       };
     }
     case actionTypes.FINISH_LINEAR: {
-      const { path } = payload;
+      const { path, assPath } = payload;
       const { videoDatas } = state;
       const {
         progressFromWorker: { beginTime }
@@ -209,6 +209,7 @@ export default function Lounge(state = initialState, action) {
           ...state.videoDatas,
           [path]: {
             ...state.videoDatas[path],
+            assPath,
             completeWork: true,
             cancelWork: false,
             progressFromWorker: {

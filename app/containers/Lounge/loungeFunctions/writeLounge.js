@@ -50,15 +50,12 @@ export default function writeAss({ data, vCap }) {
   const { path, FPS, length } = vCap;
 
   toMs = frame => (frame * 1000) / FPS;
-
-  const stream = fs.createWriteStream(
-    `${path.substr(0, path.lastIndexOf('.'))} [${moment().format(
-      'YYYY-MM-DD_HH-mm'
-    )}].ass`,
-    {
-      encoding: 'utf8'
-    }
-  );
+  const assPath = `${path.substr(0, path.lastIndexOf('.'))} [${moment().format(
+    'YYYY-MM-DD_HH-mm'
+  )}].ass`;
+  const stream = fs.createWriteStream(assPath, {
+    encoding: 'utf8'
+  });
   // eslint-disable-next-line no-console
   stream.on('finish', () => console.log('Finish writing file!!'));
   stream.once('open', () => {

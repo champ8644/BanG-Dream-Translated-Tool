@@ -26,6 +26,8 @@ import { styles } from './ListVCapStyle';
 import { withStyles } from '@material-ui/core/styles';
 import { ws } from '../constants/config';
 
+const { shell } = require('electron');
+
 const makeMapStateToProps = () => {
   return (state, props) => ({
     ...makeProgressMultiBarProps()(state, props),
@@ -33,6 +35,10 @@ const makeMapStateToProps = () => {
     workingStatus: makeWorkingStatus(state)
   });
 };
+
+function openFolder(path) {
+  shell.showItemInFolder(path);
+}
 
 function ListVCap(props) {
   const {
@@ -51,7 +57,8 @@ function ListVCap(props) {
     showFPS,
     onSwitchFPS,
     isEvent,
-    handleSwitch
+    handleSwitch,
+    assPath
   } = props;
   const canvasRef = React.useRef();
   const [isLoading, setLoading] = React.useState(true);
@@ -156,6 +163,16 @@ function ListVCap(props) {
                   disabled={readyToWork || cancelWork || completeWork}
                 />
                 {path.dirname(videoFilePath)}
+                {assPath && (
+                  <Button
+                    variant='outlined'
+                    size='small'
+                    className={classes.openFolderButton}
+                    onClick={openFolder.bind(this, videoFilePath)}
+                  >
+                    Open Folder
+                  </Button>
+                )}
               </Typography>
             </CardContent>
             <div className={classes.grow}>

@@ -107,12 +107,7 @@ export default function mainLounge({ vCap, start, end, index, process }) {
         prevRes = testfindTextBubble(mat, prevRes, state, frame);
       },
       finished: async finished => {
-        if (finished) {
-          resolve(state);
-          message2UI('finish-progress', { path: vCap.path });
-        } else {
-          message2UI('cancel-progress', { path: vCap.path });
-        }
+        resolve({ res: state, finished });
       }
     });
   });
