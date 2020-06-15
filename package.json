@@ -61,7 +61,6 @@
     "appId": "com.electron.bang-dream-translated-tool",
     "forceCodeSigning": false,
     "copyright": "© Varis Ratanasirisawad",
-    "readonly": true,
     "nsis": {
       "differentialPackage": true
     },
