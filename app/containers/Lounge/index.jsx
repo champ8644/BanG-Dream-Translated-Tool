@@ -263,6 +263,8 @@ class Lounge extends Component {
       onSwitchFPSVCapList,
       exportingLounge,
       importingLounge,
+      devLounge,
+      handleSwitchVCapList,
       mainProgressProps: {
         readyToWork,
         percentLinear,
@@ -271,7 +273,7 @@ class Lounge extends Component {
         cancelWork,
         showFPS
       },
-      testingFunc
+      captureVCap
     } = this.props;
     return (
       <div className={classes.root}>
@@ -358,6 +360,18 @@ class Lounge extends Component {
                 </Button>
                 <Button
                   className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={() => devLounge()}
+                >
+                  Start Lounge
+                </Button>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
+                  onClick={() => devLounge({ test: true })}
+                >
+                  Lounge Test
+                </Button>
+                <Button
+                  className={clsx(classes.btn, classes.marginLeft)}
                   onClick={() => devQueue({ end: 1000 })}
                 >
                   Start Until 1000 frames
@@ -370,9 +384,9 @@ class Lounge extends Component {
                 </Button>
                 <Button
                   className={clsx(classes.btn, classes.marginLeft)}
-                  onClick={testingFunc}
+                  onClick={captureVCap}
                 >
-                  Testing
+                  Capture
                 </Button>
               </>
             )}
@@ -414,6 +428,7 @@ class Lounge extends Component {
                 onCancel={onCancelVCapList.bind(this, path)}
                 onRefresh={onRefreshVCapList.bind(this, path)}
                 onSwitchFPS={onSwitchFPSVCapList.bind(this, path)}
+                handleSwitch={handleSwitchVCapList.bind(this, path)}
               />
             ))}
           </div>

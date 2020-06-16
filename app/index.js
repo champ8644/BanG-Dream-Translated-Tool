@@ -2,15 +2,20 @@
 
 /* eslint global-require: off */
 
-import React from 'react';
-import { render } from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
-import Root from './containers/App/Root';
-import { configureStore, history } from './store/configureStore';
 import './styles/scss/app.global.scss';
+
+import { configureStore, history } from './store/configureStore';
+
+import { AppContainer } from 'react-hot-loader';
+import React from 'react';
+import Root from './containers/App/Root';
+import firebase from 'firebase';
+import firebaseConfig from '../firebaseConfig.json';
+import { render } from 'react-dom';
 
 const MOUNT_POINT = document.getElementById('root');
 const store = configureStore();
+firebase.initializeApp(firebaseConfig);
 
 render(
   <AppContainer>

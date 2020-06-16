@@ -1,10 +1,14 @@
 'use strict';
 
-import Analytics from 'electron-ga';
-import { TRACKING_ID } from '../../config/google-analytics-key';
 import { APP_NAME, APP_VERSION } from '../constants/meta';
 
-export const analytics = new Analytics(TRACKING_ID, {
-  appName: APP_NAME,
-  appVersion: APP_VERSION
-});
+import firebase from 'firebase';
+
+export const analytics = firebase.analytics();
+
+export const logEvent = (event, payload) =>
+  analytics.logEvent(event, {
+    appName: APP_NAME,
+    appVersion: APP_VERSION,
+    contents: payload
+  });

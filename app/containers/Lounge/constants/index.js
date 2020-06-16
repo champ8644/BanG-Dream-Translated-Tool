@@ -14,10 +14,10 @@ export const yellow = new cv.Vec(0, 255, 255);
 export const black = new cv.Vec(0, 0, 0);
 export const white = new cv.Vec(255, 255, 255);
 export const color = {
-  green,
-  blue,
   red,
+  blue,
   purple,
+  green,
   cyan,
   yellow,
   black,
@@ -50,13 +50,13 @@ export const subtitleThreshold = {
 
 export const rows = 1440;
 export const cols = 1920;
-export const skipDialogCountThreshold = 3000;
+export const skipDialogCountThreshold = 5000;
 export const dialogThreshold = 200;
 export const dialogDiffThreshold = 100;
 export const dialogPartialDiffThreshold = 150;
 export const starLabelEndThreshold = 0.6;
 export const threshPercentDiff = 3;
-export const threshStarMatching = 0.45;
+export const threshStarMatching = 0.4;
 export const threshPlacePercentDiff = 5;
 export const threshTitlePercentDiff = 5;
 export const threshSubSubtitle = 20;
@@ -142,7 +142,7 @@ export const subtitleCrop = {
   rectY: [Math.round(1200 * rx), Math.round(1400 * rx)]
 };
 export const subtitlePartialCrop = {
-  rectX: [Math.round(120 * rx), Math.round(600 * rx)],
+  rectX: [Math.round(120 * rx), Math.round(1000 * rx)],
   rectY: [Math.round(1200 * rx), Math.round(1260 * rx)]
 };
 export const subtitleFifthCrop = {
@@ -185,3 +185,9 @@ export const videoListMaxHeight = Math.round(1440 * videoListRatio);
 export const skipNonIntersectWhiteLine = false;
 
 export const RESEARCH_SKIP = 150;
+
+export const loungeBackgroundColorThreshold = 220;
+
+export const limitLoungeMoving = { x: 118, y: 68, c: 118 };
+
+export const eventLoungeThreshold = 240;

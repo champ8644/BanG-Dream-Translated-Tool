@@ -60,9 +60,13 @@ const rectInnerNameLabel = new cv.Rect(
 );
 
 export default function starMatching(mat, vCap) {
-  let prevMat;
-  if (!vCap.prevMat.empty) ({ prevMat } = vCap);
-  else prevMat = mat;
+  let prevMat = vCap.getSnapShot();
+
+  if (!prevMat) prevMat = mat;
+  else if (prevMat.empty) prevMat = mat;
+
+  // if (!vCap.prevMat.empty) ({ prevMat } = vCap);
+  // else prevMat = mat;
   const actor = thresholdOtsu(prevMat.getRegion(rectInnerNameLabel), null);
 
   const threshMat = mat
@@ -73,10 +77,21 @@ export default function starMatching(mat, vCap) {
   const percentDiff =
     (threshMat.countNonZero() / threshMat.rows / threshMat.cols) * 100;
   if (percentDiff < threshPercentDiff) {
-    return {
-      x: 0,
-      y: 0
-    };
+    const matchRect = new cv.Rect(
+      rectInnerNameLabel.x,
+      rectInnerNameLabel.y,
+      rectInnerNameLabel.width,
+      rectInnerNameLabel.height
+    );
+    mat.drawRectangle(matchRect, color.yellow, thickness);
+    writeMat(
+      mat,
+      `${percentDiff} < ${threshPercentDiff}`,
+      [685, 1220],
+      color.black
+    );
+
+    return mat;
   }
   // const arr = [
   //   cv.TM_SQDIFF,
@@ -129,7 +144,7 @@ export default function starMatching(mat, vCap) {
     x: maxLoc.x + roiX[0] - innerX[0],
     y: maxLoc.y + roiY[0] - innerY[0]
   });
-  // console.log('max', { x: maxLoc.x, y: maxLoc.y });
+  //
   // mat.drawRectangle(getStar, arrColor[i], thickness);
   //   }
   // }
@@ -153,7 +168,7 @@ export default function starMatching(mat, vCap) {
       -nameLabelStarRegion.height - 32
     ]);
   // eslint-disable-next-line no-console
-  console.log({ maxVal, maxLoc, threshStarMatching });
+
   if (maxVal > threshStarMatching) {
     const diff = {
       x: maxLoc.x + roiX[0] - innerX[0],

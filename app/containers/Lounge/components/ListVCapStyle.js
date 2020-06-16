@@ -1,3 +1,5 @@
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import green from '@material-ui/core/colors/green';
 import { videoListMaxWidth } from '../constants/index';
 
 export const styles = theme => ({
@@ -195,5 +197,49 @@ export const styles = theme => ({
     WebkitTextStroke: 'thin',
     WebkitTextStrokeColor: 'black',
     textShadow: '1px 1px gray'
+  },
+  switchBase: {
+    color: theme.palette.primary.main,
+    '&:hover': {
+      backgroundColor: fade(
+        theme.palette.primary.main,
+        theme.palette.action.hoverOpacity
+      ),
+      '@media (hover: none)': {
+        backgroundColor: 'transparent'
+      }
+    }
+  },
+  track: {
+    backgroundColor: theme.palette.primary.main
+  },
+  spanBox: props => {
+    const { isEvent } = props;
+    let mainColor = theme.palette.primary;
+    if (isEvent) mainColor = theme.palette.secondary;
+    return {
+      display: 'inline-block',
+      width: '75px',
+      textAlign: 'center',
+      backgroundColor: fade(mainColor.main, theme.palette.action.hoverOpacity),
+      padding: '3px 8px',
+      fontWeight: 700,
+      border: '2px',
+      borderStyle: 'solid',
+      borderColor: mainColor.main,
+      color: mainColor.main
+    };
+  },
+  openFolderButton: {
+    color: green[500],
+    border: `1px solid ${fade(green[500], 0.5)}`,
+    '&:hover': {
+      border: `1px solid ${green[500]}`,
+      backgroundColor: fade(green[500], theme.palette.action.hoverOpacity),
+      // Reset on touch devices, it doesn't add specificity
+      '@media (hover: none)': {
+        backgroundColor: 'transparent'
+      }
+    }
   }
 });

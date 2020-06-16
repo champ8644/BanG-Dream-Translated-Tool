@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
+
 import Snackbar from '@material-ui/core/Snackbar';
-import { withStyles } from '@material-ui/core/styles';
 import SnackbarThemeWrapper from './components/SnackbarThemeWrapper';
 import { styles } from './styles';
+import { withStyles } from '@material-ui/core/styles';
 
 class Snackbars extends PureComponent {
   constructor(props) {
@@ -10,7 +11,7 @@ class Snackbars extends PureComponent {
     this.snackbarOpen = false;
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.fireSnackbar();
   }
 

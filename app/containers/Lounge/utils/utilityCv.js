@@ -1,4 +1,4 @@
-import { black, thickness } from '../constants';
+import { black, color as colorConst, thickness } from '../constants';
 
 import cv from 'opencv4nodejs';
 
@@ -16,19 +16,44 @@ export function makeBGR(mat) {
   return mat.cvtColor(cv.COLOR_GRAY2BGR);
 }
 
-export function writeMat(mat, text, point, color = black) {
+function getPoint(point) {
   let x;
   let y;
   if (Array.isArray(point)) [x, y] = point;
   else ({ x, y } = point);
+  return new cv.Point2(x, y);
+}
+
+export function dotMat(
+  mat,
+  point,
+  color = black,
+  border = cv.FILLED,
+  size = 5
+) {
+  mat.drawCircle(getPoint(point), size, color, border);
+}
+
+export function writeMat(mat, text, point, color = black) {
+  let colorText = color;
+  if (typeof color === 'string') colorText = colorConst[color];
   mat.putText(
     text,
-    new cv.Point2(x, y),
+    getPoint(point),
     cv.FONT_HERSHEY_COMPLEX,
     2,
-    color,
+    colorConst.white,
+    cv.LINE_AA,
+    5
+  );
+  mat.putText(
+    text,
+    getPoint(point),
+    cv.FONT_HERSHEY_COMPLEX,
+    2,
+    colorText,
     cv.LINE_4,
-    1
+    2
   );
 }
 

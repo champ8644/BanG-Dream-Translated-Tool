@@ -8,6 +8,7 @@ import {
 } from './constants/config';
 
 import { actionTypes } from './actions';
+import { eventLoungeThreshold } from './constants';
 import moment from 'moment';
 import { showTime } from './constants/function';
 
@@ -55,6 +56,11 @@ const initialConverter = {
   showFPS: true
 };
 
+function calcEvent(vCap) {
+  const { FPS, length } = vCap;
+  return length / FPS > eventLoungeThreshold;
+}
+
 export const initialVideoDatas = {
   vCap: null,
   progressFromWorker: null,
@@ -99,13 +105,15 @@ export default function Lounge(state = initialState, action) {
         paths.push(vCap.path);
         payloadDatas[vCap.path] = {
           ...initialVideoDatas,
-          vCap
+          vCap,
+          isEvent: calcEvent(vCap)
         };
       });
       dup.forEach(vCap => {
         payloadDatas[vCap.path] = {
           ...initialVideoDatas,
-          vCap
+          vCap,
+          isEvent: calcEvent(vCap)
         };
       });
       return {
@@ -188,7 +196,7 @@ export default function Lounge(state = initialState, action) {
       };
     }
     case actionTypes.FINISH_LINEAR: {
-      const { path } = payload;
+      const { path, assPath } = payload;
       const { videoDatas } = state;
       const {
         progressFromWorker: { beginTime }
@@ -201,6 +209,7 @@ export default function Lounge(state = initialState, action) {
           ...state.videoDatas,
           [path]: {
             ...state.videoDatas[path],
+            assPath,
             completeWork: true,
             cancelWork: false,
             progressFromWorker: {
@@ -381,6 +390,26 @@ export default function Lounge(state = initialState, action) {
     }
     case actionTypes.HANDLE_NUM_PROCESS:
       return { ...state, displayNumProcess: Number(payload) };
+    case actionTypes.HANDLE_SWITCH_CAP_LIST: {
+      const {
+        completeWork,
+        cancelWork,
+        readyToWork,
+        isEvent
+      } = state.videoDatas[payload];
+      if (!readyToWork && !completeWork && !cancelWork)
+        return {
+          ...state,
+          videoDatas: {
+            ...state.videoDatas,
+            [payload]: {
+              ...state.videoDatas[payload],
+              isEvent: !isEvent
+            }
+          }
+        };
+      return state;
+    }
     case actionTypes.ON_CLOSE_VCAP_LIST: {
       // eslint-disable-next-line no-unused-vars
       const { [payload]: removed, ...newVideoDatas } = state.videoDatas;

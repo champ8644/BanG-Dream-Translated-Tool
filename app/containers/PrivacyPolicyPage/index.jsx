@@ -22,7 +22,7 @@ import { styles } from './styles';
 import { withStyles } from '@material-ui/core/styles';
 
 class PrivacyPolicyPage extends Component {
-  componentWillMount() {
+  componentDidMount() {
     resetOverFlowY();
   }
 

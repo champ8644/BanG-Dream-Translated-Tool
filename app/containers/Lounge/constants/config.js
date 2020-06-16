@@ -26,7 +26,8 @@ export const fileNames = [
   'fullDialogGenerator.js',
   'findTrueTitleSpline.js',
   'starLabelEndTemplater.js',
-  'starLabelEndGenerator.js'
+  'starLabelEndGenerator.js',
+  'findTextBubble.js'
 ];
 
 export const radioObj = IS_DEV
@@ -40,22 +41,25 @@ export const radioObj = IS_DEV
       // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
       // 'starLabelEndGenerator',
-      // 'starMatching',
+      'nameLabelGenerator',
+      'starMatching',
       // 'titleLabelGenerator',
-      // 'fullDialogGenerator'
-      'lounge'
+      'fullDialogGenerator'
+      // 'lounge',
+      // 'findTextBubble'
     ]
   : [];
 
-export const isAutoOpen = false; // IS_DEV;
+export const isAutoOpen = true;
 
-export const defaultOverlayMode = IS_DEV ? 'lounge' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 1 : 0;
+export const defaultOverlayMode = IS_DEV ? 'starMatching' : 'none';
+export const defaultVCapBeginFrame = IS_DEV ? 89395 : 0;
 // const prefixFileName = 'E:\\Champ\\Downloads\\';
 // const prefixFileName = 'E:\\Bandori\\Events\\';
-const prefixFileName = 'E:\\Bandori\\LoungeHNY2020\\';
-const fileName = 'วันเกิดคุณคะน้าเรนเดอร์แล้ว.mp4';
+const prefixFileName = 'E:\\Bandori\\Events\\';
+const fileName = 'EVENT_029ย้อนหลัง ซอมบี้_Zombie [475A114F]_2_000200.mp4';
 export const autoOpenFileName = `${prefixFileName}${fileName}`;
+// export const autoOpenFileName = `"E:\\Champ\\Downloads\\วิดีโอ_วันเกิด+ล้อนจ์_2020010ซาบะ_HBD2020_Saaya [F6E1211A]_1_220703.mp4"`;
 
 export const sliderObjSelector = {
   starMatching: {
@@ -135,8 +139,8 @@ export const ws = {
 // export const startFrameTest = 116230;
 // export const startFrameTest = 106848;
 // export const endFrameTest = 106969;
-export const startFrameTest = 37619;
-export const endFrameTest = 37690;
+export const startFrameTest = 89395;
+export const endFrameTest = 89595;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

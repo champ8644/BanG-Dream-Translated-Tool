@@ -55,7 +55,8 @@ const actionTypesList = [
   'CONFIRMING_CLOSE_CONVERTING_DIALOG',
   'CONFIRMED_CLOSE_CONVERTING_DIALOG',
   'ON_SWITCH_FPS_VCAP_LIST',
-  'FINISHING_QUEUE'
+  'FINISHING_QUEUE',
+  'HANDLE_SWITCH_CAP_LIST'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -69,11 +70,8 @@ export function testingFunc() {
 export function devQueue(payload = {}) {
   return (dispatch, getState) => {
     const { videoFilePath, vCap, displayNumProcess } = getState().Lounge;
-    const { start: _start, end: _end, test } = payload;
-    let start = _start;
-    let end = _end;
-    if (start === undefined) start = 0;
-    if (end === undefined) end = vCap.length;
+    let { start = 0, end = vCap.length } = payload;
+    const { test } = payload;
     if (test) {
       start = startFrameTest;
       end = endFrameTest;
@@ -91,6 +89,28 @@ export function devQueue(payload = {}) {
   };
 }
 
+export function devLounge(payload = {}) {
+  return (dispatch, getState) => {
+    const { videoFilePath, vCap } = getState().Lounge;
+    let { start = 0, end = vCap.length } = payload;
+    const { test } = payload;
+    if (test) {
+      start = startFrameTest;
+      end = endFrameTest;
+    }
+    dispatch({
+      type: actionTypes.TICK_QUEUE,
+      payload: { displayNumProcess: 1, path: vCap.path }
+    });
+    message2Worker('start-lounge', {
+      videoFilePath,
+      start,
+      end,
+      process: 1
+    });
+  };
+}
+
 export function updateLinear(payload) {
   return {
     type: actionTypes.UPDATE_LINEAR,
@@ -100,9 +120,9 @@ export function updateLinear(payload) {
 
 export function updateThumbnail(payload) {
   return (dispatch, getState) => {
-    const { path, info } = payload;
+    const { path, info, type } = payload;
     const { vCap } = getState().Lounge.videoDatas[path];
-    if (vCap) vCap.updateThumbnail(info);
+    if (vCap) vCap.updateThumbnail(info, type);
     console.log('info: ', info);
   };
 }
@@ -154,6 +174,13 @@ export function handleConfirmCloseConvertingDialog() {
       type: actionTypes.CONFIRMED_CLOSE_CONVERTING_DIALOG
     });
     dispatch(stopQueue());
+  };
+}
+
+export function handleSwitchVCapList(path) {
+  return {
+    type: actionTypes.HANDLE_SWITCH_CAP_LIST,
+    payload: path
   };
 }
 
@@ -221,26 +248,47 @@ export function tickQueue() {
     if (!isActivate) return;
     let nextQueue = null;
     let vCapLength;
+    let nextIsEvent;
     for (let i = 0; i < queue.length; i++) {
       const path = queue[i];
-      const { vCap, completeWork, cancelWork, readyToWork } = videoDatas[path];
+      const {
+        vCap,
+        completeWork,
+        cancelWork,
+        readyToWork,
+        isEvent
+      } = videoDatas[path];
       if (!completeWork && !cancelWork && !readyToWork) {
         nextQueue = path;
         vCapLength = vCap.length;
+        nextIsEvent = isEvent;
         break;
       }
     }
     if (!nextQueue) return dispatch({ type: actionTypes.FINISHING_QUEUE });
-    dispatch({
-      type: actionTypes.TICK_QUEUE,
-      payload: { displayNumProcess, path: nextQueue }
-    });
-    message2Worker('start-events', {
-      videoFilePath: nextQueue,
-      start: 0,
-      end: vCapLength,
-      process: displayNumProcess
-    });
+    if (nextIsEvent) {
+      dispatch({
+        type: actionTypes.TICK_QUEUE,
+        payload: { displayNumProcess, path: nextQueue }
+      });
+      message2Worker('start-events', {
+        videoFilePath: nextQueue,
+        start: 0,
+        end: vCapLength,
+        process: displayNumProcess
+      });
+    } else {
+      dispatch({
+        type: actionTypes.TICK_QUEUE,
+        payload: { displayNumProcess: 1, path: nextQueue }
+      });
+      message2Worker('start-lounge', {
+        videoFilePath: nextQueue,
+        start: 0,
+        end: vCapLength,
+        process: 1
+      });
+    }
   };
 }
 
@@ -635,5 +683,12 @@ export function importingLounge() {
 function stopProgress() {
   return {
     type: actionTypes.STOP_PROGRESS
+  };
+}
+
+export function captureVCap() {
+  return (dispatch, getState) => {
+    const { vCap } = getState().Lounge;
+    vCap.snapShot();
   };
 }
