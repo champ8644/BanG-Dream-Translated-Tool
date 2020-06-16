@@ -41,24 +41,23 @@ export const radioObj = IS_DEV
       // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
       // 'starLabelEndGenerator',
-      // 'nameLabelGenerator',
-      // 'starMatching',
+      'nameLabelGenerator',
+      'starMatching',
       // 'titleLabelGenerator',
-      // 'fullDialogGenerator'
+      'fullDialogGenerator'
       // 'lounge',
-      'findTextBubble'
+      // 'findTextBubble'
     ]
   : [];
 
-export const isAutoOpen = IS_DEV;
+export const isAutoOpen = true;
 
-export const defaultOverlayMode = IS_DEV ? 'findTextBubble' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 0 : 0;
+export const defaultOverlayMode = IS_DEV ? 'starMatching' : 'none';
+export const defaultVCapBeginFrame = IS_DEV ? 89395 : 0;
 // const prefixFileName = 'E:\\Champ\\Downloads\\';
 // const prefixFileName = 'E:\\Bandori\\Events\\';
-const prefixFileName = '"E:\\Bandori\\Events\\';
-const fileName =
-  'วิดีโอ_วันเกิด+ล้อนจ์_2019009_63_01_01 HNY Pasupare [C3FF93C7]_2_142138.mkv"';
+const prefixFileName = 'E:\\Bandori\\Events\\';
+const fileName = 'EVENT_029ย้อนหลัง ซอมบี้_Zombie [475A114F]_2_000200.mp4';
 export const autoOpenFileName = `${prefixFileName}${fileName}`;
 // export const autoOpenFileName = `"E:\\Champ\\Downloads\\วิดีโอ_วันเกิด+ล้อนจ์_2020010ซาบะ_HBD2020_Saaya [F6E1211A]_1_220703.mp4"`;
 
@@ -140,8 +139,8 @@ export const ws = {
 // export const startFrameTest = 116230;
 // export const startFrameTest = 106848;
 // export const endFrameTest = 106969;
-export const startFrameTest = 3450;
-export const endFrameTest = 3500;
+export const startFrameTest = 89395;
+export const endFrameTest = 89595;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

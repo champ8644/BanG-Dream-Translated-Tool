@@ -685,3 +685,10 @@ function stopProgress() {
     type: actionTypes.STOP_PROGRESS
   };
 }
+
+export function captureVCap() {
+  return (dispatch, getState) => {
+    const { vCap } = getState().Lounge;
+    vCap.snapShot();
+  };
+}

@@ -471,4 +471,12 @@ export default class VideoCapture {
   getMemoize() {
     return this.prevMemoized;
   }
+
+  snapShot() {
+    this.captured = this.getRaw();
+  }
+
+  getSnapShot() {
+    return this.captured;
+  }
 }

@@ -273,7 +273,7 @@ class Lounge extends Component {
         cancelWork,
         showFPS
       },
-      testingFunc
+      captureVCap
     } = this.props;
     return (
       <div className={classes.root}>
@@ -384,9 +384,9 @@ class Lounge extends Component {
                 </Button>
                 <Button
                   className={clsx(classes.btn, classes.marginLeft)}
-                  onClick={testingFunc}
+                  onClick={captureVCap}
                 >
-                  Testing
+                  Capture
                 </Button>
               </>
             )}
