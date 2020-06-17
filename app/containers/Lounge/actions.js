@@ -689,6 +689,7 @@ function stopProgress() {
 export function captureVCap() {
   return (dispatch, getState) => {
     const { vCap } = getState().Lounge;
+    console.log('getIt!');
     vCap.snapShot();
   };
 }
