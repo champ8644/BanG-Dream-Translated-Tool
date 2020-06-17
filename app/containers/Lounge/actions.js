@@ -44,7 +44,8 @@ const actionTypesList = [
   'FINISH_LINEAR',
   'CANCEL_LINEAR',
   'HANDLE_NUM_PROCESS',
-  'ADD_QUEUE',
+  'ADD_UNIQUE_QUEUE',
+  'ADD_DUP_QUEUE',
   'TICK_QUEUE',
   'ACTIVATING_QUEUE',
   'INACTIVATING_QUEUE',
@@ -56,7 +57,8 @@ const actionTypesList = [
   'CONFIRMED_CLOSE_CONVERTING_DIALOG',
   'ON_SWITCH_FPS_VCAP_LIST',
   'FINISHING_QUEUE',
-  'HANDLE_SWITCH_CAP_LIST'
+  'HANDLE_SWITCH_CAP_LIST',
+  'ANSWER_TYPE'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -258,7 +260,7 @@ export function tickQueue() {
         readyToWork,
         isEvent
       } = videoDatas[path];
-      if (!completeWork && !cancelWork && !readyToWork) {
+      if (!completeWork && !cancelWork && !readyToWork && isEvent !== null) {
         nextQueue = path;
         vCapLength = vCap.length;
         nextIsEvent = isEvent;
@@ -307,6 +309,27 @@ export function stopQueue() {
   };
 }
 
+export function answerType(payload) {
+  return {
+    type: actionTypes.ANSWER_TYPE,
+    payload
+  };
+}
+
+function addUniqueQueue(vCap) {
+  return dispatch => {
+    setTimeout(() => {
+      message2Worker('ask-type', { path: vCap.path });
+      dispatch({
+        type: actionTypes.ADD_UNIQUE_QUEUE,
+        payload: {
+          vCap
+        }
+      });
+    }, 0);
+  };
+}
+
 export function addQueue() {
   return async (dispatch, getState) => {
     const { queue, videoDatas } = getState().Lounge;
@@ -332,27 +355,25 @@ export function addQueue() {
       });
       if (uniqueFilePaths.length !== filePaths.length)
         dispatch(throwAlert({ message: 'There is duplicate file(s)' }));
+      // dispatch Duplicate path
       dispatch({
-        type: actionTypes.ADD_QUEUE,
-        payload: {
-          unique: uniqueFilePaths
-            .map(path => {
-              let vCap = null;
-              try {
-                vCap = new VideoCapture({
-                  path,
-                  maxWidth: videoListMaxWidth,
-                  maxHeight: videoListMaxHeight
-                });
-              } catch (err) {
-                dispatch(throwAlert({ message: err }));
-                vCap = null;
-              }
-              return vCap;
-            })
-            .filter(item => item),
-          dup: dupFile.map(path => videoDatas[path].vCap)
+        type: actionTypes.ADD_DUP_QUEUE,
+        payload: dupFile.map(path => videoDatas[path].vCap)
+      });
+      // dispatch Unique path
+      uniqueFilePaths.forEach(path => {
+        let vCap = null;
+        try {
+          vCap = new VideoCapture({
+            path,
+            maxWidth: videoListMaxWidth,
+            maxHeight: videoListMaxHeight
+          });
+        } catch (err) {
+          dispatch(throwAlert({ message: err }));
+          vCap = null;
         }
+        if (vCap) dispatch(addUniqueQueue(vCap));
       });
     } catch (err) {
       if (typeof err === 'object' && err !== null)
@@ -689,6 +710,7 @@ function stopProgress() {
 export function captureVCap() {
   return (dispatch, getState) => {
     const { vCap } = getState().Lounge;
+    console.log('getIt!');
     vCap.snapShot();
   };
 }

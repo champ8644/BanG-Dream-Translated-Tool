@@ -10,7 +10,6 @@ import {
 import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 import subtitleFinder from './subtitleFinder';
-import { thresholdOtsu } from '../utils/thresholdCv';
 
 let CaptureNameLabel;
 try {
@@ -68,7 +67,7 @@ export default function makeNameLabel(mat, starMove) {
   let actorStar;
   let dialog = null;
   if (percentDiff < threshPercentDiff) {
-    actor = thresholdOtsu(scopeMat.getRegion(rectInnerNameLabel), null);
+    actor = scopeMat.getRegion(rectInnerNameLabel);
     actorStar = threshMat.getRegion(rectNameLabelStarCropRelative);
     dialog = subtitleFinder(mat);
   }

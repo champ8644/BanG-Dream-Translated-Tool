@@ -15,7 +15,6 @@ import { mat2Rect, paintMat, writeMat } from '../utils/utilityCv';
 import { PATHS } from '../../../utils/paths';
 import cv from 'opencv4nodejs';
 import { formatNumber } from '../constants/function';
-import { thresholdOtsu } from '../utils/thresholdCv';
 
 const { val, sat, hue } = nameLabelThreshold;
 const lowerColorBounds = new cv.Vec(hue[0], sat[0], val[0]);
@@ -59,16 +58,43 @@ const rectInnerNameLabel = new cv.Rect(
   innerY[1] - innerY[0]
 );
 
+const maxOrMin = {
+  TM_SQDIFF: 0,
+  TM_SQDIFF_NORMED: 0,
+  TM_CCORR: 1,
+  TM_CCORR_NORMED: 1,
+  TM_CCOEFF: 1,
+  TM_CCOEFF_NORMED: 1
+};
+
+function bakeMinMax(minMax, type) {
+  if (maxOrMin[type] === 0)
+    return {
+      minL: `{${minMax.minLoc.x + roiX[0] - innerX[0]},${minMax.minLoc.y +
+        roiY[0] -
+        innerY[0]}}`,
+      minV: minMax.minVal
+    };
+  return {
+    maxL: `{${minMax.maxLoc.x + roiX[0] - innerX[0]},${minMax.maxLoc.y +
+      roiY[0] -
+      innerY[0]}}`,
+    maxV: minMax.maxVal
+  };
+}
+
 export default function starMatching(mat, vCap) {
   let prevMat = vCap.getSnapShot();
 
-  if (!prevMat) prevMat = mat;
-  else if (prevMat.empty) prevMat = mat;
+  if (!prevMat) {
+    if (vCap.prevMat.empty) ({ prevMat } = vCap);
+    else prevMat = mat;
+  }
+  if (prevMat.empty) prevMat = mat;
 
-  // if (!vCap.prevMat.empty) ({ prevMat } = vCap);
-  // else prevMat = mat;
-  const actor = thresholdOtsu(prevMat.getRegion(rectInnerNameLabel), null);
-
+  const actor = prevMat
+    .getRegion(rectInnerNameLabel)
+    .cvtColor(cv.COLOR_BGR2GRAY);
   const threshMat = mat
     .getRegion(rectNameLabelStarCrop)
     .cvtColor(cv.COLOR_BGR2HSV)
@@ -93,81 +119,62 @@ export default function starMatching(mat, vCap) {
 
     return mat;
   }
-  // const arr = [
-  //   cv.TM_SQDIFF,
-  //   cv.TM_SQDIFF_NORMED,
-  //   cv.TM_CCORR,
-  //   cv.TM_CCORR_NORMED,
-  //   cv.TM_CCOEFF,
-  //   cv.TM_CCOEFF_NORMED
-  // ];
-  // const arrColor = [
-  //   color.red,
-  //   color.blue,
-  //   color.green,
-  //   color.yellow,
-  //   color.cyan,
-  //   color.purple
-  // ];
-  // const arrValid = [1, 1, 1, 1, 1, 1];
-  // const i = 3;
-  // for (let i = 0; i < 6; i++) {
-  // if (arrValid[i]) {
-  const roiRangeTest = mat
+
+  let getMatched;
+  let normGetMatched;
+  const normGetmatchedPaint = [];
+  const textMatchProps = [];
+  const choosenOne = 'TM_CCOEFF_NORMED';
+
+  const matFindField = mat
     .getRegion(nameLabelStarRegion)
-    .cvtColor(cv.COLOR_BGR2HSV)
-    .inRange(lowerColorBounds, upperColorBounds)
-    .bitwiseNot();
-  const roiEdges = roiRangeTest.canny(0, 255, 7);
-  const actorEdges = actor.canny(0, 255, 7);
-  // const roiRangeTest = thresholdOtsu(mat.getRegion(nameLabelStarRegion), null);
-  // .normalize(0, 1, cv.NORM_MINMAX, -1)
-  const getMatched = roiEdges.matchTemplate(
-    actorEdges,
-    cv.TM_CCORR_NORMED,
-    actor
+    .cvtColor(cv.COLOR_BGR2GRAY);
+  [
+    'TM_SQDIFF',
+    'TM_SQDIFF_NORMED',
+    'TM_CCORR',
+    'TM_CCORR_NORMED',
+    'TM_CCOEFF',
+    'TM_CCOEFF_NORMED'
+  ].forEach(item => {
+    const getMatchedEach = matFindField.matchTemplate(actor, cv[item]);
+    const normGetMatchedEach = getMatchedEach.normalize(
+      0,
+      255,
+      cv.NORM_MINMAX,
+      cv.CV_8UC1
+    );
+    if (choosenOne === item) {
+      getMatched = getMatchedEach;
+      normGetMatched = normGetMatchedEach;
+    }
+    normGetmatchedPaint.push(normGetMatchedEach);
+    textMatchProps.push(bakeMinMax(getMatchedEach.minMaxLoc(), item));
+  });
+  const normRect = mat2Rect(
+    nameLabelStarRegion.x,
+    nameLabelStarRegion.y,
+    normGetMatched
   );
-  const normGetMatched = getMatched.convertTo(cv.CV_8UC1, 255, 0);
+  paintMat(
+    mat,
+    normGetmatchedPaint,
+    normRect,
+    color.yellow,
+    -nameLabelStarRegion.height * 3,
+    textMatchProps
+  );
 
   const matchProps = getMatched.minMaxLoc();
   const { maxLoc, maxVal } = matchProps;
-
-  // const matchLoc =
-  //   arr[i] === cv.TM_SQDIFF || arr[i] === cv.TM_SQDIFF_NORMED ? minLoc : maxLoc;
-  // const matchVal =
-  //   arr[i] === cv.TM_SQDIFF || arr[i] === cv.TM_SQDIFF_NORMED ? minVal : maxVal;
-  // matchLoc.x += roiX[0];
-  // matchLoc.y += roiY[0];
 
   // eslint-disable-next-line no-console
   console.log('diff', {
     x: maxLoc.x + roiX[0] - innerX[0],
     y: maxLoc.y + roiY[0] - innerY[0]
   });
-  //
-  // mat.drawRectangle(getStar, arrColor[i], thickness);
-  //   }
-  // }
 
-  const normRect = mat2Rect(
-    nameLabelStarRegion.x,
-    nameLabelStarRegion.y,
-    normGetMatched
-  );
-  paintMat(mat, roiEdges, nameLabelStarRegion, color.black);
-  paintMat(
-    mat,
-    normGetMatched,
-    normRect,
-    color.blue,
-    -nameLabelStarRegion.height
-  );
-  if (actor)
-    paintMat(mat, actorEdges, rectInnerNameLabel, color.red, [
-      normRect.width * 2 - 142,
-      -nameLabelStarRegion.height - 32
-    ]);
-  // eslint-disable-next-line no-console
+  paintMat(mat, matFindField, nameLabelStarRegion, color.black);
 
   if (maxVal > threshStarMatching) {
     const diff = {
@@ -179,6 +186,13 @@ export default function starMatching(mat, vCap) {
       rectInnerNameLabel.y + diff.y,
       rectInnerNameLabel.width,
       rectInnerNameLabel.height
+    );
+    paintMat(
+      mat,
+      [actor, mat.getRegion(matchRect)],
+      rectInnerNameLabel,
+      color.red,
+      [normRect.width * 2 - 142, -nameLabelStarRegion.height - 32]
     );
     mat.drawRectangle(matchRect, color.yellow, thickness);
     writeMat(mat, `{${diff.x},${diff.y}}`, [685, 1220], color.purple);

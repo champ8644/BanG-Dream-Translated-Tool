@@ -361,7 +361,7 @@ export default function mainEvent({ vCap, start, end, index, process }) {
           // console.log('new dialog at', frame);
         } else if (refractory.name) {
           // vCap.current.showMatInCanvas(nameObj.actorStar);
-          starMatched = starMatching(mat, currentActor);
+          starMatched = starMatching(mat, currentActor.actor);
           // console.log('starMatched: ', starMatched);
           // console.log('refractory: ', { ...refractory });
           // console.log('nameObj: ', nameObj);

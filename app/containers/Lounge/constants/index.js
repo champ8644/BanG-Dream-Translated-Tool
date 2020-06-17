@@ -56,7 +56,7 @@ export const dialogDiffThreshold = 100;
 export const dialogPartialDiffThreshold = 150;
 export const starLabelEndThreshold = 0.6;
 export const threshPercentDiff = 3;
-export const threshStarMatching = 0.4;
+export const threshStarMatching = 0.95;
 export const threshPlacePercentDiff = 5;
 export const threshTitlePercentDiff = 5;
 export const threshSubSubtitle = 20;
@@ -191,3 +191,4 @@ export const loungeBackgroundColorThreshold = 220;
 export const limitLoungeMoving = { x: 118, y: 68, c: 118 };
 
 export const eventLoungeThreshold = 240;
+export const FindingEventType = 3;

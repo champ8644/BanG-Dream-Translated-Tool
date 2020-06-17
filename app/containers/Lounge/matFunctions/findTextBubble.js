@@ -139,12 +139,12 @@ export default function findTextBubble(mat, vCap) {
   const res = [];
   const prevRes = vCap.getMemoize();
   contours.forEach(item => {
+    const roi = item.boundingRect();
     if (item.area > 5000) {
       const peri = item.arcLength(true);
       const approx = item.approxPolyDP(0.04 * peri, true);
       if (approx.length === 4) {
         const approxContour = new cv.Contour(approx);
-        const roi = item.boundingRect();
         if (isFinalContour(approxContour, roi)) {
           const maskMat = new cv.Mat(
             mat.rows,
@@ -185,6 +185,42 @@ export default function findTextBubble(mat, vCap) {
                   index: selectedRect
                 });
             }
+          }
+        }
+      } else {
+        const maskMat = new cv.Mat(mat.rows, mat.cols, cv.CV_8UC1, color.black);
+        maskMat.drawContours([item.getPoints()], -1, color.white, cv.FILLED);
+        const childrenRect = getChildrenRect(contours, item);
+        if (childrenRect) {
+          maskMat.drawRectangle(childrenRect, color.black, cv.FILLED);
+          const intermetmat = new cv.Mat(mat.rows, mat.cols, cv.CV_8UC3, [
+            255,
+            255,
+            0
+          ]);
+          mat.copyTo(intermetmat, maskMat);
+          const { w, x, y } = mat.mean(maskMat);
+          if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
+            // intermetmat.copyTo(outputFrame);
+            intermetmat.getRegion(roi).copyTo(outputFrame.getRegion(roi));
+            outObj.push(item);
+            res.push(childrenRect);
+            statusRect.write(childrenRect);
+            let mincalc = 1e10;
+            let selectedRect = null;
+            prevRes.forEach((rect, index) => {
+              const calc = calcRect(childrenRect, rect);
+              // console.log('calc: ', calc);
+              if (mincalc > calc) {
+                selectedRect = index;
+                mincalc = calc;
+              }
+            });
+            if (selectedRect !== null)
+              statusRect.writeMiddle({
+                ...compareRect(childrenRect, prevRes[selectedRect]),
+                index: selectedRect
+              });
           }
         }
       }

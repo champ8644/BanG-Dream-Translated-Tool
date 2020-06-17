@@ -1,11 +1,5 @@
 import {
-  addBlackMat,
-  addNameMat,
-  addPlaceMat,
-  addTitleMat,
-  addWhiteMat
-} from './matFunctions/additive';
-import {
+  FindingEventType,
   blackMaxThreshold,
   green,
   maxHeight,
@@ -13,9 +7,17 @@ import {
   rx,
   whiteMinThreshold
 } from './constants';
+import {
+  addBlackMat,
+  addNameMat,
+  addPlaceMat,
+  addTitleMat,
+  addWhiteMat
+} from './matFunctions/additive';
 
 import cv from 'opencv4nodejs';
 import mainEvent from './mainFunctions/mainEvent';
+import makeNameLabel from './mainFunctions/makeNameLabel';
 import matFunctions from './matFunctions';
 import { vCapfindTextBubble } from './matFunctions/findTextBubble';
 
@@ -478,5 +480,19 @@ export default class VideoCapture {
 
   getSnapShot() {
     return this.captured;
+  }
+
+  findTypeEvent() {
+    const begin = Math.floor(this.length / (FindingEventType + 1));
+    for (let i = 1; i <= FindingEventType; i++) {
+      const mat = this.getRaw(begin * i);
+      const { status } = makeNameLabel(mat);
+      if (status) {
+        this.setFrame(0);
+        return true;
+      }
+    }
+    this.setFrame(0);
+    return false;
   }
 }

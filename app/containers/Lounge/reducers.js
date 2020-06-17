@@ -8,7 +8,6 @@ import {
 } from './constants/config';
 
 import { actionTypes } from './actions';
-import { eventLoungeThreshold } from './constants';
 import moment from 'moment';
 import { showTime } from './constants/function';
 
@@ -56,11 +55,6 @@ const initialConverter = {
   showFPS: true
 };
 
-function calcEvent(vCap) {
-  const { FPS, length } = vCap;
-  return length / FPS > eventLoungeThreshold;
-}
-
 export const initialVideoDatas = {
   vCap: null,
   progressFromWorker: null,
@@ -97,29 +91,48 @@ export default function Lounge(state = initialState, action) {
         isActivate: false
       };
     }
-    case actionTypes.ADD_QUEUE: {
+    case actionTypes.ADD_DUP_QUEUE: {
       const paths = [];
       const payloadDatas = {};
-      const { unique, dup } = payload;
-      unique.forEach(vCap => {
-        paths.push(vCap.path);
+      payload.forEach(vCap => {
         payloadDatas[vCap.path] = {
           ...initialVideoDatas,
           vCap,
-          isEvent: calcEvent(vCap)
-        };
-      });
-      dup.forEach(vCap => {
-        payloadDatas[vCap.path] = {
-          ...initialVideoDatas,
-          vCap,
-          isEvent: calcEvent(vCap)
+          isEvent: state.videoDatas[vCap.path].isEvent
         };
       });
       return {
         ...state,
         queue: [...state.queue, ...paths],
         videoDatas: { ...state.videoDatas, ...payloadDatas }
+      };
+    }
+    case actionTypes.ADD_UNIQUE_QUEUE: {
+      const { vCap } = payload;
+      return {
+        ...state,
+        queue: [...state.queue, vCap.path],
+        videoDatas: {
+          ...state.videoDatas,
+          [vCap.path]: {
+            ...initialVideoDatas,
+            vCap,
+            isEvent: null
+          }
+        }
+      };
+    }
+    case actionTypes.ANSWER_TYPE: {
+      const { path, isEvent } = payload;
+      return {
+        ...state,
+        videoDatas: {
+          ...state.videoDatas,
+          [path]: {
+            ...state.videoDatas[path],
+            isEvent
+          }
+        }
       };
     }
     case actionTypes.UPDATE_FRAME:

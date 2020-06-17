@@ -53,6 +53,13 @@ ipcRenderer.on('start-lounge', async (e, arg) => {
   }
 });
 
+ipcRenderer.on('ask-type', async (e, arg) => {
+  const { path } = arg;
+  const vCap = new VideoCapture({ path });
+  const isEvent = vCap.findTypeEvent();
+  message2UI('answer-type', { path, isEvent });
+});
+
 ipcRenderer.on('sum-events', (e, payload) => {
   if (payload[0].finished) {
     const assPath = writeAss(mergeData(payload));
