@@ -41,23 +41,24 @@ export const radioObj = IS_DEV
       // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
       // 'starLabelEndGenerator',
-      'nameLabelGenerator',
-      'starMatching',
+      // 'nameLabelGenerator',
+      // 'starMatching',
       // 'titleLabelGenerator',
-      'fullDialogGenerator'
+      // 'fullDialogGenerator'
       // 'lounge',
-      // 'findTextBubble'
+      'findTextBubble'
     ]
   : [];
 
-export const isAutoOpen = true;
+export const isAutoOpen = IS_DEV;
 
-export const defaultOverlayMode = IS_DEV ? 'starMatching' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 89395 : 0;
+export const defaultOverlayMode = IS_DEV ? 'findTextBubble' : 'none';
+export const defaultVCapBeginFrame = IS_DEV ? 993 : 0;
 // const prefixFileName = 'E:\\Champ\\Downloads\\';
 // const prefixFileName = 'E:\\Bandori\\Events\\';
 const prefixFileName = 'E:\\Bandori\\Events\\';
-const fileName = 'EVENT_029ย้อนหลัง ซอมบี้_Zombie [475A114F]_2_000200.mp4';
+const fileName =
+  'วิดีโอ_วันเกิด+ล้อนจ์_2020010ซาบะ_HBD2020_Saaya [F6E1211A]_1_220703.mp4';
 export const autoOpenFileName = `${prefixFileName}${fileName}`;
 // export const autoOpenFileName = `"E:\\Champ\\Downloads\\วิดีโอ_วันเกิด+ล้อนจ์_2020010ซาบะ_HBD2020_Saaya [F6E1211A]_1_220703.mp4"`;
 
