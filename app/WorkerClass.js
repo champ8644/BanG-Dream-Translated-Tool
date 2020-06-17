@@ -69,6 +69,23 @@ export default class WorkerClass {
     });
   }
 
+  async askType(payload) {
+    const { path } = payload;
+    const invokeWindows = [];
+    let i = 0;
+    for (; i < 1; i++)
+      invokeWindows[i] = this.workerWindows[i]
+        ? this.workerWindows[i]
+        : this.openNewWindow(i);
+    for (; i < this.workerWindows.length; i++) {
+      if (this.workerWindows[i]) this.workerWindows[i].close();
+    }
+    this.workerWindows = await Promise.all(invokeWindows);
+    this.workerWindows[0].webContents.send('ask-type', {
+      path
+    });
+  }
+
   async startEvents(payload) {
     const { videoFilePath, start, end, process } = payload;
     const waiting = [];
@@ -121,6 +138,9 @@ export default class WorkerClass {
           if (window)
             if (window.webContents) window.webContents.send('stop-events');
         });
+        break;
+      case 'ask-type':
+        this.askType(payload);
         break;
       default:
     }

@@ -198,6 +198,12 @@ export const styles = theme => ({
     WebkitTextStrokeColor: 'black',
     textShadow: '1px 1px gray'
   },
+  typographyMiddle: {
+    position: 'relative'
+  },
+  switchRoot: {
+    marginLeft: '75px'
+  },
   switchBase: {
     color: theme.palette.primary.main,
     '&:hover': {
@@ -213,11 +219,22 @@ export const styles = theme => ({
   track: {
     backgroundColor: theme.palette.primary.main
   },
+  circularBox: {
+    position: 'absolute',
+    display: 'inline-block',
+    width: '75px',
+    textAlign: 'center',
+    padding: '3px 8px'
+  },
+  circularChild: {
+    position: 'relative'
+  },
   spanBox: props => {
     const { isEvent } = props;
     let mainColor = theme.palette.primary;
     if (isEvent) mainColor = theme.palette.secondary;
     return {
+      position: 'absolute',
       display: 'inline-block',
       width: '75px',
       textAlign: 'center',

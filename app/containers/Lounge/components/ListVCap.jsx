@@ -149,18 +149,34 @@ function ListVCap(props) {
                 color='textSecondary'
                 noWrap
                 gutterBottom={false}
+                className={classes.typographyMiddle}
               >
-                <span className={classes.spanBox}>
-                  {isEvent ? 'Events' : 'Lounge'}
-                </span>
+                {isEvent === null ? (
+                  <span className={classes.circularBox}>
+                    <CircularProgress
+                      className={classes.circularChild}
+                      disableShrink
+                    />
+                  </span>
+                ) : (
+                  <span className={classes.spanBox}>
+                    {isEvent ? 'Events' : 'Lounge'}
+                  </span>
+                )}
                 <Switch
                   classes={{
+                    root: classes.switchRoot,
                     switchBase: classes.switchBase,
                     track: classes.track
                   }}
-                  checked={isEvent}
+                  checked={!!isEvent}
                   onChange={handleSwitch}
-                  disabled={readyToWork || cancelWork || completeWork}
+                  disabled={
+                    readyToWork ||
+                    cancelWork ||
+                    completeWork ||
+                    isEvent === null
+                  }
                 />
                 {path.dirname(videoFilePath)}
                 {assPath && (
