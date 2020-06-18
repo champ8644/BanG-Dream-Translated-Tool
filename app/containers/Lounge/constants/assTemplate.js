@@ -36,6 +36,7 @@ Style: Credit,Layiji MaHaNiYom V1.61,80,&H00EEDDFF,&H0006067E,&H007733FF,&H00000
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:00.00,Default,▼CODE LINES▼,0,0,0,,
 Comment: 0,0:00:00.00,0:00:00.00,Credit,,0,0,0,code once,function checkIfEmpty (text) if text=="" then return "\\\\alpha&HFF&" end return "\\\\alpha&H00&" end
 Comment: 0,0:00:00.00,0:00:00.00,Credit,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\fad(5000,5000)\\blur0\\1c&H7733FF&\\3c&HEEDDFF&\\fscx35\\fscy35\\bord5\\pos(1885,90)}m 121 7 b 104 -29 98 -29 81 7 b 46 12 49 27 71 43 b 61 81 72 89 101 68 b 129 91 144 80 131 43 b 156 21 154 10 121 7 m 173 -112 l 98 -32 b 99 -26 108 -23 113 -21 l 186 -97 b 190 -104 184 -115 173 -112 m 175 -81 b 187 -87 193 -70 188 -65 l 124 -2 b 122 -7 119 -11 115 -17 m 177 -50 b 186 -50 192 -44 189 -34 l 149 7 b 146 6 137 1 130 0 m 185 2 b 192 -9 187 -20 174 -14 l 153 9 l 151 10 b 159 21 152 28 150 35 m 140 55 l 140 75 b 142 80 144 80 147 77 l 189 30 b 190 19 186 15 174 17
 Comment: 0,0:00:00.00,0:00:00.00,Credit,,0,0,0,template line,!retime("line", 0, 0)!{\\fad(5000,5000)\\blur2}

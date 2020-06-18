@@ -40,8 +40,8 @@ function writeShake({ shake, begin, end }) {
 `;
 }
 
-function writeTemplateLine() {
-  return `Dialogue: 0,0:00:00.00,0:00:00.00,Default,▼TEMPLATE LINES▼,0,0,0,,
+function writeSubtitleLine() {
+  return `Dialogue: 0,0:00:00.00,0:00:00.00,Default,SUBTITLE LINES▼,0,0,0,,
 `;
 }
 
@@ -62,7 +62,7 @@ export default function writeAss({ data, vCap }) {
     stream.write(loungeTemplate(path));
     data.forEach(item => stream.write(writeShake(item)));
     stream.write(writeCredit(length));
-    stream.write(writeTemplateLine());
+    stream.write(writeSubtitleLine());
     data.forEach(item => stream.write(writeText(item)));
     stream.end();
   });
