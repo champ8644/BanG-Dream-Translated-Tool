@@ -1,7 +1,7 @@
 function afterHooks() {
   const execSync = require('child_process').execSync;
-  execSync('yarn patch', { encoding: 'utf-8' });
-  execSync('shutdown -s -t 60', { encoding: 'utf-8' });
+  // execSync('yarn patch', { encoding: 'utf-8' });
+  execSync('shutdown -s -t 300', { encoding: 'utf-8' });
 }
 
 afterHooks();

@@ -1,4 +1,5 @@
 import {
+  black,
   blue,
   green,
   nameLabelCrop,
@@ -54,6 +55,19 @@ const diffSubtitleRect2 = new cv.Rect(
   rectY[1] - rectY[0]
 );
 
+function subTractBorder(mat) {
+  const contours = mat.findContours(cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
+  const copy = mat.copy();
+  copy.drawContours(
+    contours.map(item => item.getPoints()),
+    -1,
+    black,
+    1,
+    cv.LINE_8
+  );
+  return copy;
+}
+
 export default function nameLabelGenerator(mat, vCap) {
   const {
     status,
@@ -70,11 +84,26 @@ export default function nameLabelGenerator(mat, vCap) {
     paintMat(mat, dialogMat.matSubtitle, subtitleRect, red);
     paintMat(mat, dialogMat.fifthMatSubtitle, subtitleRectFifth, green, 100);
     if (dialogMat.prevMatSubtitle) {
-      paintMat(mat, dialogMat.prevMatSubtitle, prevSubtitleRect, yellow);
-      const sub = dialogMat.prevMatSubtitle.sub(dialogMat.matSubtitle);
-      paintMat(mat, sub, diffSubtitleRect, blue);
-      const revSub = dialogMat.matSubtitle.sub(dialogMat.prevMatSubtitle);
-      paintMat(mat, revSub, diffSubtitleRect2, purple);
+      paintMat(
+        mat,
+        dialogMat.prevMatSubtitle,
+        prevSubtitleRect,
+        yellow,
+        null,
+        dialogMat.prevMatSubtitle.countNonZero()
+      );
+      const nextBordered = subTractBorder(dialogMat.prevMatSubtitle);
+      const sub = nextBordered.sub(dialogMat.matSubtitle);
+      paintMat(mat, sub, diffSubtitleRect, blue, null, sub.countNonZero());
+      // const revSub = dialogMat.matSubtitle.sub(dialogMat.prevMatSubtitle);
+      paintMat(
+        mat,
+        nextBordered,
+        diffSubtitleRect2,
+        purple,
+        null,
+        nextBordered.countNonZero()
+      );
     }
 
     return mat;
