@@ -128,7 +128,7 @@ function writeShake({ arr, begin, end }) {
 }
 
 function writeSubtitleLine() {
-  return `Dialogue: 0,0:00:00.00,0:00:00.00,Default,SUBTITLE LINES▼,0,0,0,,
+  return `Dialogue: 0,0:00:00.00,0:00:00.00,Default,▼SUBTITLE LINES▼,0,0,0,,
 `;
 }
 
@@ -424,8 +424,8 @@ function exportingAss({
     stream.write(assTemplate(path, comments));
     shakeArr.forEach(item => stream.write(writeShake(item)));
     stream.write(writeCredit(limitVCap));
-    nameActor.forEach(item => stream.write(writeNameActor(item)));
     stream.write(writeSubtitleLine());
+    nameActor.forEach(item => stream.write(writeNameActor(item)));
     data.forEach(item => {
       switch (item.type) {
         case 'name':

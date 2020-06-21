@@ -367,11 +367,16 @@ export default function mainEvent({ vCap, start, end, index, process }) {
           // console.log('nameObj: ', nameObj);
           if (starMatched) {
             if (starMatched.x === 0 && starMatched.y === 0) {
+              // console.log('refractory.star: ', refractory.star);
               if (refractory.star) {
                 if (!nameObj.status) {
                   // console.log(3.111, 'สั่นปลอม + เคยมีสั่น + ไม่เจอactor');
                   refractory.star--;
                 } else if (isNewDialog(nameObj.dialog, prevDialog)) {
+                  // console.log(
+                  //   'isNewDialog(nameObj.dialog, prevDialog): ',
+                  //   isNewDialog(nameObj.dialog, prevDialog)
+                  // );
                   // console.log(
                   //   3.112,
                   //   'สั่นปลอม + เคยมีสั่น + เจอactor + เป็นรูปใหม่'

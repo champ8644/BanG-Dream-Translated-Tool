@@ -171,7 +171,8 @@ export default function starMatching(mat, vCap) {
   // eslint-disable-next-line no-console
   console.log('diff', {
     x: maxLoc.x + roiX[0] - innerX[0],
-    y: maxLoc.y + roiY[0] - innerY[0]
+    y: maxLoc.y + roiY[0] - innerY[0],
+    maxVal
   });
 
   paintMat(mat, matFindField, nameLabelStarRegion, color.black);

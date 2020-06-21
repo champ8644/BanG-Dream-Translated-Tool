@@ -41,7 +41,7 @@ function writeShake({ shake, begin, end }) {
 }
 
 function writeSubtitleLine() {
-  return `Dialogue: 0,0:00:00.00,0:00:00.00,Default,SUBTITLE LINES▼,0,0,0,,
+  return `Dialogue: 0,0:00:00.00,0:00:00.00,Default,▼SUBTITLE LINES▼,0,0,0,,
 `;
 }
 
