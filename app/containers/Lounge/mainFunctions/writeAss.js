@@ -392,7 +392,7 @@ export default function writeAss({ data, nameActor, info }) {
     meanSkip: skipProp.sum / skipProp.count
   };
 
-  exportingAss({
+  return exportingAss({
     data: outData,
     path,
     nameActor,
@@ -418,8 +418,6 @@ function exportingAss({
   const stream = fs.createWriteStream(assPath, {
     encoding: 'utf8'
   });
-  // eslint-disable-next-line no-console
-  stream.on('finish', () => console.log('Finish writing file!!'));
   stream.once('open', () => {
     stream.write(assTemplate(path, comments));
     shakeArr.forEach(item => stream.write(writeShake(item)));
@@ -460,5 +458,12 @@ function exportingAss({
     });
     stream.write(additionInfoTemplate(info));
     stream.end();
+  });
+  return new Promise(resolve => {
+    stream.on('finish', () => {
+      // eslint-disable-next-line no-console
+      console.log('Finish writing file!!');
+      resolve(assPath);
+    });
   });
 }

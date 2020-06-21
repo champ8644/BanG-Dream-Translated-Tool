@@ -249,10 +249,15 @@ export const styles = theme => ({
   },
   openFolderButton: {
     color: green[500],
-    border: `1px solid ${fade(green[500], 0.5)}`,
+    border: `1px solid ${green[500]}`,
+    marginLeft: '1rem',
+    fontSize: '0.95rem',
+    borderWidth: 'medium',
     '&:hover': {
-      border: `1px solid ${green[500]}`,
+      border: `1px solid ${fade(green[500], 0.5)}`,
       backgroundColor: fade(green[500], theme.palette.action.hoverOpacity),
+      fontSize: '0.95rem',
+      borderWidth: 'medium',
       // Reset on touch devices, it doesn't add specificity
       '@media (hover: none)': {
         backgroundColor: 'transparent'

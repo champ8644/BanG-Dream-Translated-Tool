@@ -60,9 +60,9 @@ ipcRenderer.on('ask-type', async (e, arg) => {
   message2UI('answer-type', { path, isEvent });
 });
 
-ipcRenderer.on('sum-events', (e, payload) => {
+ipcRenderer.on('sum-events', async (e, payload) => {
   if (payload[0].finished) {
-    const assPath = writeAss(mergeData(payload));
+    const assPath = await writeAss(mergeData(payload));
     message2UI('finish-progress', { path: payload[0].info.path, assPath });
   } else message2UI('cancel-progress', { path: payload[0].info.path });
 });

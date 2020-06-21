@@ -184,7 +184,7 @@ function ListVCap(props) {
                     variant='outlined'
                     size='small'
                     className={classes.openFolderButton}
-                    onClick={openFolder.bind(this, videoFilePath)}
+                    onClick={openFolder.bind(this, assPath)}
                   >
                     Open Folder
                   </Button>
