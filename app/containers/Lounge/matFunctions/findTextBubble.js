@@ -5,6 +5,7 @@ import {
 } from '../constants';
 
 import cv from 'opencv4nodejs';
+import { showOtherBubble } from '../constants/config';
 import { writeMat } from '../utils/utilityCv';
 
 class StatusRectClass {
@@ -59,12 +60,26 @@ function getH(contour) {
 }
 
 function isFinalContour(contour, roi) {
+  // console.log({ contour, roi });
   // if (roi.width < 130) return false;
   // if (roi.height < 130) return false;
-  if (roi.width / roi.height < 2) return false;
+  // console.log(
+  //   'roi.width / roi.height: < 1.5 ',
+  //   roi.width,
+  //   roi.height,
+  //   roi.width / roi.height
+  // );
+  if (roi.width / roi.height < 1.6) return false;
   const rect = contour.boundingRect();
-  if (rect.width <= rect.height) return false;
+  // console.log(
+  //   'rect.width <= rect.height: ',
+  //   rect.width,
+  //   rect.height,
+  //   rect.width <= rect.height
+  // );
+  if (rect.width / rect.height < 1.6) return false;
   const percent = (contour.area / rect.width / rect.height) * 100;
+  // console.log('percent: ', percent);
   if (percent < 80) return false;
   return true;
 }
@@ -140,12 +155,14 @@ export default function findTextBubble(mat, vCap) {
   const prevRes = vCap.getMemoize();
   contours.forEach(item => {
     const roi = item.boundingRect();
+    // outputFrame.drawRectangle(roi, color.red, 2);
     if (item.area > 5000) {
       const peri = item.arcLength(true);
       const approx = item.approxPolyDP(0.04 * peri, true);
       if (approx.length === 4) {
         const approxContour = new cv.Contour(approx);
         if (isFinalContour(approxContour, roi)) {
+          // console.log({ approxContour, roi });
           const maskMat = new cv.Mat(
             mat.rows,
             mat.cols,
@@ -186,48 +203,91 @@ export default function findTextBubble(mat, vCap) {
                 });
             }
           }
-        }
-      } else {
-        const maskMat = new cv.Mat(mat.rows, mat.cols, cv.CV_8UC1, color.black);
-        maskMat.drawContours([item.getPoints()], -1, color.white, cv.FILLED);
-        const childrenRect = getChildrenRect(contours, item);
-        if (childrenRect) {
-          maskMat.drawRectangle(childrenRect, color.black, cv.FILLED);
-          const intermetmat = new cv.Mat(mat.rows, mat.cols, cv.CV_8UC3, [
-            255,
-            255,
-            0
-          ]);
-          mat.copyTo(intermetmat, maskMat);
-          const { w, x, y } = mat.mean(maskMat);
-          if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
-            // intermetmat.copyTo(outputFrame);
-            intermetmat.getRegion(roi).copyTo(outputFrame.getRegion(roi));
-            outObj.push(item);
-            res.push(childrenRect);
-            statusRect.write(childrenRect);
-            let mincalc = 1e10;
-            let selectedRect = null;
-            prevRes.forEach((rect, index) => {
-              const calc = calcRect(childrenRect, rect);
-              // console.log('calc: ', calc);
-              if (mincalc > calc) {
-                selectedRect = index;
-                mincalc = calc;
-              }
-            });
-            if (selectedRect !== null)
-              statusRect.writeMiddle({
-                ...compareRect(childrenRect, prevRes[selectedRect]),
-                index: selectedRect
+        } else if (showOtherBubble) {
+          // console.log('showOtherBubbleInner: ');
+          const maskMat = new cv.Mat(
+            mat.rows,
+            mat.cols,
+            cv.CV_8UC1,
+            color.black
+          );
+          maskMat.drawContours([item.getPoints()], -1, color.white, cv.FILLED);
+          const childrenRect = getChildrenRect(contours, item);
+          if (childrenRect) {
+            maskMat.drawRectangle(childrenRect, color.black, cv.FILLED);
+            const intermetmat = new cv.Mat(mat.rows, mat.cols, cv.CV_8UC3, [
+              255,
+              0,
+              255
+            ]);
+            mat.copyTo(intermetmat, maskMat);
+            const { w, x, y } = mat.mean(maskMat);
+            if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
+              // intermetmat.copyTo(outputFrame);
+              intermetmat.getRegion(roi).copyTo(outputFrame.getRegion(roi));
+              outObj.push(item);
+              res.push(childrenRect);
+              statusRect.write(childrenRect);
+              let mincalc = 1e10;
+              let selectedRect = null;
+              prevRes.forEach((rect, index) => {
+                const calc = calcRect(childrenRect, rect);
+                // console.log('calc: ', calc);
+                if (mincalc > calc) {
+                  selectedRect = index;
+                  mincalc = calc;
+                }
               });
+              if (selectedRect !== null)
+                statusRect.writeMiddle({
+                  ...compareRect(childrenRect, prevRes[selectedRect]),
+                  index: selectedRect
+                });
+            }
           }
         }
+        // } else if (showOtherBubble) {
+        //   const maskMat = new cv.Mat(mat.rows, mat.cols, cv.CV_8UC1, color.black);
+        //   maskMat.drawContours([item.getPoints()], -1, color.white, cv.FILLED);
+        //   const childrenRect = getChildrenRect(contours, item);
+        //   if (childrenRect) {
+        //     maskMat.drawRectangle(childrenRect, color.black, cv.FILLED);
+        //     const intermetmat = new cv.Mat(mat.rows, mat.cols, cv.CV_8UC3, [
+        //       255,
+        //       255,
+        //       0
+        //     ]);
+        //     mat.copyTo(intermetmat, maskMat);
+        //     const { w, x, y } = mat.mean(maskMat);
+        //     if (Math.min(w, x, y) > loungeBackgroundColorThreshold) {
+        //       // intermetmat.copyTo(outputFrame);
+        //       intermetmat.getRegion(roi).copyTo(outputFrame.getRegion(roi));
+        //       outObj.push(item);
+        //       res.push(childrenRect);
+        //       statusRect.write(childrenRect);
+        //       let mincalc = 1e10;
+        //       let selectedRect = null;
+        //       prevRes.forEach((rect, index) => {
+        //         const calc = calcRect(childrenRect, rect);
+        //         // console.log('calc: ', calc);
+        //         if (mincalc > calc) {
+        //           selectedRect = index;
+        //           mincalc = calc;
+        //         }
+        //       });
+        //       if (selectedRect !== null)
+        //         statusRect.writeMiddle({
+        //           ...compareRect(childrenRect, prevRes[selectedRect]),
+        //           index: selectedRect
+        //         });
+        //     }
+        //   }
       }
     }
   });
   prevRes.forEach((rect, index) => statusRect.writeBelow({ ...rect, index }));
   vCap.putMemoize(res);
+  // console.log('res: ', res);
   logChild(outputFrame, contours, outObj);
   return outputFrame;
 }

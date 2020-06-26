@@ -107,6 +107,8 @@ export default function mainLounge({ vCap, start, end, index, process }) {
         prevRes = testfindTextBubble(mat, prevRes, state, frame);
       },
       finished: async finished => {
+        // eslint-disable-next-line no-console
+        console.log('res: ', state);
         resolve({ res: state, finished });
       }
     });

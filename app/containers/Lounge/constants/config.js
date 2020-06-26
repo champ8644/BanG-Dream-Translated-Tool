@@ -41,23 +41,21 @@ export const radioObj = IS_DEV
       // 'findTrueTitleSpline'
       // 'placeLabelGenerator',
       // 'starLabelEndGenerator',
-      'nameLabelGenerator',
-      'starMatching'
+      // 'nameLabelGenerator',
+      // 'starMatching'
       // 'titleLabelGenerator',
       // 'fullDialogGenerator'
       // 'lounge',
-      // 'findTextBubble'
+      'findTextBubble'
     ]
   : [];
 
 export const isAutoOpen = IS_DEV;
+export const defaultOverlayMode = IS_DEV ? 'findTextBubble' : 'none';
+export const defaultVCapBeginFrame = IS_DEV ? 2180 : 0;
+export const autoOpenFileName = `E:\\Bandori\\Events\\วิดีโอ_วันเกิด+ล้อนจ์_2020013อี๊บ_HBD2020_Eve [42350B0C]_1_221055.mp4`;
 
-export const defaultOverlayMode = IS_DEV ? 'nameLabelGenerator' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 130776 : 0; // 108960
-// const prefixFileName = 'E:\\Champ\\Downloads\\';
-// const prefixFileName = 'E:\\Bandori\\Events\\';
-export const autoOpenFileName = `E:\\Bandori\\Events\\EVENT_033ฝนตก_Bushido Umbrella [C0FD13D5]_1_155440.mp4`;
-// export const autoOpenFileName = `"E:\\Champ\\Downloads\\วิดีโอ_วันเกิด+ล้อนจ์_2020010ซาบะ_HBD2020_Saaya [F6E1211A]_1_220703.mp4"`;
+export const showOtherBubble = true;
 
 export const sliderObjSelector = {
   starMatching: {
@@ -137,8 +135,8 @@ export const ws = {
 // export const startFrameTest = 116230;
 // export const startFrameTest = 106848;
 // export const endFrameTest = 106969;
-export const startFrameTest = 145511;
-export const endFrameTest = 145512;
+export const startFrameTest = 2176;
+export const endFrameTest = 2362;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

@@ -147,6 +147,11 @@ if (!isDeviceBootable) {
         mainWindow = null;
         mainWorker.close();
         mainWorker = null;
+        try {
+          app.quit();
+        } catch (e) {
+          throw new Error(e);
+        }
       });
 
       mainWorker = new WorkerClass();

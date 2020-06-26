@@ -2,6 +2,7 @@ import { color } from '../constants';
 import cv from 'opencv4nodejs';
 
 export default function simplifyPosition(data) {
+  if (data.length < 2) return `_G.table.insert(db,{})`;
   const approxContour = _item => {
     const item = new cv.Contour(_item);
     const peri = item.arcLength(true);
