@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable import/no-unresolved, import/no-extraneous-dependencies, import/no-self-import */
 
 const { join } = require('path');
 const { readFileSync } = require('fs');
