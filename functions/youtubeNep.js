@@ -22,14 +22,15 @@ const { version } = pkginfo;
 const APP_VERSION = version;
 
 const data = {
-  EntryTitle: 'ตื่นนอนแล้วนอนต่อ',
-  EntryUrl: 'https://ift.tt/2ZnuIb6',
-  EntryAuthor: 'Facebook',
-  EntryContent: 'Image + ตื่นนอนแล้วนอนต่อ',
-  EntryImageUrl: 'https://ift.tt/2NLXOeR',
-  EntryPublished: 'July 02, 2020 at 08:06AM',
-  FeedTitle: 'Nep-A-Live - Posts | Facebook',
-  FeedUrl: 'https://ift.tt/2CS3H7Z'
+  EntryAuthor: 'tah10270',
+  EntryContent: '(none)',
+  EntryImageUrl: 'http://ifttt.com/images/no_image_card.png',
+  EntryPublished: 'July 02, 2020 at 01:34PM',
+  EntryTitle:
+    'Bang Dream : การ์ด Railgun Arisa 4★ ท่านพี่ขาอันตัวข้าอาริสะขอตามติดไปชั่วชีวิต',
+  EntryUrl: 'https://www.youtube.com/watch?v=TckSvw-F-0c',
+  FeedTitle: 'tah10270',
+  FeedUrl: 'https://www.youtube.com/channel/UCtmSyLZO2E9uT7oPpzTkQ4A'
 };
 
 async function discordRequest() {
@@ -40,7 +41,8 @@ async function discordRequest() {
     EntryPublished,
     FeedTitle,
     EntryImageUrl,
-    EntryAuthor
+    EntryAuthor,
+    FeedUrl
   } = data;
   try {
     await axios({
@@ -48,20 +50,21 @@ async function discordRequest() {
       url:
         'https://discordapp.com/api/webhooks/728086818779824160/TpWg7kSUzzKyQm-FT5QlpjYnaUqv9a8lXTO6mHSfKD87WaxJektSw55YRhLLjLwzeWjc',
       data: {
-        embeds: [
-          {
-            color: 3889560,
-            author: { name: EntryAuthor },
-            title: FeedTitle,
-            description: EntryTitle,
-            url: EntryUrl,
-            image: { url: EntryImageUrl },
-            content: EntryContent,
-            footer: {
-              text: EntryPublished
-            }
-          }
-        ]
+        content: EntryUrl
+        // embeds: [
+        //   {
+        //     color: 3889560,
+        //     author: { name: 'Youtube' },
+        //     title: FeedTitle,
+        //     description: EntryTitle,
+        //     url: EntryUrl,
+        //     image: { url: EntryImageUrl },
+        //     content: EntryContent,
+        //     footer: {
+        //       text: EntryPublished
+        //     }
+        //   }
+        // ]
       }
     });
     console.log('done');

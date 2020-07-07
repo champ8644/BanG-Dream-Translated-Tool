@@ -39,7 +39,7 @@ export const radioObj = IS_DEV
       // 'BGRFinder',
       // 'HSVFinder',
       // 'findTrueTitleSpline'
-      // 'placeLabelGenerator',
+      'placeLabelGenerator',
       // 'starLabelEndGenerator',
       // 'nameLabelGenerator',
       // 'starMatching'

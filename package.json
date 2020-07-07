@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.15.16",
+  "version": "1.16.1",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -239,7 +239,7 @@
     "cross-env": "^5.2.0",
     "css-loader": "^1.0.0",
     "detect-port": "^1.2.3",
-    "electron": "7.1.8",
+    "electron": "7.2.4",
     "electron-builder": "^22.2.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-rebuild": "^1.8.8",

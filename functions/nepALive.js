@@ -56,7 +56,6 @@ async function discordRequest() {
             description: EntryTitle,
             url: EntryUrl,
             image: { url: EntryImageUrl },
-            content: EntryContent,
             footer: {
               text: EntryPublished
             }
