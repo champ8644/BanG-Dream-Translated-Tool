@@ -239,7 +239,7 @@
     "cross-env": "^5.2.0",
     "css-loader": "^1.0.0",
     "detect-port": "^1.2.3",
-    "electron": "7.1.8",
+    "electron": "9.1.0",
     "electron-builder": "^22.2.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-rebuild": "^1.8.8",
