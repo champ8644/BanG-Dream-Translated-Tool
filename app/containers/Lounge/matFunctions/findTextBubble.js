@@ -69,7 +69,7 @@ function isFinalContour(contour, roi) {
   //   roi.height,
   //   roi.width / roi.height
   // );
-  if (roi.width / roi.height < 1.6) return false;
+  if (roi.width / roi.height < 1.2) return false;
   const rect = contour.boundingRect();
   // console.log(
   //   'rect.width <= rect.height: ',
@@ -77,7 +77,7 @@ function isFinalContour(contour, roi) {
   //   rect.height,
   //   rect.width <= rect.height
   // );
-  if (rect.width / rect.height < 1.6) return false;
+  if (rect.width / rect.height < 1.2) return false;
   const percent = (contour.area / rect.width / rect.height) * 100;
   // console.log('percent: ', percent);
   if (percent < 80) return false;

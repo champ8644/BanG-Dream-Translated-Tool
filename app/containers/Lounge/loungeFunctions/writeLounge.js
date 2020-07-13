@@ -66,4 +66,5 @@ export default function writeAss({ data, vCap }) {
     data.forEach(item => stream.write(writeText(item)));
     stream.end();
   });
+  return assPath;
 }

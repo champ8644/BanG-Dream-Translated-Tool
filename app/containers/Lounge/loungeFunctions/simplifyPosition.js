@@ -138,25 +138,23 @@ export default function simplifyPosition(data) {
     prevKeyframe[key] = 0;
   });
 
-  const findX0 = (x1, y1, x2, y2) =>
-    Math.ceil(x2 - ((x2 - x1) * y2) / (y2 - y1));
-  const findXN = (x1, y1, x2, y2) =>
-    Math.floor(x1 - ((x2 - x1) * y1) / (y2 - y1));
+  const findX0 = (_x1, y1, _x2, y2) => {
+    const x1 = parseFloat(_x1);
+    const x2 = parseFloat(_x2);
+    if (y1 === y2) return x2;
+    return Math.ceil(x2 - ((x2 - x1) * y2) / (y2 - y1));
+  };
+  const findXN = (_x1, y1, _x2, y2) => {
+    const x1 = parseFloat(_x1);
+    const x2 = parseFloat(_x2);
+    if (y1 === y2) return x1;
+    return Math.floor(x1 - ((x2 - x1) * y1) / (y2 - y1));
+  };
   const interpolate = (_x1, y1, _x2, y2, _xN) => {
     const x1 = parseFloat(_x1);
     const x2 = parseFloat(_x2);
     const xN = parseFloat(_xN);
-    // console.log('interpolate: ', {
-    //   _x1,
-    //   _x2,
-    //   _xN,
-    //   x1,
-    //   y1,
-    //   x2,
-    //   y2,
-    //   xN,
-    //   yN: y1 + ((y2 - y1) * (xN - x1)) / (x2 - x1)
-    // });
+    if (x2 === x1) return y1;
     return y1 + ((y2 - y1) * (xN - x1)) / (x2 - x1);
   };
   const interpolBetween = (i, j, key) => {
@@ -201,9 +199,17 @@ export default function simplifyPosition(data) {
   }
 
   const interpolateWidth = (x1, x2, dir) => {
+    // if (!isFinite(x1) || !isFinite(x2)) console.log({ x1, x2, dir });
     let xN;
     if (dir < 0) {
       xN = findX0(x1, sumContour[x1].height, x2, sumContour[x2].height);
+      // if (!isFinite(xN))
+      //   console.log('findX0', {
+      //     x1,
+      //     sx1h: sumContour[x1].height,
+      //     x2,
+      //     sx2h: sumContour[x2].height
+      //   });
       // console.log('dir<0', {
       //   x1,
       //   sx1: sumContour[x1].height,
@@ -212,6 +218,13 @@ export default function simplifyPosition(data) {
       // });
     } else {
       xN = findXN(x1, sumContour[x1].height, x2, sumContour[x2].height);
+      // if (!isFinite(xN))
+      //   console.log('findXN', {
+      //     x1,
+      //     sx1h: sumContour[x1].height,
+      //     x2,
+      //     sx2h: sumContour[x2].height
+      //   });
 
       // console.log('dir>0', {
       //   x1,
@@ -226,17 +239,24 @@ export default function simplifyPosition(data) {
       const y1 = sumContour[x1][key];
       const y2 = sumContour[x2][key];
       val[key] = interpolate(x1, y1, x2, y2, xN);
+      // if (!isFinite(xN))
+      //   console.log({ x1, y1, x2, y2, xN, val, key, vk: val[key] });
     });
     return [xN, val];
   };
   const [key2, val] = interpolateWidth(iterFrames[0], iterFrames[1], -1);
+  // if (!isFinite(key2)) console.log({ key2, val });
   sumContour[key2] = val;
   const [key3, val2] = interpolateWidth(
     iterFrames[iterFrames.length - 2],
     iterFrames[iterFrames.length - 1],
     1
   );
+
+  // if (!isFinite(key3)) console.log({ key3, val2 });
   sumContour[key3] = val2;
+  // eslint-disable-next-line no-console
+  console.log('sumContour: ', sumContour);
 
   // delete sumContour[iterFrames[0]];
   // delete sumContour[iterFrames[iterFrames.length - 1]];
@@ -256,6 +276,26 @@ export default function simplifyPosition(data) {
   const round3Dig = num => Math.round(num * 1000) / 1000;
   const arr = [];
   for (let i = 0; i < iterFrames.length; i++) {
+    // [
+    //   round3Dig((iterFrames[i] * 1000) / 60),
+    //   round3Dig(sumContour[iterFrames[i]].centerX),
+    //   round3Dig(sumContour[iterFrames[i]].centerY),
+    //   round3Dig(sumContour[iterFrames[i]].width),
+    //   round3Dig(sumContour[iterFrames[i]].height),
+    //   round3Dig((sumContour[iterFrames[i]].height * 100) / maxHeight)
+    // ].forEach((item, key) => {
+    // if (isNaN(item)) {
+    //   console.log({
+    //     item,
+    //     key,
+    //     i,
+    //     iterFrames,
+    //     iterFramesXX: iterFrames[i],
+    //     sumContour,
+    //     sumContourXX: sumContour[iterFrames[i]]
+    //   });
+    // }
+    // });
     const join = [
       `t=${round3Dig((iterFrames[i] * 1000) / 60)}`, // vCap.FPS
       `x=${round3Dig(sumContour[iterFrames[i]].centerX)}`,
