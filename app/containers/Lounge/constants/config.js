@@ -52,8 +52,8 @@ export const radioObj = IS_DEV
 
 export const isAutoOpen = IS_DEV;
 export const defaultOverlayMode = IS_DEV ? 'findTextBubble' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 898 : 0;
-export const autoOpenFileName = `E:\\Bandori\\Events\\Mof1 [D51B188C]_2_210307.mp4`;
+export const defaultVCapBeginFrame = IS_DEV ? 1561 : 0;
+export const autoOpenFileName = `E:\\Champ\\Downloads\\ScreenRecording_07-19-2563 00-48-45 [18A11EC4]_1_132629.mp4`;
 
 export const showOtherBubble = true;
 
@@ -135,8 +135,8 @@ export const ws = {
 // export const startFrameTest = 116230;
 // export const startFrameTest = 106848;
 // export const endFrameTest = 106969;
-export const startFrameTest = 850;
-export const endFrameTest = 906;
+export const startFrameTest = 1561;
+export const endFrameTest = 1736;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;
