@@ -39,21 +39,22 @@ export const radioObj = IS_DEV
       // 'BGRFinder',
       // 'HSVFinder',
       // 'findTrueTitleSpline'
-      'placeLabelGenerator',
+      // 'placeLabelGenerator',
       // 'starLabelEndGenerator',
       // 'nameLabelGenerator',
       // 'starMatching'
-      // 'titleLabelGenerator',
+      'titleLabelGenerator'
       // 'fullDialogGenerator'
       // 'lounge',
-      'findTextBubble'
+      // 'findTextBubble'
     ]
   : [];
 
 export const isAutoOpen = IS_DEV;
-export const defaultOverlayMode = IS_DEV ? 'findTextBubble' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 1561 : 0;
-export const autoOpenFileName = `E:\\Champ\\Downloads\\ScreenRecording_07-19-2563 00-48-45 [18A11EC4]_1_132629.mp4`;
+export const defaultOverlayMode = IS_DEV ? 'titleLabelGenerator' : 'none';
+export const defaultVCapBeginFrame = IS_DEV ? 49702 : 0;
+export const autoOpenFileName =
+  'D:\\Bandori\\Working\\RAS SS2 [FB3375E6]_5_124030.mp4';
 
 export const showOtherBubble = true;
 
