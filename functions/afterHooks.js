@@ -4,6 +4,6 @@ module.exports = {
     require('./discordRequest').default();
     // execSync('yarn patch', { encoding: 'utf-8' });
     // console.log('process.env.SHUTDOWN: ', process.env.SHUTDOWN);
-    execSync('shutdown -s -t 300', { encoding: 'utf-8' });
+    // execSync('shutdown -s -t 300', { encoding: 'utf-8' });
   }
 };
