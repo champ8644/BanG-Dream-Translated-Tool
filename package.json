@@ -1,7 +1,7 @@
 {
   "name": "bang-dream-translated-tool",
   "productName": "BanG Dream Translated Tool",
-  "version": "1.16.3",
+  "version": "1.16.4",
   "description": "BanG Dream Translated Tool for Nep-A-Live collaborator",
   "scripts": {
     "build": "yarn lint && concurrently \"yarn build-main\" \"yarn build-renderer\"",
@@ -280,6 +280,7 @@
   "dependencies": {
     "@material-ui/core": "4.7.2",
     "@material-ui/icons": "^4.5.1",
+    "axios": "^0.20.0",
     "bluebird": "^3.5.2",
     "classnames": "^2.2.6",
     "clsx": "^1.0.4",
