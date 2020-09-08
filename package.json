@@ -33,7 +33,8 @@
     "preinstall": "node ./internals/scripts/CheckYarn.js",
     "postinstall": "yarn build-dll && electron-builder install-app-deps",
     "electron-rebuild": "electron-rebuild -w opencv4nodejs",
-    "patch": "yarn version --new-version patch"
+    "patch": "yarn version --new-version patch",
+    "runHook": "node functions/runAfterHooks.js"
   },
   "lint-staged": {
     "*.{js,jsx}": [
