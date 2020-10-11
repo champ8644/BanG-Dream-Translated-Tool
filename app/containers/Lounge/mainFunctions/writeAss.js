@@ -65,7 +65,7 @@ function writeSubtitleShake({
 function writeNameActor({ frame, uid }) {
   return `Comment: 0,${timestamp(frame)},${timestamp(
     frame
-  )},ข้อความ,,0,0,0,code once,name[${uid}] = ""
+  )},ข้อความ,,0,0,0,code once,name[${uid}] = {""}
 `;
 }
 
