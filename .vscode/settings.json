@@ -41,7 +41,8 @@
   },
   "editor.tokenColorCustomizations": {
     "[React Ocean Next Extended - Italic]": {
-      "textMateRules": [{
+      "textMateRules": [
+        {
           "scope": "variable.other.object",
           "settings": {
             "foreground": "#6a8aa8"
@@ -66,5 +67,7 @@
   "eslint.enable": true,
   "editor.formatOnSave": true,
   "editor.fontFamily": "Fira Code Retina",
-  "editor.fontLigatures": true
+  "editor.fontLigatures": true,
+
+  "typescriptHero.imports.multiLineWrapThreshold": 80
 }

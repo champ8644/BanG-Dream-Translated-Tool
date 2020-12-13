@@ -52,9 +52,9 @@ export const radioObj = IS_DEV
 
 export const isAutoOpen = IS_DEV;
 export const defaultOverlayMode = IS_DEV ? 'titleLabelGenerator' : 'none';
-export const defaultVCapBeginFrame = IS_DEV ? 49702 : 0;
+export const defaultVCapBeginFrame = IS_DEV ? 327676 : 0;
 export const autoOpenFileName =
-  'D:\\Bandori\\Working\\RAS SS2 [FB3375E6]_5_124030.mp4';
+  'D:\\Downloads\\Title Idol [E20175DA]_1_195949.mp4';
 
 export const showOtherBubble = true;
 
@@ -136,8 +136,8 @@ export const ws = {
 // export const startFrameTest = 116230;
 // export const startFrameTest = 106848;
 // export const endFrameTest = 106969;
-export const startFrameTest = 1561;
-export const endFrameTest = 1736;
+export const startFrameTest = 327000;
+export const endFrameTest = 328000;
 export const meanSmooth = 5;
 export const meanLength = 1000;
 export const chunkCount = 60;

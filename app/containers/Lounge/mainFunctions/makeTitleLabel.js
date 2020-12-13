@@ -1,3 +1,6 @@
+import cv from 'opencv4nodejs';
+
+import { PATHS } from '../../../utils/paths';
 import {
   placeLabelThreshold,
   qualityRatio,
@@ -5,9 +8,6 @@ import {
   threshTitlePercentDiff,
   titleLabelCrop
 } from '../constants';
-
-import { PATHS } from '../../../utils/paths';
-import cv from 'opencv4nodejs';
 import titleLineWidthFinder from './titleLineWidthFinder';
 import titleNameFinder from './titleNameFinder';
 
@@ -43,13 +43,17 @@ export default function titleLabelGenerator(mat, refractory) {
   const percentDiff = (masked.countNonZero() / countTitleLabel) * 100;
   let titleWidth;
   let titleCrop;
-  if (percentDiff < threshTitlePercentDiff && !refractory) {
+  let finalStatus = percentDiff < threshTitlePercentDiff;
+  if (finalStatus && !refractory) {
     titleWidth = titleLineWidthFinder(mat);
-    titleCrop = titleNameFinder(mat, titleWidth);
+    if (!titleWidth) {
+      finalStatus = false;
+      titleWidth = undefined;
+    } else titleCrop = titleNameFinder(mat, titleWidth);
   }
   return {
     percentDiff,
-    status: percentDiff < threshTitlePercentDiff,
+    status: finalStatus,
     width: titleWidth,
     titleCrop
   };
