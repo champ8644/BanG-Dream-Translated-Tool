@@ -69,5 +69,6 @@
   "editor.fontFamily": "Fira Code Retina",
   "editor.fontLigatures": true,
 
-  "typescriptHero.imports.multiLineWrapThreshold": 80
+  "typescriptHero.imports.multiLineWrapThreshold": 80,
+  "typescriptHero.imports.organizeOnSave": false
 }

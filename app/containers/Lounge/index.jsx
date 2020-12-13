@@ -1,11 +1,56 @@
 'use strict';
 
-import * as actions from './actions';
+import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import Switch from '@material-ui/core/Switch';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Select from '@material-ui/core/Select';
+import Slider from '@material-ui/core/Slider';
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import FastForwardIcon from '@material-ui/icons/FastForward';
+import FastRewindIcon from '@material-ui/icons/FastRewind';
+import PieChartIcon from '@material-ui/icons/PieChart';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import SkipNextIcon from '@material-ui/icons/SkipNext';
+import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
+import StopIcon from '@material-ui/icons/Stop';
+import TheatersIcon from '@material-ui/icons/Theaters';
+import TimerIcon from '@material-ui/icons/Timer';
+import clsx from 'clsx';
+import electron from 'electron';
+import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
+import { IS_DEV } from '../../constants/env';
+import { APP_TITLE } from '../../constants/meta';
+import { withReducer } from '../../store/reducers/withReducer';
+import * as actions from './actions';
+import ListVCap from './components/ListVCap';
+import ProgressChipbar from './components/ProgressChipBar';
 import ProgressMultiBar, {
   CustomLinearProgress
 } from './components/ProgressMultiBar';
-import React, { Component } from 'react';
+import { NUM_MAX_PROCESS } from './constants';
 import {
   autoOpenFileName,
   defaultVCapBeginFrame,
@@ -13,6 +58,8 @@ import {
   radioObj,
   ws
 } from './constants/config';
+import { formatNumber } from './constants/function';
+import reducers from './reducers';
 import {
   makeCloseConvertingDialog,
   makeCurrentFrame,
@@ -30,56 +77,11 @@ import {
   makeVideoCapture,
   makeVideoFilePath,
   makeWillUpdateNextFrame,
-  makeWorkingStatus
+  makeWorkingStatus,
+  makeAutoStart,
+  makeWatchPath
 } from './selectors';
-
-import { APP_TITLE } from '../../constants/meta';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FastForwardIcon from '@material-ui/icons/FastForward';
-import FastRewindIcon from '@material-ui/icons/FastRewind';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import Grid from '@material-ui/core/Grid';
-import { Helmet } from 'react-helmet';
-import { IS_DEV } from '../../constants/env';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListVCap from './components/ListVCap';
-import MenuItem from '@material-ui/core/MenuItem';
-import { NUM_MAX_PROCESS } from './constants';
-import Paper from '@material-ui/core/Paper';
-import PieChartIcon from '@material-ui/icons/PieChart';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import ProgressChipbar from './components/ProgressChipBar';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Select from '@material-ui/core/Select';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import Slider from '@material-ui/core/Slider';
-import StopIcon from '@material-ui/icons/Stop';
-import TextField from '@material-ui/core/TextField';
-import TheatersIcon from '@material-ui/icons/Theaters';
-import TimerIcon from '@material-ui/icons/Timer';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import { bindActionCreators } from 'redux';
-import clsx from 'clsx';
-import { connect } from 'react-redux';
-import electron from 'electron';
-import { formatNumber } from './constants/function';
-import reducers from './reducers';
 import { styles } from './styles';
-import { withReducer } from '../../store/reducers/withReducer';
-import { withStyles } from '@material-ui/core/styles';
 
 const { ipcRenderer } = electron;
 
@@ -109,7 +111,9 @@ const mapStateToProps = (state, props) => {
     queue: makeQueue(state),
     workingStatus: makeWorkingStatus(state),
     closeConvertingDialog: makeCloseConvertingDialog(state),
-    mainProgressProps: makeMainProgressMultiBarProps()(state)
+    mainProgressProps: makeMainProgressMultiBarProps()(state),
+    autoStart: makeAutoStart(state),
+    watchPath: makeWatchPath(state)
   };
 };
 
@@ -277,7 +281,12 @@ class Lounge extends Component {
         cancelWork,
         showFPS
       },
-      captureVCap
+      captureVCap,
+      addWatcher,
+      clearWatcher,
+      autoStart,
+      handleAutoStart,
+      watchPath
     } = this.props;
     return (
       <div className={classes.root}>
@@ -297,48 +306,92 @@ class Lounge extends Component {
             )}
           </Grid>
         </Grid>
-        <Tooltip title='Add new video(s)' arrow>
-          <Button className={classes.btn} onClick={addQueue}>
-            Add queue
-          </Button>
-        </Tooltip>
+        <Grid container>
+          <Grid item>
+            {watchPath ? (
+              <Tooltip title='Clear watched folder' arrow>
+                <Button className={classes.btn2} onClick={clearWatcher}>
+                  Clear Watcher
+                </Button>
+              </Tooltip>
+            ) : (
+              <Tooltip title='Tracking a folder for new file' arrow>
+                <Button className={classes.btn} onClick={addWatcher}>
+                  Watch Folder
+                </Button>
+              </Tooltip>
+            )}
+          </Grid>
+          <Grid item>
+            <Switch
+              classes={{
+                root: classes.switchRoot,
+                switchBase: classes.switchBase,
+                track: classes.track
+              }}
+              checked={!!autoStart}
+              onChange={handleAutoStart}
+            />
+          </Grid>
+          <Grid item classes={{ root: classes.flex }}>
+            <span
+              className={autoStart ? classes.spanBoxTrue : classes.spanBoxFalse}
+            >
+              {autoStart ? 'AutoStart: On' : 'AutoStart: Off'}
+            </span>
+          </Grid>
+          <Grid item classes={{ root: classes.flex }}>
+            {watchPath && (
+              <Paper classes={{ root: classes.paperWatch }}>
+                <Typography variant='h6'>Watching on: {watchPath}</Typography>
+              </Paper>
+            )}
+          </Grid>
+        </Grid>
+        <div className={classes.buttonSliderContainer}>
+          <Tooltip title='Add new video(s)' arrow>
+            <Button className={classes.btn} onClick={addQueue}>
+              Add queue
+            </Button>
+          </Tooltip>
 
-        <FormControl className={classes.formControlInput}>
-          <InputLabel id='input-label-num-process'>Process</InputLabel>
-          <Select
-            id='select-num-process'
-            value={displayNumProcess}
-            onChange={handleNumProcess}
-          >
-            {ProcessMenuItem}
-          </Select>
-        </FormControl>
-        {IS_DEV && (
-          <Button
-            className={clsx(classes.btn, classes.marginLeft)}
-            onClick={() => openFile()}
-          >
-            Open file
-          </Button>
-        )}
-        {queue.length > 0 && (
-          <>
+          <FormControl className={classes.formControlInput}>
+            <InputLabel id='input-label-num-process'>Process</InputLabel>
+            <Select
+              id='select-num-process'
+              value={displayNumProcess}
+              onChange={handleNumProcess}
+            >
+              {ProcessMenuItem}
+            </Select>
+          </FormControl>
+          {IS_DEV && (
             <Button
               className={clsx(classes.btn, classes.marginLeft)}
-              onClick={startQueue}
-              disabled={workingStatus !== ws.idle}
+              onClick={() => openFile()}
             >
-              Start queue
+              Open file
             </Button>
-            <Button
-              className={clsx(classes.btn, classes.marginLeft)}
-              onClick={stopQueue}
-              disabled={workingStatus !== ws.converting}
-            >
-              Stop queue
-            </Button>
-          </>
-        )}
+          )}
+          {queue.length > 0 && (
+            <>
+              <Button
+                className={clsx(classes.btn, classes.marginLeft)}
+                onClick={startQueue}
+                disabled={workingStatus !== ws.idle}
+              >
+                Start queue
+              </Button>
+              <Button
+                className={clsx(classes.btn, classes.marginLeft)}
+                onClick={stopQueue}
+                disabled={workingStatus !== ws.converting}
+              >
+                Stop queue
+              </Button>
+            </>
+          )}
+        </div>
         {vCap && (
           <div className={classes.buttonSliderContainer}>
             {radioObj.length > 0 && (

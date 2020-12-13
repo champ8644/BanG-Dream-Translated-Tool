@@ -225,6 +225,16 @@ export const makeMainShowFPS = createSelector(
   videoData => (videoData ? videoData.showFPS : initialVideoDatas.showFPS)
 );
 
+export const makeAutoStart = createSelector(
+  make,
+  state => state.autoStart
+);
+
+export const makeWatchPath = createSelector(
+  make,
+  state => state.watchPath
+);
+
 export const makeMainProgressMultiBarProps = () =>
   createSelector(
     makeMainPercentLinear,

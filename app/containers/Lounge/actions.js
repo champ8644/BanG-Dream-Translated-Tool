@@ -1,19 +1,20 @@
 'use strict';
 
-/* eslint-disable no-console */
+import chokidar from 'chokidar';
+import { remote } from 'electron';
+import cv from 'opencv4nodejs';
 
+import prefixer from '../../utils/reducerPrefixer';
+import { throwAlert } from '../Alerts/actions';
+import { gapConst, videoListMaxHeight, videoListMaxWidth } from './constants';
 import { endFrameTest, startFrameTest } from './constants/config';
 import { exporting, importing } from './loungeFunctions/lounge';
-import { gapConst, videoListMaxHeight, videoListMaxWidth } from './constants';
 import mainEvent, { devalidLoop } from './mainFunctions/mainEvent';
-
-import VideoCapture from './VideoCapture';
-import cv from 'opencv4nodejs';
-import { message2Worker } from './utils';
-import prefixer from '../../utils/reducerPrefixer';
-import { remote } from 'electron';
 import testerFunction from './nodeFunctions';
-import { throwAlert } from '../Alerts/actions';
+import { message2Worker } from './utils';
+import VideoCapture from './VideoCapture';
+
+/* eslint-disable no-console */
 
 const { dialog } = remote;
 
@@ -58,7 +59,10 @@ const actionTypesList = [
   'ON_SWITCH_FPS_VCAP_LIST',
   'FINISHING_QUEUE',
   'HANDLE_SWITCH_CAP_LIST',
-  'ANSWER_TYPE'
+  'ANSWER_TYPE',
+  'HANDLE_AUTO_START',
+  'ADD_WATCHER_ACTION',
+  'CLEAR_WATCHER_ACTION'
 ];
 
 export const actionTypes = prefixer(prefix, actionTypesList);
@@ -310,9 +314,13 @@ export function stopQueue() {
 }
 
 export function answerType(payload) {
-  return {
-    type: actionTypes.ANSWER_TYPE,
-    payload
+  return (dispatch, getState) => {
+    dispatch({
+      type: actionTypes.ANSWER_TYPE,
+      payload
+    });
+    const { autoStart } = getState().Lounge;
+    if (autoStart) dispatch(startQueue());
   };
 }
 
@@ -373,7 +381,9 @@ export function addQueue() {
           dispatch(throwAlert({ message: err }));
           vCap = null;
         }
-        if (vCap) dispatch(addUniqueQueue(vCap));
+        if (vCap) {
+          dispatch(addUniqueQueue(vCap));
+        }
       });
     } catch (err) {
       if (typeof err === 'object' && err !== null)
@@ -712,5 +722,84 @@ export function captureVCap() {
     const { vCap } = getState().Lounge;
     console.log('getIt!');
     vCap.snapShot();
+  };
+}
+
+let watcher;
+
+export function addWatcherAction(path) {
+  return {
+    type: actionTypes.ADD_WATCHER_ACTION,
+    payload: path
+  };
+}
+
+export function addWatcher() {
+  return async (dispatch, getState) => {
+    // const { queue, videoDatas } = getState().Lounge;
+    const { filePaths, canceled } = await dialog.showOpenDialog({
+      properties: ['openDirectory']
+    });
+    if (canceled) return;
+    try {
+      const filePathGlob = filePaths[0].replace(/\\/g, '/');
+      dispatch(addWatcherAction(filePathGlob));
+      watcher = chokidar.watch(filePathGlob, {
+        // ignored: /(^|[\/\\])\../, // ignore dotfiles
+        persistent: true,
+        depth: 0,
+        awaitWriteFinish: { stabilityThreshold: 3000 }
+      });
+      console.log(`Init ${filePathGlob} starting.`);
+      watcher.on('ready', () => {
+        console.log(`Initial scan ${filePathGlob} complete. Ready for changes`);
+        watcher.on('add', async path => {
+          if (/.*\[.*\].*\.mp4/.test(path)) {
+            console.log('Konayuki %{path} has been added.');
+            let vCap = null;
+            try {
+              vCap = new VideoCapture({
+                path,
+                maxWidth: videoListMaxWidth,
+                maxHeight: videoListMaxHeight
+              });
+            } catch (err) {
+              dispatch(throwAlert({ message: err }));
+              vCap = null;
+            }
+            if (vCap) dispatch(addUniqueQueue(vCap));
+          } else {
+            console.log(`File ${path} has been added, doing nothing.`);
+          }
+        });
+      });
+    } catch (err) {
+      if (typeof err === 'object' && err !== null)
+        dispatch(throwAlert({ message: err.message }));
+      else dispatch(throwAlert({ message: err }));
+    }
+  };
+}
+
+export function clearWatcherAction(path) {
+  return {
+    type: actionTypes.CLEAR_WATCHER_ACTION,
+    payload: path
+  };
+}
+
+export function clearWatcher() {
+  return async dispatch => {
+    if (watcher) {
+      await watcher.close();
+      watcher = undefined;
+      dispatch(clearWatcherAction());
+    }
+  };
+}
+
+export function handleAutoStart() {
+  return {
+    type: actionTypes.HANDLE_AUTO_START
   };
 }

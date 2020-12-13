@@ -1,5 +1,6 @@
 'use strict';
 
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import { mixins, variables } from '../../../styles/js';
 
 export const styles = theme => {
@@ -7,6 +8,25 @@ export const styles = theme => {
     root: {
       height: 'calc(100vh - 78px)',
       padding: theme.spacing(3, 5)
+    },
+    switchRoot: {
+      alignSelf: 'center',
+      display: 'flex'
+    },
+    switchBase: {
+      color: theme.palette.primary.main,
+      '&:hover': {
+        backgroundColor: fade(
+          theme.palette.primary.main,
+          theme.palette.action.hoverOpacity
+        ),
+        '@media (hover: none)': {
+          backgroundColor: 'transparent'
+        }
+      }
+    },
+    track: {
+      backgroundColor: theme.palette.primary.main
     },
     chip: {
       margin: theme.spacing(0.5)
@@ -38,6 +58,11 @@ export const styles = theme => {
     },
     TitleFileName: {
       margin: theme.spacing(2.5, 4)
+    },
+    paperWatch: {
+      marginLeft: '1rem',
+      alignSelf: 'center',
+      padding: '0 1rem'
     },
     videoEachHeader: {
       margin: theme.spacing(0, 0, 0, 4)
@@ -110,6 +135,17 @@ export const styles = theme => {
       fontSize: '1.3em',
       textDecoration: 'none !important'
     },
+    btn2: {
+      background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+      border: 0,
+      borderRadius: 3,
+      boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+      color: 'white',
+      height: '2.5em',
+      flexGrow: 1,
+      fontSize: '1.3em',
+      textDecoration: 'none !important'
+    },
     btnDisabled: {
       background: 'gray'
     },
@@ -154,6 +190,42 @@ export const styles = theme => {
     flex: { display: 'flex' },
     indent: {
       margin: theme.spacing(0, 0, 0, 3)
+    },
+    spanBoxTrue: {
+      // position: 'absolute',
+      display: 'flex',
+      // width: '75px',
+      textAlign: 'center',
+      alignSelf: 'center',
+      height: '30px',
+      backgroundColor: fade(
+        theme.palette.secondary.main,
+        theme.palette.action.hoverOpacity
+      ),
+      padding: '3px 8px',
+      fontWeight: 700,
+      border: '2px',
+      borderStyle: 'solid',
+      borderColor: theme.palette.secondary.main,
+      color: theme.palette.secondary.main
+    },
+    spanBoxFalse: {
+      // position: 'absolute',
+      display: 'inline-block',
+      alignSelf: 'center',
+      height: '30px',
+      // width: '75px',
+      textAlign: 'center',
+      backgroundColor: fade(
+        theme.palette.primary.main,
+        theme.palette.action.hoverOpacity
+      ),
+      padding: '3px 8px',
+      fontWeight: 700,
+      border: '2px',
+      borderStyle: 'solid',
+      borderColor: theme.palette.primary.main,
+      color: theme.palette.primary.main
     }
   };
 };

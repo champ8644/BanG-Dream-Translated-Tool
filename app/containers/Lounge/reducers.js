@@ -44,7 +44,9 @@ export const initialState = {
   workingStatus: ws.idle,
   isActivate: false,
   closeConvertingDialog: { open: false, path: null },
-  mainVideoData: null
+  mainVideoData: null,
+  autoStart: true,
+  watchPath: undefined
 };
 
 const initialConverter = {
@@ -484,6 +486,12 @@ export default function Lounge(state = initialState, action) {
           path: payload
         }
       };
+    case actionTypes.HANDLE_AUTO_START:
+      return { ...state, autoStart: !state.autoStart };
+    case actionTypes.ADD_WATCHER_ACTION:
+      return { ...state, watchPath: payload };
+    case actionTypes.CLEAR_WATCHER_ACTION:
+      return { ...state, watchPath: undefined };
     default:
       return state;
   }
