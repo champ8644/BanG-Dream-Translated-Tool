@@ -51,12 +51,12 @@ export default function nameLabelTemplater(mat) {
     .cvtColor(cv.COLOR_GRAY2BGR)
     .and(maskRect);
   cv.imwrite(
-    PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}_Temp.png`),
+    PATHS.resourcePath(`CaptureNameLabelCrop_${qualityRatio}.png`),
     masked
   );
   const actor = thresholdOtsu(mat.getRegion(rectNameLabelStarCrop), null);
   cv.imwrite(
-    PATHS.resourcePath(`CaptureNameLabelStar_${qualityRatio}_Temp.png`),
+    PATHS.resourcePath(`CaptureNameLabelStar_${qualityRatio}.png`),
     actor
   );
   paintMat(mat, masked, rectOuterNameLabel, blue);

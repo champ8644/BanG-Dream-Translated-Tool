@@ -102,9 +102,9 @@ export const nameLabelCrop = {
   ]
 };
 export const starCrop = {
-  rectX: [Math.round(555 * rx), Math.round(616 * rx)],
+  rectX: [Math.round(523 * rx), Math.round(583 * rx)],
   rectY: [
-    Math.round(1105 * rx) + yOffset.dialog,
+    Math.round(1107 * rx) + yOffset.dialog,
     Math.round(1189 * rx) + yOffset.dialog
   ]
 };
@@ -157,22 +157,22 @@ export const starLabelEndCrop = {
 export const subtitleCrop = {
   rectX: [Math.round(100 * rx), Math.round(1800 * rx)],
   rectY: [
-    Math.round(1200 * rx) + yOffset.dialog,
-    Math.round(1400 * rx) + yOffset.dialog
+    Math.round(1210 * rx) + yOffset.dialog,
+    Math.round(1390 * rx) + yOffset.dialog
   ]
 };
 export const subtitlePartialCrop = {
   rectX: [Math.round(120 * rx), Math.round(1000 * rx)],
   rectY: [
-    Math.round(1200 * rx) + yOffset.dialog,
-    Math.round(1260 * rx) + yOffset.dialog
+    Math.round(1210 * rx) + yOffset.dialog,
+    Math.round(1270 * rx) + yOffset.dialog
   ]
 };
 export const subtitleFifthCrop = {
   rectX: [Math.round(340 * rx), Math.round(440 * rx)],
   rectY: [
-    Math.round(1200 * rx) + yOffset.dialog,
-    Math.round(1260 * rx) + yOffset.dialog
+    Math.round(1210 * rx) + yOffset.dialog,
+    Math.round(1270 * rx) + yOffset.dialog
   ]
 };
 export const fifthThreshold = 150;

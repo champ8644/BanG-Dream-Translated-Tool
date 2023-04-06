@@ -75,7 +75,7 @@ export default function nameLabelGenerator(mat, vCap) {
     percentDiff
   } = makeNameLabel(mat);
   // eslint-disable-next-line no-console
-  console.log('percentDiff: ', percentDiff);
+  console.log('percentDiff: ', percentDiff, status);
   if (status) {
     const dialogMat = subtitleFinder(mat, vCap); // matSubtitle, prevMatSubtitle
     // eslint-disable-next-line no-console
