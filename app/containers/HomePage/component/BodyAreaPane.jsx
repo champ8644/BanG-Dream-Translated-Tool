@@ -22,6 +22,9 @@ class BodyAreaPane extends PureComponent {
           <div className={styles.heading1}>Translated Tool</div>
           <div className={styles.subTitle}>version {APP_VERSION}</div>
           <ButtonHompage history={history} classes={styles} />
+          <div className={styles.subTitle}>
+            {'<Now support newest version of Ipad!!>'}
+          </div>
           {/* <div className={styles.heading1}>BanG Dream Translated Tool</div>
           <div className={styles.subTitle}>version {APP_VERSION}</div>
           <SignIn onClick={() => history.push(routes.MainMenu.locate)} /> */}
