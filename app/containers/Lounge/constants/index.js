@@ -65,7 +65,7 @@ export const threshSubSubtitle = 20;
 export const blackThreshold = 3;
 export const whiteThreshold = 252;
 export const fadeThreshold = 2;
-export const actorThreshold = 1000;
+export const actorThreshold = 750;
 export const blackMaxThreshold = 8;
 export const whiteMinThreshold = 255 - blackMaxThreshold;
 
@@ -90,12 +90,12 @@ export const placeCenterThreshold = {
 };
 
 export const nameLabelCrop = {
-  innerX: [Math.round(115 * rx), Math.round(547 * rx)],
+  innerX: [Math.round(100 * rx), Math.round(520 * rx)],
   innerY: [
     Math.round(1116 * rx) + yOffset.dialog,
-    Math.round(1177 * rx) + yOffset.dialog
+    Math.round(1180 * rx) + yOffset.dialog
   ],
-  outerX: [Math.round(78 * rx), Math.round(620 * rx)],
+  outerX: [Math.round(70 * rx), Math.round(610 * rx)],
   outerY: [
     Math.round(1104 * rx) + yOffset.dialog,
     Math.round(1190 * rx) + yOffset.dialog

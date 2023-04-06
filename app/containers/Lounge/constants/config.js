@@ -43,6 +43,7 @@ export const radioObj = IS_DEV
       'starLabelEndGenerator',
       'starTemplater',
       'nameLabelGenerator',
+      'nameLabelTemplater',
       'starMatching',
       'titleLabelGenerator',
       'fullDialogGenerator',
@@ -52,7 +53,7 @@ export const radioObj = IS_DEV
   : [];
 
 export const isAutoOpen = IS_DEV;
-export const defaultOverlayMode = IS_DEV ? 'nameLabelGenerator' : 'none';
+export const defaultOverlayMode = IS_DEV ? 'nameLabelTemplater' : 'none';
 export const defaultVCapBeginFrame = IS_DEV ? 2000 : 0;
 export const autoOpenFileName =
   'D:\\Downloads\\New folder (122)\\RPReplay_Final1679066312 [8B13FB6E]_2_175549.mp4';
