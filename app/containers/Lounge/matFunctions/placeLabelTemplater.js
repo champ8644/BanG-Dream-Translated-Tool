@@ -39,11 +39,11 @@ export default function placeLabelTemplater(mat) {
     .cvtColor(cv.COLOR_GRAY2BGR)
     .and(maskRect);
   cv.imwrite(
-    PATHS.resourcePath(`CapturePlaceLabelCrop_${qualityRatio}_Temp.png`),
+    PATHS.resourcePath(`CapturePlaceLabelCrop_${qualityRatio}.png`),
     masked
   );
   cv.imwrite(
-    PATHS.resourcePath(`CapturePlaceLabelCrop_${qualityRatio}_Temp.png`),
+    PATHS.resourcePath(`CapturePlaceLabelCrop_${qualityRatio}.png`),
     masked
   );
   return masked;

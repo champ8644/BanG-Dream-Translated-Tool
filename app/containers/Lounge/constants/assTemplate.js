@@ -10,6 +10,11 @@ const contextAssTemplate = {
     style: {
       dialog: { y: 1200 }
     },
+    place: {
+      clipY: [679, 755],
+      BGposY: 850,
+      textPosY: 767
+    },
     label: {
       pos: {
         x: 366.845,
@@ -19,6 +24,7 @@ const contextAssTemplate = {
         x: 130,
         y: 1150
       },
+      dialogPosY: 1020,
       clip: '\\clip(106,1115,554,1181)',
       actorPosY: 1050,
       color: '\\c&H7224EC&',
@@ -38,15 +44,21 @@ const contextAssTemplate = {
     style: {
       dialog: { y: 1020 }
     },
+    place: {
+      clipY: [629, 705],
+      BGposY: 800,
+      textPosY: 717
+    },
     label: {
       pos: {
         x: 366.845,
         y: 890
       },
-      textPos: {
+      actorPos: {
         x: 130,
         y: 990
       },
+      dialogPosY: 1035,
       clip: '\\clip(100,955,520,1021)',
       actorPosY: 890,
       color: '\\1vc(&H823DF0&,&H7425ED&,&H823DF0&,&H7425ED&)',
@@ -54,7 +66,7 @@ const contextAssTemplate = {
       dialogY: [1035, 1115, 1185, 1265],
       timing: [0, 1500, 3000],
       lines: 3,
-      speed: 2500,
+      speed: 2000,
       spacing: -20,
       compensate: 10,
       shape:
@@ -111,10 +123,34 @@ Dialogue: 0,0:00:00.00,0:00:00.00,Default,▼CODE LINES▼,0,0,0,,
 Comment: 0,0:00:00.00,0:00:00.00,Credit,,0,0,0,code once,function checkIfEmpty (text) if text=="" or text==nil then return "\\\\alpha&HFF&" end return "\\\\alpha&H00&" end
 Comment: 0,0:00:00.00,0:00:00.00,Credit,,0,0,0,template notext line,!retime("line", 0, 0)!{\\p1\\fad(5000,5000)\\blur0\\1c&H7733FF&\\3c&HEEDDFF&\\fscx35\\fscy35\\bord5\\pos(1885,90)}m 121 7 b 104 -29 98 -29 81 7 b 46 12 49 27 71 43 b 61 81 72 89 101 68 b 129 91 144 80 131 43 b 156 21 154 10 121 7 m 173 -112 l 98 -32 b 99 -26 108 -23 113 -21 l 186 -97 b 190 -104 184 -115 173 -112 m 175 -81 b 187 -87 193 -70 188 -65 l 124 -2 b 122 -7 119 -11 115 -17 m 177 -50 b 186 -50 192 -44 189 -34 l 149 7 b 146 6 137 1 130 0 m 185 2 b 192 -9 187 -20 174 -14 l 153 9 l 151 10 b 159 21 152 28 150 35 m 140 55 l 140 75 b 142 80 144 80 147 77 l 189 30 b 190 19 186 15 174 17
 Comment: 0,0:00:00.00,0:00:00.00,Credit,,0,0,0,template line keeptags,!retime("line", 0, 0)!{\\fad(5000,5000)\\blur2}
-Comment: 0,0:00:00.00,0:00:00.00,ชื่อสถานที่,,0,0,0,template notext line,!retime("line", -400, 400)!{\\p1\\bord0\\shad0\\fscx8000\\fad(400,400)\\c&H4E4170&\\fscy600\\clip(730,679,1790,755)\\t(0,400,\\clip(416,679,1502,755))\\t(1500,1900,\\clip(140,679,1202,755)\\pos(554,850)!checkIfEmpty(line.text_stripped)!}m -96 -11 l 140 -11 140 12 -96 12
-Comment: 0,0:00:00.00,0:00:00.00,ชื่อสถานที่,,0,0,0,template notext line,!retime("line", -400, 400)!{\\p1\\bord0\\shad0\\fscx8000\\fad(400,400)\\c&HFFFEFF&\\fscy600\\clip(730,679,1790,755)\\t(0,400,\\clip(416,679,1502,755))\\t(1500,1900,\\clip(140,679,1202,755)\\pos(554,850)!checkIfEmpty(line.text_stripped)!}m -96 -11 l 140 -11 140 12 -96 12
-Comment: 0,0:00:00.00,0:00:00.00,ชื่อสถานที่,,0,0,0,template line keeptags,!retime("line",-400, 400)!{\\fad(400,400)\\move(1185,767,960,767,0,400)\\fs$actor\\alpha&H00&\\t(1000,1001,\\alpha&HFF&)}
-Comment: 0,0:00:00.00,0:00:00.00,ชื่อสถานที่,,0,0,0,template line keeptags,!retime("line", -400, 400)!{\\fad(400,400)\\move(960,767,660,767,1500,1900)\\fs$actor\\alpha&HFF&\\t(1000,1001,\\alpha&H00&)}
+Comment: 0,0:00:00.00,0:00:00.00,ชื่อสถานที่,,0,0,0,template notext line,!retime("line", -400, 400)!{\\p1\\bord0\\shad0\\fscx8000\\fad(400,400)\\c&H4E4170&\\fscy600\\clip(730,${
+    contextAss.place.clipY[0]
+  },1790,${contextAss.place.clipY[1]})\\t(0,400,\\clip(416,${
+    contextAss.place.clipY[0]
+  },1502,${contextAss.place.clipY[1]}))\\t(1500,1900,\\clip(140,${
+    contextAss.place.clipY[0]
+  },1202,${contextAss.place.clipY[1]})\\pos(554,${
+    contextAss.place.BGposY
+  })!checkIfEmpty(line.text_stripped)!}m -96 -11 l 140 -11 140 12 -96 12
+Comment: 0,0:00:00.00,0:00:00.00,ชื่อสถานที่,,0,0,0,template notext line,!retime("line", -400, 400)!{\\p1\\bord0\\shad0\\fscx8000\\fad(400,400)\\c&HFFFEFF&\\fscy600\\clip(730,${
+    contextAss.place.clipY[0]
+  },1790,${contextAss.place.clipY[1]})\\t(0,400,\\clip(416,${
+    contextAss.place.clipY[0]
+  },1502,${contextAss.place.clipY[1]}))\\t(1500,1900,\\clip(140,${
+    contextAss.place.clipY[0]
+  },1202,${contextAss.place.clipY[1]})\\pos(554,${
+    contextAss.place.BGposY
+  })!checkIfEmpty(line.text_stripped)!}m -96 -11 l 140 -11 140 12 -96 12
+Comment: 0,0:00:00.00,0:00:00.00,ชื่อสถานที่,,0,0,0,template line keeptags,!retime("line",-400, 400)!{\\fad(400,400)\\move(1185,${
+    contextAss.place.textPosY
+  },960,${
+    contextAss.place.textPosY
+  },0,400)\\fs$actor\\alpha&H00&\\t(1000,1001,\\alpha&HFF&)}
+Comment: 0,0:00:00.00,0:00:00.00,ชื่อสถานที่,,0,0,0,template line keeptags,!retime("line", -400, 400)!{\\fad(400,400)\\move(960,${
+    contextAss.place.textPosY
+  },660,${
+    contextAss.place.textPosY
+  },1500,1900)\\fs$actor\\alpha&HFF&\\t(1000,1001,\\alpha&H00&)}
 Comment: 0,0:00:00.00,0:00:00.00,ชื่อตอน,,0,0,0,code once,titleBefore = {{t=-433.33,x=300.685},{t=-416.67,x=263.147},{t=-400,x=231.147},{t=-383.33,x=200.378},{t=-366.67,x=173.301},{t=-350,x=146.403},{t=-333.33,x=124.018},{t=-316.67,x=105.127},{t=-300,x=87.623},{t=-283.33,x=72.35},{t=-266.67,x=58.94},{t=-250,x=47.348},{t=-233.33,x=38.042},{t=-216.67,x=30.111},{t=-200,x=23.093},{t=-183.33,x=19.023},{t=-166.67,x=11.023},{t=-150,x=8.918},{t=-133.33,x=7.374},{t=-116.67,x=6.25},{t=-100,x=5.83},{t=-83.33,x=5.69},{t=-66.67,x=4.988},{t=-50,x=4.988},{t=-33.33,x=4.146},{t=-16.67,x=3.585},{t=0,x=2.181},{t=16.67,x=0}}; titleAfter = {{t=-50,x=2.55999999999995},{t=-33.33,x=1.59999999999991},{t=-16.67,x=0},{t=0,x=-0.6400000000001},{t=16.67,x=-3.20000000000005},{t=33.33,x=-6.08000000000004},{t=50,x=-10.24},{t=66.67,x=-15.0400000000001},{t=83.33,x=-20.1600000000001},{t=100,x=-27.5200000000001},{t=116.67,x=-35.5200000000001},{t=133.33,x=-44.16},{t=150,x=-54.4},{t=166.67,x=-65.6},{t=183.33,x=-78.4},{t=200,x=-92.8000000000001},{t=216.67,x=-107.2},{t=233.33,x=-124.48},{t=250,x=-143.04},{t=266.67,x=-164.16},{t=283.33,x=-185.92},{t=300,x=-209.28},{t=316.67,x=-234.88},{t=333.33,x=-262.4},{t=350,x=-291.84},{t=366.67,x=-323.84},{t=383.33,x=-360}};
 Comment: 0,0:00:00.00,0:00:00.00,ชื่อตอน,,0,0,0,template line notext,!maxloop(#titleBefore-1)!!retime("preline",titleBefore[j].t,titleBefore[j+1].t)!{\\an4\\p1\\bord0\\shad0\\fscx1000\\c&HFFFCFD&\\fscy500\\pos(800.236,85)\\clip(!titleBefore[j].x+90!,20,!titleBefore[j].x+$actor+65!,75)\\alpha&HFF&\\t(!(titleBefore[1].t)-(titleBefore[j].t)!,!-(titleBefore[j].t)-150!,!checkIfEmpty(line.text_stripped)!)} m -96 -1 l 100 -1 100 18 -96  18
 Comment: 0,0:00:00.00,0:00:00.00,ชื่อตอน,,0,0,0,template line notext,!retime("line", 16.66, -50)!{\\an4\\p1\\bord0\\shad0\\fscx1000\\c&HFFFCFD&\\fscy500\\pos(800.236,85)\\clip(90,20,!$actor+65!,75)!checkIfEmpty(line.text_stripped)!} m -96 -1 l 100 -1 100 18 -96  18
@@ -151,7 +187,8 @@ ${Array(contextAss.label.lines)
     .fill()
     .map(
       (_v, idx) =>
-        `Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template line keeptags,{\\pos(125,${1020 +
+        `Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template line keeptags,{\\pos(125,${contextAss
+          .label.dialogPosY +
           contextAss.label.spacing * idx})\\clip(90,${
           contextAss.label.dialogY[idx]
         },90,${contextAss.label.dialogY[idx + 1] +
@@ -164,7 +201,7 @@ ${Array(contextAss.label.lines)
     ).join(`
 `)}
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความ,,0,0,0,template notext line,!retime("line", 0, 0)!{\\1c&HFFFFFF&\\shad0.2\\fs!nameFontSize!\\pos(!130+(offSetActor)!,${
-    contextAss.label.textPos.y
+    contextAss.label.actorPos.y
   })\\an4}!name[$actor][1]!
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,code once,shake = {}
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,code line,_, _,idx,actx = string.find(line.actor, "([%d.]*)%p*([%d.]*)"); id = _G.tonumber(idx); act = _G.tonumber(actx)
@@ -183,7 +220,8 @@ ${Array(contextAss.label.lines)
     .fill()
     .map(
       (_v, idx) =>
-        `Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,template line keeptags,!maxloop(_G.table.getn(shake[id])-1)! !retime("preline",shake[id][j].t,shake[id][j+1].t)!{\\pos(!shake[id][j].x+125!,!shake[id][j].y+${1020 +
+        `Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,template line keeptags,!maxloop(_G.table.getn(shake[id])-1)! !retime("preline",shake[id][j].t,shake[id][j+1].t)!{\\pos(!shake[id][j].x+125!,!shake[id][j].y+${contextAss
+          .label.dialogPosY +
           contextAss.label.spacing *
             idx}!)\\clip(!shake[id][j].x+90!,!shake[id][j].y+${
           contextAss.label.dialogY[idx]
@@ -200,7 +238,7 @@ ${Array(contextAss.label.lines)
     ).join(`
 `)}
 Comment: 0,0:00:00.00,0:00:00.00,ข้อความสั่น,,0,0,0,template notext line,!maxloop(_G.table.getn(shake[id])-1)! !retime("preline",shake[id][j].t,shake[id][j+1].t)!{\\an4\\1c&HFFFFFF&\\shad0.2\\fs!nameFontSize!\\pos(!shake[id][j].x+(offSetActor)+130!,!shake[id][j].y+${
-    contextAss.label.textPos.y
+    contextAss.label.actorPos.y
   }!)}!name[act][1]!
 `;
 }
