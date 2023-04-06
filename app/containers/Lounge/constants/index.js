@@ -1,5 +1,7 @@
 import cv from 'opencv4nodejs';
 
+export const yOffset = { title: 0, place: -50, dialog: -160 };
+
 export const qualityRatio = 1;
 export const rx = 1 / qualityRatio;
 export const maxWidth = (960 / 2) * 2;
@@ -89,17 +91,29 @@ export const placeCenterThreshold = {
 
 export const nameLabelCrop = {
   innerX: [Math.round(115 * rx), Math.round(547 * rx)],
-  innerY: [Math.round(1116 * rx), Math.round(1177 * rx)],
+  innerY: [
+    Math.round(1116 * rx) + yOffset.dialog,
+    Math.round(1177 * rx) + yOffset.dialog
+  ],
   outerX: [Math.round(78 * rx), Math.round(620 * rx)],
-  outerY: [Math.round(1104 * rx), Math.round(1190 * rx)]
+  outerY: [
+    Math.round(1104 * rx) + yOffset.dialog,
+    Math.round(1190 * rx) + yOffset.dialog
+  ]
 };
 export const starCrop = {
   rectX: [Math.round(555 * rx), Math.round(616 * rx)],
-  rectY: [Math.round(1105 * rx), Math.round(1189 * rx)]
+  rectY: [
+    Math.round(1105 * rx) + yOffset.dialog,
+    Math.round(1189 * rx) + yOffset.dialog
+  ]
 };
 export const nameLabelStarCrop = {
   rectX: [Math.round(112 * rx), Math.round(597 * rx)],
-  rectY: [Math.round(1110 * rx), Math.round(1185 * rx)]
+  rectY: [
+    Math.round(1110 * rx) + yOffset.dialog,
+    Math.round(1185 * rx) + yOffset.dialog
+  ]
 };
 const diffShaken = 40;
 export const nameLabelStarROI = {
@@ -108,8 +122,8 @@ export const nameLabelStarROI = {
     Math.round((597 + diffShaken) * rx)
   ],
   rectY: [
-    Math.round((1110 - diffShaken) * rx),
-    Math.round((1185 + diffShaken) * rx)
+    Math.round((1110 - diffShaken) * rx) + yOffset.dialog,
+    Math.round((1185 + diffShaken) * rx) + yOffset.dialog
   ]
 };
 export const starROI = {
@@ -118,8 +132,8 @@ export const starROI = {
     Math.round((616 + diffShaken) * rx)
   ],
   rectY: [
-    Math.round((900 - diffShaken) * rx),
-    Math.round((1400 + diffShaken) * rx)
+    Math.round((900 - diffShaken) * rx) + yOffset.dialog,
+    Math.round((1400 + diffShaken) * rx) + yOffset.dialog
   ]
 };
 
@@ -129,46 +143,73 @@ export const starLabelEndROI = {
     Math.round((619 + diffShaken) * rx)
   ],
   roiY: [
-    Math.round((1105 - diffShaken) * rx),
-    Math.round((1189 + diffShaken) * rx)
+    Math.round((1105 - diffShaken) * rx) + yOffset.dialog,
+    Math.round((1189 + diffShaken) * rx) + yOffset.dialog
   ]
 };
 export const starLabelEndCrop = {
   rectX: [Math.round(555 * rx), Math.round(619 * rx)],
-  rectY: [Math.round(1105 * rx), Math.round(1189 * rx)]
+  rectY: [
+    Math.round(1105 * rx) + yOffset.dialog,
+    Math.round(1189 * rx) + yOffset.dialog
+  ]
 };
 export const subtitleCrop = {
   rectX: [Math.round(100 * rx), Math.round(1800 * rx)],
-  rectY: [Math.round(1200 * rx), Math.round(1400 * rx)]
+  rectY: [
+    Math.round(1200 * rx) + yOffset.dialog,
+    Math.round(1400 * rx) + yOffset.dialog
+  ]
 };
 export const subtitlePartialCrop = {
   rectX: [Math.round(120 * rx), Math.round(1000 * rx)],
-  rectY: [Math.round(1200 * rx), Math.round(1260 * rx)]
+  rectY: [
+    Math.round(1200 * rx) + yOffset.dialog,
+    Math.round(1260 * rx) + yOffset.dialog
+  ]
 };
 export const subtitleFifthCrop = {
   rectX: [Math.round(340 * rx), Math.round(440 * rx)],
-  rectY: [Math.round(1200 * rx), Math.round(1260 * rx)]
+  rectY: [
+    Math.round(1200 * rx) + yOffset.dialog,
+    Math.round(1260 * rx) + yOffset.dialog
+  ]
 };
 export const fifthThreshold = 150;
 export const placeLabelCrop = {
   innerX: [Math.round(447 * rx), Math.round(1464 * rx)],
-  innerY: [Math.round(695 * rx), Math.round(745 * rx)],
+  innerY: [
+    Math.round(695 * rx) + yOffset.place,
+    Math.round(745 * rx) + yOffset.place
+  ],
   outerX: [Math.round(323 * rx), Math.round(1592 * rx)],
-  outerY: [Math.round(649 * rx), Math.round(795 * rx)]
+  outerY: [
+    Math.round(649 * rx) + yOffset.place,
+    Math.round(795 * rx) + yOffset.place
+  ]
 };
 export const titleLabelCrop = {
   outerX: [Math.round(20 * rx), Math.round(90 * rx)],
-  outerY: [Math.round(20 * rx), Math.round(90 * rx)],
+  outerY: [
+    Math.round(20 * rx) + yOffset.title,
+    Math.round(90 * rx) + yOffset.title
+  ],
   innerX: [Math.round(385 * rx), Math.round(1465 * rx)],
-  innerY: [Math.round(690 * rx), Math.round(750 * rx)]
+  innerY: [
+    Math.round(690 * rx) + yOffset.title,
+    Math.round(750 * rx) + yOffset.title
+  ]
 };
 export const titleLineCrop = {
   rectX: [Math.round(75 * rx), Math.round(1920 * rx)],
-  rectY: [Math.round(80 * rx), Math.round(85 * rx)]
+  rectY: [
+    Math.round(80 * rx) + yOffset.title,
+    Math.round(85 * rx) + yOffset.title
+  ]
 };
 export const titleHeader = {
   x: Math.round(75 * rx),
-  y: Math.round(25 * rx),
+  y: Math.round(25 * rx) + yOffset.title,
   height: Math.round(60 * rx)
 };
 

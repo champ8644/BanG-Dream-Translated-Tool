@@ -41,6 +41,7 @@ export const radioObj = IS_DEV
       'findTrueTitleSpline',
       'placeLabelGenerator',
       'starLabelEndGenerator',
+      'starTemplater',
       'nameLabelGenerator',
       'starMatching',
       'titleLabelGenerator',
