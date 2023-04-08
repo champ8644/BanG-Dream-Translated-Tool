@@ -66,7 +66,7 @@ const contextAssTemplate = {
       dialogY: [1035, 1115, 1185, 1265],
       timing: [0, 1500, 3000],
       lines: 3,
-      speed: 2000,
+      speed: 1500,
       spacing: -20,
       compensate: 10,
       shape:
